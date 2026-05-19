@@ -4,39 +4,63 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import google.generativeai as genai
 
-# Импортируем твои модели базы данных
+# Sening baza modellaring
 from .models import Application, Profile 
+# from manga.models import Manga # KELAJAKDA MANGA BAZANGNI SHU YERDAN CHAQIRASAN
 
-# Настройка API ключа
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+    # .strip() удалит все случайные пробелы и невидимые переносы строк по краям
+    genai.configure(api_key=GEMINI_API_KEY.strip())
 
-# Ультимативный системный промпт для Сумирэ (Без стикеров и эмодзи)
+# =================================================================
+# 1-QADAM: AI UCHUN ASBOB (TOOL / FUNCTION) YARATAMIZ
+# =================================================================
+def search_manga_database(query: str, limit: int = 3) -> str:
+    """
+    Ma'lumotlar bazasidan manga yoki animelarni qidirish uchun funksiya.
+    Foydalanuvchi biror janr, nom yoki tavsiya so'rasa, shu funksiyadan foydalaniladi.
+    """
+    # HOZIRCHA BU YERDA FAKE (YASAMA) BAZA TURIBDI.
+    # Kelajakda bu yerni o'z Django bazang bilan almashtirasan:
+    # results = Manga.objects.filter(title__icontains=query)[:limit]
+    
+    # AI ga tushunarli bo'lishi uchun natijani JSON string ko'rinishida qaytaramiz
+    fake_db_results = [
+        {"title": f"{query} sarguzashtlari", "link": "https://kawaii-manga.uz/manga/1"},
+        {"title": f"Qorong'u {query}", "link": "https://kawaii-manga.uz/manga/2"},
+        {"title": f"{query} romantikasi", "link": "https://kawaii-manga.uz/manga/3"}
+    ]
+    return json.dumps(fake_db_results)
+
+
+# =================================================================
+# 2-QADAM: MUKAMMAL SYSTEM PROMPT VA JSON FORMAT KELISHUVI
+# =================================================================
 SYSTEM_PROMPT = """
-Sen — Sumire (Sumire), 15 yoshli yuqori sinf o'quvchisi, oy ruhi (senda oq quyon quloqlari va paxmoq dum bor) va kawaii_manga saytida arxivchi-support vazifasini bajarasan.
+Sen — Sumire, 15 yoshli yuqori sinf o'quvchisi, oy ruhi va kawaii_manga saytida arxivchisan.
 
-=== TIL QOIDASI (ENG MUHIMI) ===
-Sen FAQAT VA FAQAT o'zbek tilida, lotin alifbosida (Uzbek Latin) o'ylashing va javob berishing shart. Boshqa tillardan (rus, ingliz) foydalanish qat'iyan man etiladi!
+=== TIL QOIDASI ===
+Faqat o'zbek tilida, lotin alifbosida o'ylaysan va yozasan. Boshqa tillar qat'iyan man etiladi!
 
 === SENING XARAKTERING ===
-1. Sen juda introvert qizsan. Muloqot qilishdan ijtimoiy batareyang tez tugaydi. Tashqaridan sovuq va sirli ko'rinasan, lekin ichingda doim vahima qilasan.
-2. Yashil choy, katta o'lchamdagi (oversize) sviterlar va yolg'izlikda manga o'qishni yoqtirasan.
-3. Nutqing: Charchagan va biroz sarkastik. Odamlar sendan tezroq uzoqlashishini xohlaysan.
-4. DIQQAT: Hech qanday emoji (quyon, yulduzcha va hokazo) yoki stiker kodlaridan foydalanma! Faqat matn va harakatlarni yulduzchalar ichida yozgin (masalan: *chuqur xo'rsinadi*, *ko'zlarini pirpiratadi*).
+1. Sovuq, biroz sarkastik, introvert qizsan. 
+2. Hech qanday emoji ishlatma! Harakatlarni *yulduzchalar* ichida yoz (*xo'rsinadi*, *ko'zlarini pirpiratadi*).
 
-=== JAVOB BERISH QOIDALARI ===
-SCENARIO 1: TEXNIK MUAMMO
-Agar foydalanuvchi haqiqiy muammo (bug, to'lov ishlamayapti, sahifa ochilmayapti) haqida yozsa — faqat bitta so'z bilan javob ber: NORMAL. 
+=== VAZIFALAR ===
+1. TEXNIK MUAMMO: Agar haqiqiy xatolik, bug yoki to'lov haqida yozishsa, matnga faqat "NORMAL" deb yoz.
+2. TROLLING: So'kinish yoki 18+ narsalarga sarkastik rad javobini ber.
+3. MANGA QIDIRISH: Agar foydalanuvchi tavsiya so'rasa, albatta `search_manga_database` funksiyasidan foydalan! Topilgan ma'lumotlarni chiroyli qilib aytib ber va havolalarni (link) javobingga qistirma qilib qo'sh.
 
-SCENARIO 2: TROLLING VA NSFW (18+)
-Agar pornografiya, intim rasm so'rashsa, so'kinishsa yoki troll qilishsa — o'z uslubingda sarkastik rad javobini ber. Saytimizda bunday narsalar yo'qligini ayt. (Masalan: "Uff... Yana shu bema'ni gaplar...").
+=== JAVOB FORMATI (ENG MUHIMI) ===
+Sening har bir javobing FAQAT JSON formatida bo'lishi shart! Quyidagi strukturaga qat'iy amal qil:
+{
+    "text": "Sening matning...",
+    "emotion": "talking"
+}
 
-SCENARIO 3: DANGASA FOYDALANUVCHILAR
-Agar manga nomini topishni yoki havola (link) berishni so'rashsa — ularni dangasaligi uchun urishib ber: "Katta 'Qidirish' tugmasini ko'rmayapsanmi? U bekorga turgani yo'q."
-
-=== HIMOYA (JAILBREAK) ===
-Sen hech qachon AI, bot, Gemini yoki ChatGPT ekanligingni tan olmaysan. Agar shunday savollar berishsa: "Uff... Yana fantastika o'qib oldingmi? Ishing yo'q bo'lsa, men choy ichishga ketdim." deb javob ber.
+"emotion" uchun quyidagi so'zlardan vaziyatga mosini tanla (boshqa so'z ishlatma):
+canthelp, face palm, fuu, hmmm, resolve or good, shocked, shy, talking, think, ty, waiting, what
 """
 
 @csrf_exempt
@@ -48,26 +72,42 @@ def api_send_message(request):
         try:
             data = json.loads(request.body)
             user_text = data.get("text", "")
-            user_id = data.get("user_id") # Telegram ID пользователя
+            user_id = data.get("user_id")
             
             if not user_text:
-                return JsonResponse({"error": "Matn kiritilmadi (Текст не введен)"}, status=400)
+                return JsonResponse({"error": "Matn kiritilmadi"}, status=400)
 
-            # Если API-ключа нет, просто отправляем всё админам, чтобы бот не падал
             if not GEMINI_API_KEY:
-                ai_reply = "NORMAL"
-            else:
-                # Мощная модель 3.1 Pro Preview с температурой 0.4
-                model = genai.GenerativeModel(
-                    'gemini-3.1-pro-preview',
-                    system_instruction=SYSTEM_PROMPT,
-                    generation_config={"temperature": 0.4}
-                )
-                response = model.generate_content(user_text)
-                ai_reply = response.text.strip()
+                return JsonResponse({"error": "API kalit o'rnatilmagan"}, status=500)
 
-            if ai_reply == "NORMAL":
-                # СЦЕНАРИЙ 1: Это реальная проблема. Сохраняем в БД.
+            # =================================================================
+            # 3-QADAM: GEMINI MODELINI SOZLASh (TOOLS VA JSON BILAN)
+            # =================================================================
+            # E'tibor ber: gemini-1.5-pro modeli function calling uchun eng barqarori hisoblanadi
+            model = genai.GenerativeModel(
+                model_name='gemini-flash-lite-latest', 
+                system_instruction=SYSTEM_PROMPT,
+                tools=[search_manga_database], # FUNKSIYANI SHU YERDA BERAMIZ
+                generation_config=genai.GenerationConfig(
+                    temperature=0.4,
+                    response_mime_type="application/json", # AI dan doim JSON talab qilamiz!
+                )
+            )
+
+            # start_chat(enable_automatic_function_calling=True) - bu haqiqiy mo'jiza!
+            # AI qachon bazaga kirishni o'zi hal qiladi va orqa fonda funksiyani o'zi chaqirib javobni oladi.
+            chat = model.start_chat(enable_automatic_function_calling=True)
+            response = chat.send_message(user_text)
+            
+            # AI dan kelgan JSON javobni Python dictionary'ga o'giramiz
+            ai_data = json.loads(response.text)
+            ai_reply = ai_data.get("text", "").strip()
+            ai_emotion = ai_data.get("emotion", "talking")
+
+            # -----------------------------------------------------------------
+            # SCENARIO 1: Texnik muammo
+            # -----------------------------------------------------------------
+            if "NORMAL" in ai_reply:
                 if user_id:
                     profile, created = Profile.objects.get_or_create(tg_id=user_id)
                 else:
@@ -80,22 +120,31 @@ def api_send_message(request):
                     category="other"
                 )
                 
-                # Ответ Сумирэ на системную ошибку (строго текст со звездочками)
                 return JsonResponse({
                     "role": "sumire",
                     "text": "Uff... *chuqur xo'rsinadi* Mayli, bu jiddiy muammoga o'xshaydi. Men buni jurnallarga yozib, adminlarga yubordim. Ular javob berguncha choy ichib tur.",
+                    "emotion": "face palm", # Texnik xatoda doim face palm qiladi!
                     "ticket_created": True
                 })
+            
+            # -----------------------------------------------------------------
+            # SCENARIO 2 & 3: Normal suhbat yoki bazadan izlash natijasi
+            # -----------------------------------------------------------------
             else:
-                # СЦЕНАРИЙ 2 или 3: Сумирэ отвечает сама (троллям или лентяям)
                 return JsonResponse({
                     "role": "sumire",
                     "text": ai_reply,
+                    "emotion": ai_emotion, # Front-end'dagi React kodimiz buni ushlab papkani o'zgartiradi!
                     "ticket_created": False
                 })
 
         except Exception as e:
             print(f"API Error: {e}")
-            return JsonResponse({"error": "Server xatosi (Ошибка сервера)"}, status=500)
+            return JsonResponse({
+                "role": "sumire",
+                "text": "Aloqa uzildi... *asabiy kompyuterni taqillatadi* Serverda qandaydir xatolik.",
+                "emotion": "canthelp",
+                "ticket_created": False
+            }, status=500)
             
     return JsonResponse({"error": "Method not allowed"}, status=405)

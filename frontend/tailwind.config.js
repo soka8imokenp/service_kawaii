@@ -7,8 +7,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'ui': ['"Pixelify Sans"', 'sans-serif'], 
-        'dialogue': ['"VT323"', 'monospace'],  
+        'ui': ['"Silkscreen"', 'cursive'],          // Чистый пиксель для кнопок и HUD
+        'dialogue': ['"Share Tech Mono"', 'monospace'], // Терминальный кибер-шрифт для чтения
       }
     },
   },

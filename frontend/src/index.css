@@ -9,45 +9,61 @@
 }
 
 body {
-  background-color: #0b0813;
+  background-color: #05030a; /* Глубокий, почти черный космический цвет */
   color: #fff;
   overflow: hidden; 
 }
 
-/* Приглушенная ретро-сетка */
-.animated-bg {
+/* Движущаяся 3D кибер-сетка */
+.cyber-grid {
   position: absolute;
   top: -50%; left: -50%; right: -50%; bottom: -50%;
   width: 200%; height: 200%;
   background: 
-    linear-gradient(rgba(147, 51, 234, 0.05) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(147, 51, 234, 0.05) 2px, transparent 2px);
-  background-size: 32px 32px;
-  transform: perspective(400px) rotateX(60deg) translateY(0);
-  animation: gridMove 12s linear infinite;
+    linear-gradient(rgba(139, 92, 246, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.08) 1px, transparent 1px);
+  background-size: 40px 40px;
+  transform: perspective(600px) rotateX(60deg) translateY(0);
+  animation: gridPan 10s linear infinite;
   z-index: 0;
 }
 
-@keyframes gridMove {
-  0% { transform: perspective(400px) rotateX(60deg) translateY(0); }
-  100% { transform: perspective(400px) rotateX(60deg) translateY(32px); }
+@keyframes gridPan {
+  0% { transform: perspective(600px) rotateX(60deg) translateY(0); }
+  100% { transform: perspective(600px) rotateX(60deg) translateY(40px); }
 }
 
-.sprite-breathe {
-  animation: breathe 3.5s ease-in-out infinite;
-  image-rendering: pixelated;
+/* Эффект старого монитора (Scanlines) */
+.scanlines {
+  position: absolute; inset: 0; z-index: 50; pointer-events: none;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+  background-size: 100% 4px;
 }
 
-@keyframes breathe {
+/* Анимация дыхания спрайта с мягким свечением */
+.sprite-anim {
+  animation: levitate 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(217, 70, 239, 0.2));
+}
+
+@keyframes levitate {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  50% { transform: translateY(-6px); }
 }
 
-.animate-blink {
-  animation: blink 1s step-end infinite;
-}
+.blink { animation: blinker 1s step-end infinite; }
+@keyframes blinker { 50% { opacity: 0; } }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+/* Кастомный пиксельный скроллбар для эстетики */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #05030a; }
+::-webkit-scrollbar-thumb { background: #d946ef; border: 1px solid #000; }
+
+/* Прячем скроллбар для скрытого скроллинга длинных ответов Сумирэ */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE и Edge */
+  scrollbar-width: none;  /* Firefox */
 }

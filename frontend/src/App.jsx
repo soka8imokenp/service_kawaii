@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 
 function App() {
-  // Прямое приветствие без глупых ролевых описаний
-  const initialText = "Arxivga xush kelibsiz. Nima kerakligini aytsangiz, men yordam berishga harakat qilaman.";
+  const initialText = "Salom. Nima kerakligini aytsangiz, men yordam berishga harakat qilaman.";
   
   const [dialogue, setDialogue] = useState(initialText);
   const [displayedText, setDisplayedText] = useState("");
@@ -15,10 +14,42 @@ function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [battery, setBattery] = useState(100);
 
+  const [emotion, setEmotion] = useState('talking'); 
+  const [frame, setFrame] = useState(1);
+
+  // Смена кадров для Lip-Sync
   useEffect(() => {
-    let index = 0;
-    setDisplayedText("");
+    let animInterval;
     
+    if (isTyping) {
+      if (emotion === 'talking') {
+        setFrame(2);
+        animInterval = setInterval(() => {
+          setFrame(prev => (prev === 2 ? 3 : 2));
+        }, 180); 
+      } else {
+        setFrame(1);
+        let currentFrame = 1;
+        animInterval = setInterval(() => {
+          if (currentFrame < 3) {
+            currentFrame++;
+            setFrame(currentFrame);
+          } else {
+            clearInterval(animInterval);
+          }
+        }, 250); 
+      }
+    } else {
+      setFrame(1);
+    }
+
+    return () => clearInterval(animInterval);
+  }, [isTyping, emotion]);
+
+  // Печатная машинка
+  useEffect(() => {
+    if (!dialogue) return;
+
     if (dialogue === "...") {
       setDisplayedText("...");
       setIsTyping(true);
@@ -31,16 +62,21 @@ function App() {
 
     const cleanText = dialogue.replace(urlRegex, '').trim();
     setIsTyping(true);
+    setDisplayedText(""); 
+
+    let currentText = "";
+    let index = 0;
 
     const timer = setInterval(() => {
       if (index < cleanText.length) {
-        setDisplayedText((prev) => prev + cleanText.charAt(index));
+        currentText += cleanText[index]; 
+        setDisplayedText(currentText);
         index++;
       } else {
         clearInterval(timer);
         setIsTyping(false);
       }
-    }, 20);
+    }, 25);
 
     return () => clearInterval(timer);
   }, [dialogue]);
@@ -54,8 +90,9 @@ function App() {
     setIsLoading(true);
     setLinks([]);
     
+    setEmotion('think');
     setDialogue("...");
-    setBattery(prev => Math.max(10, prev - 15));
+    setBattery(prev => Math.max(5, prev - 10));
 
     try {
       const response = await fetch('http://localhost:8000/feedback/api/send/', {
@@ -65,41 +102,46 @@ function App() {
       });
 
       const data = await response.json();
-      
-      // Чистим текст от любых звездочек, если они прилетели от ИИ
       let cleanResponse = data.text.replace(/\*[^*]+\*/g, '').trim();
+      
+      if (data.emotion) {
+         setEmotion(data.emotion);
+      } else {
+         setEmotion('talking');
+      }
+
       setDialogue(cleanResponse);
     } catch (error) {
-      setDialogue("Aloqa uzildi. Server javob bermayapti...");
+      setEmotion('canthelp'); 
+      setDialogue("Aloqa uzildi... Server javob bermayapti.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col h-screen relative bg-[#0b0813] font-ui">
+    <div className="flex flex-col h-[100dvh] relative bg-[#05030a] font-ui selection:bg-fuchsia-500 selection:text-white overflow-hidden">
       
-      {/* Приглушенная анимированная 3D сетка */}
-      <div className="animated-bg pointer-events-none opacity-40"></div>
-      
-      {/* Мягкое затемнение */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0b0813] via-transparent to-[#0b0813] pointer-events-none z-10"></div>
+      {/* КИБЕР-ЭФФЕКТЫ */}
+      <div className="cyber-grid pointer-events-none opacity-60"></div>
+      <div className="scanlines pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#05030a]/40 to-[#05030a] z-10 pointer-events-none"></div>
 
-      {/* --- HUD ВЕРХНЯЯ ПАНЕЛЬ --- */}
-      <div className="relative z-20 flex justify-between items-start p-4">
-        <div className="bg-[#1b142c] border-2 border-[#6d28d9] px-3 py-1 shadow-[2px_2px_0_#000]">
-          <h2 className="text-[10px] text-fuchsia-400 tracking-widest">ARCHIVE // LAYER</h2>
+      {/* --- HUD ПАНЕЛЬ --- */}
+      <div className="relative z-20 flex justify-between items-start p-2 md:p-4">
+        <div className="bg-[#0f0a1c]/90 backdrop-blur-md border-l-2 md:border-l-4 border-fuchsia-500 px-2 py-1 md:px-4 md:py-1.5 shadow-[2px_2px_0_rgba(0,0,0,0.5)] flex items-center gap-2">
+          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-fuchsia-500 animate-pulse"></div>
+          <h2 className="text-[8px] md:text-[10px] text-fuchsia-100 tracking-widest mt-0.5">SYS.ARCHIVE</h2>
         </div>
         
-        {/* Батарейка кубиками */}
-        <div className="bg-[#1b142c] border-2 border-[#6d28d9] p-2 flex flex-col items-end gap-1 shadow-[2px_2px_0_#000]">
-          <span className="text-[8px] text-purple-300 tracking-wider">SOCIAL BATTERY</span>
-          <div className="flex gap-0.5">
+        <div className="bg-[#0f0a1c]/90 backdrop-blur-md border border-purple-900/50 p-1.5 md:p-2 shadow-[2px_2px_0_rgba(0,0,0,0.5)] flex flex-col items-end gap-1">
+          <span className="text-[6px] md:text-[8px] text-purple-400 tracking-widest">BATTERY</span>
+          <div className="flex gap-0.5 md:gap-1">
             {[...Array(5)].map((_, i) => (
               <div 
                 key={i} 
-                className={`w-3 h-2 border border-black ${
-                  i < Math.ceil(battery / 20) ? 'bg-fuchsia-500 shadow-[0_0_5px_#d946ef]' : 'bg-gray-900'
+                className={`w-2 h-1.5 md:w-3.5 md:h-2 transition-all duration-300 ${
+                  i < Math.ceil(battery / 20) ? 'bg-fuchsia-500 shadow-[0_0_5px_#d946ef]' : 'bg-[#1b142c] border border-purple-900/50'
                 }`}
               ></div>
             ))}
@@ -107,85 +149,91 @@ function App() {
         </div>
       </div>
 
-      {/* --- ЭКРАН ПЕРСОНАЖА --- */}
-      <div className="flex-1 relative z-10 flex flex-col justify-end items-center pb-2">
-        {/* Мягкий аккуратный свет за ней */}
-        <div className="absolute bottom-10 w-48 h-48 bg-fuchsia-500/10 rounded-full blur-[50px]"></div>
+      {/* --- ЭКРАН ПЕРСОНАЖА (Стабильная зона) --- */}
+      <div className="flex-1 relative z-10 flex flex-col justify-end items-center overflow-hidden">
         
         <img 
-          src="/sumire-full.png" 
-          alt="Sumire" 
-          className="h-[55vh] max-h-[450px] object-contain sprite-breathe z-20 drop-shadow-[0_0_15px_rgba(0,0,0,0.6)]"
+          src={`/service/${emotion}/${frame}.webp`} 
+          alt={`Sumire-${emotion}`} 
+          className="h-[58vh] md:h-[70vh] max-h-[580px] md:max-h-[750px] object-contain sprite-anim z-20 pointer-events-none select-none"
+          onError={(e) => { e.target.src = '/sumire-full.png'; }}
         />
         
-        {/* ОБЛАЧКО ИГРОКА (YOU) */}
+        {/* ОБЛАЧКО ЮЗЕРА */}
         {userMessage && (
-          <div className="absolute top-10 right-4 max-w-[65%] z-30">
-            <div className="bg-[#1e1435] border-2 border-fuchsia-500 p-2.5 shadow-[4px_4px_0_#000] text-right relative">
-              <div className="absolute -bottom-2 right-4 w-3 h-3 bg-[#1e1435] border-b-2 border-r-2 border-fuchsia-500 transform rotate-45"></div>
-              <p className="text-fuchsia-300 text-xs tracking-wide">YOU: {userMessage}</p>
+          <div className="absolute top-8 right-2 md:right-4 max-w-[80%] md:max-w-[65%] z-30">
+            <div className="bg-[#130b24]/95 backdrop-blur-md border border-fuchsia-500/50 p-2 md:p-3 shadow-[2px_2px_0_rgba(217,70,239,0.2)] text-right">
+              <p className="font-dialogue text-[#e2e8f0] text-xs md:text-sm tracking-wide break-words">
+                <span className="text-fuchsia-500 mr-1.5 opacity-80 font-ui text-[8px]">YOU:</span> 
+                {userMessage}
+              </p>
             </div>
           </div>
         )}
       </div>
 
-      {/* --- ДИАЛОГОВЫЙ БОКС (Доработанный, сочный) --- */}
-      <div className="relative z-30 px-3 pb-2">
-        {/* ЯРКОЕ ИМЯ (Теперь горит неоном и отлично видно!) */}
-        <div className="inline-block bg-[#6d28d9] border-2 border-white px-5 py-1 ml-4 relative top-1.5 z-40 shadow-[0_0_10px_#a855f7]">
-          <span className="text-xs text-white tracking-widest font-bold drop-shadow-[2px_2px_0_#000]">SUMIRE</span>
-        </div>
-        
-        {/* Главное окно текста */}
-        <div className="bg-[#110c22]/95 border-4 border-purple-600 p-4 shadow-[6px_6px_0_#000] min-h-[110px] relative backdrop-blur-sm">
-          {/* VT323 — Идеальный, крупный и крутой пиксельный шрифт для чтения */}
-          <p className="font-dialogue text-[22px] sm:text-[24px] text-gray-100 leading-none tracking-wide min-h-[3rem]">
-            {displayedText}
-          </p>
+      {/* --- ДИАЛОГОВАЯ КОРОБКА (Намертво фиксированная!) --- */}
+      <div className="relative z-30 px-2 md:px-6 pb-2 w-full max-w-4xl mx-auto flex-shrink-0">
+        <div className="relative">
+          {/* ИМЯ СУМИРЭ */}
+          <div className="absolute -top-3 md:-top-4 left-4 bg-fuchsia-600 border border-fuchsia-300 px-3 md:px-6 py-1 z-40 shadow-[0_0_10px_rgba(217,70,239,0.6)]">
+            <span className="text-[10px] md:text-xs text-white tracking-widest drop-shadow-[1px_1px_0_#000] mt-0.5 block">SUMIRE</span>
+          </div>
+          
+          {/* Фиксированная высота: h-[130px] на мобилках, h-[160px] на мониторах */}
+          <div className="bg-[#0a0710]/95 border-2 border-fuchsia-500/80 p-4 md:p-5 shadow-[4px_4px_0_rgba(0,0,0,0.8)] h-[130px] md:h-[160px] relative backdrop-blur-xl mt-2 flex flex-col justify-between">
+            
+            {/* Внутренний контейнер для текста со скрытым скроллом */}
+            <div className="flex-1 overflow-y-auto no-scrollbar pr-1">
+              <p className="font-dialogue text-[18px] md:text-[23px] text-[#e2e8f0] leading-tight md:leading-snug tracking-wide whitespace-pre-wrap">
+                {displayedText}
+              </p>
 
-          {/* ПОДХВАТ ССЫЛОК И КНОПКА */}
-          {!isTyping && links.length > 0 && (
-            <div className="mt-3 flex gap-2 flex-wrap">
-              {links.map((link, i) => (
-                <a 
-                  key={i} 
-                  href={link} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold text-xs px-5 py-2 border-2 border-white shadow-[3px_3px_0_#000] active:translate-y-0.5 active:shadow-none transition-all inline-flex items-center gap-2"
-                >
-                  ▶ OPEN LINK
-                </a>
-              ))}
+              {/* СИСТЕМНЫЕ ССЫЛКИ */}
+              {!isTyping && links.length > 0 && (
+                <div className="mt-2.5 flex gap-2 flex-wrap">
+                  {links.map((link, i) => (
+                    <a 
+                      key={i} 
+                      href={link} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="bg-[#1b142c] hover:bg-fuchsia-600 text-fuchsia-400 hover:text-white border border-fuchsia-500 text-[8px] md:text-[10px] px-3 py-1.5 transition-all shadow-[2px_2px_0_#d946ef] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none flex items-center gap-2"
+                    >
+                      <span className="blink">▶</span> SYSTEM LINK
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
 
-          {/* Мигающая стрелочка конца текста */}
-          {!isTyping && dialogue !== "..." && (
-            <div className="absolute bottom-2 right-4 text-fuchsia-400 text-xs animate-blink">▼</div>
-          )}
+            {/* Маркер готовности (всегда прижат к правому нижнему углу бокса) */}
+            {!isTyping && dialogue !== "..." && (
+              <div className="absolute bottom-2 right-3 text-fuchsia-500 text-[10px] md:text-sm blink select-none">▼</div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* --- ПАНЕЛЬ ВВОДА КОМАНД --- */}
-      <div className="relative z-30 px-3 pb-4 mt-1">
-        <div className="bg-black/90 border-2 border-purple-600 flex items-center p-1.5 shadow-[4px_4px_0_#000] focus-within:border-fuchsia-500 transition-colors">
-          <span className="text-fuchsia-500 font-dialogue text-xl mx-2 animate-blink">{'>'}</span>
+      {/* --- ПАНЕЛЬ ВВОДА (Тоже не сжимает экран) --- */}
+      <div className="relative z-30 px-2 md:px-6 pb-3 md:pb-5 w-full max-w-4xl mx-auto flex-shrink-0">
+        <div className="bg-[#05030a]/95 border-2 border-purple-800 flex items-center p-1 md:p-1.5 shadow-[4px_4px_0_rgba(0,0,0,1)] focus-within:border-fuchsia-500 transition-all">
+          <span className="text-fuchsia-500 font-dialogue text-xl md:text-2xl mx-2 blink">{' >'}</span>
           <input 
             type="text" 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-            placeholder="TYPE COMMAND..." 
+            placeholder="Xabarni kiriting..." 
             disabled={isLoading}
-            className="flex-1 bg-transparent text-white text-xs tracking-wider focus:outline-none placeholder-purple-900 uppercase"
+            className="flex-1 bg-transparent mountaineer font-dialogue text-[#e2e8f0] text-base md:text-lg focus:outline-none placeholder-purple-900/70 w-full"
           />
           <button 
             onClick={sendMessage}
             disabled={isLoading || !input.trim()}
-            className="ml-2 bg-[#6d28d9] hover:bg-[#7c3aed] text-white text-[11px] font-bold px-4 py-2 border-2 border-purple-400 shadow-[2px_2px_0_#000] active:translate-y-0.5 active:shadow-none transition-all disabled:opacity-50"
+            className="ml-1 md:ml-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-[8px] md:text-[10px] px-3 md:px-6 py-2.5 md:py-3 border border-fuchsia-300 shadow-[2px_2px_0_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all disabled:opacity-50"
           >
-            ACT
+            YUBORISH
           </button>
         </div>
       </div>
