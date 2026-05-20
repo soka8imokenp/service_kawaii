@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react'
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || window.location.origin).replace(/\/$/, '');
+
+const getTelegramUser = () => {
+  return window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+};
+
 function App() {
   const initialText = "Salom. Nima kerakligini aytsangiz, men yordam berishga harakat qilaman.";
   
@@ -16,6 +22,17 @@ function App() {
 
   const [emotion, setEmotion] = useState('talking'); 
   const [frame, setFrame] = useState(1);
+  
+  // --- НОВОЕ: Состояние для кулдауна ---
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    const webApp = window.Telegram?.WebApp;
+    if (!webApp) return;
+
+    webApp.ready();
+    webApp.expand();
+  }, []);
 
   // Смена кадров для Lip-Sync
   useEffect(() => {
@@ -82,7 +99,8 @@ function App() {
   }, [dialogue]);
 
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    // Блокируем отправку, если идет загрузка, поле пустое ИЛИ работает кулдаун
+    if (!input.trim() || isLoading || cooldown > 0) return;
 
     const textToSent = input.trim();
     setUserMessage(textToSent);
@@ -95,10 +113,16 @@ function App() {
     setBattery(prev => Math.max(5, prev - 10));
 
     try {
-      const response = await fetch('http://localhost:8000/feedback/api/send/', {
+      const telegramUser = getTelegramUser();
+      const response = await fetch(`${API_BASE_URL}/feedback/api/send/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: textToSent, user_id: 123456789 }),
+        body: JSON.stringify({
+          text: textToSent,
+          user_id: telegramUser.id || 123456789,
+          username: telegramUser.username || '',
+          first_name: telegramUser.first_name || '',
+        }),
       });
 
       const data = await response.json();
@@ -111,11 +135,23 @@ function App() {
       }
 
       setDialogue(cleanResponse);
-    } catch (error) {
+    } catch {
       setEmotion('canthelp'); 
       setDialogue("Aloqa uzildi... Server javob bermayapti.");
     } finally {
       setIsLoading(false);
+
+      // --- НОВОЕ: Запускаем таймер на 20 секунд после ответа ---
+      setCooldown(20);
+      const cooldownTimer = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(cooldownTimer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     }
   };
 
@@ -219,6 +255,8 @@ function App() {
       <div className="relative z-30 px-2 md:px-6 pb-3 md:pb-5 w-full max-w-4xl mx-auto flex-shrink-0">
         <div className="bg-[#05030a]/95 border-2 border-purple-800 flex items-center p-1 md:p-1.5 shadow-[4px_4px_0_rgba(0,0,0,1)] focus-within:border-fuchsia-500 transition-all">
           <span className="text-fuchsia-500 font-dialogue text-xl md:text-2xl mx-2 blink">{' >'}</span>
+          
+          {/* Поле ввода остается активным, чтобы юзер мог набирать текст пока ждет */}
           <input 
             type="text" 
             value={input}
@@ -228,12 +266,18 @@ function App() {
             disabled={isLoading}
             className="flex-1 bg-transparent mountaineer font-dialogue text-[#e2e8f0] text-base md:text-lg focus:outline-none placeholder-purple-900/70 w-full"
           />
+          
+          {/* --- НОВОЕ: Кнопка с обратным отсчетом --- */}
           <button 
             onClick={sendMessage}
-            disabled={isLoading || !input.trim()}
-            className="ml-1 md:ml-2 bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-[8px] md:text-[10px] px-3 md:px-6 py-2.5 md:py-3 border border-fuchsia-300 shadow-[2px_2px_0_#000] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none transition-all disabled:opacity-50"
+            disabled={isLoading || !input.trim() || cooldown > 0}
+            className={`ml-1 md:ml-2 text-white text-[8px] md:text-[10px] px-3 md:px-6 py-2.5 md:py-3 border border-fuchsia-300 shadow-[2px_2px_0_#000] transition-all
+              ${cooldown > 0 
+                ? 'bg-purple-900/50 text-gray-400 cursor-not-allowed opacity-70' 
+                : 'bg-fuchsia-600 hover:bg-fuchsia-500 active:translate-y-0.5 active:translate-x-0.5 active:shadow-none'
+              }`}
           >
-            YUBORISH
+            {cooldown > 0 ? `KUTING (${cooldown}s)` : 'YUBORISH'}
           </button>
         </div>
       </div>
