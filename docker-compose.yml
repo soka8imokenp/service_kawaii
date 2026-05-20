@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: sumire-db
+    environment:
+      POSTGRES_DB: sumire_db
+      POSTGRES_USER: sumire_user
+      POSTGRES_PASSWORD: sumire_password_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sumire_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sumire-network
+
+  # Django Backend
+  backend:
+    build: .
+    container_name: sumire-backend
+    command: sh -c "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 --workers 4 --timeout 60 core.wsgi:application"
+    environment:
+      DEBUG: "False"
+      SECRET_KEY: django-insecure-docker-dev-key-change-in-production
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      CSRF_TRUSTED_ORIGINS: http://localhost:5173,http://localhost:3000
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173
+      CORS_ALLOW_ALL_ORIGINS: "False"
+      DATABASE_URL: postgres://sumire_user:sumire_password_dev@db:5432/sumire_db
+      TIME_ZONE: Asia/Tashkent
+      BOT_TOKEN: ${BOT_TOKEN:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./feedback/static/dist:/app/feedback/static/dist:ro
+      - ./staticfiles:/app/staticfiles
+    networks:
+      - sumire-network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: sumire-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./staticfiles:/app/staticfiles:ro
+      - ./frontend/dist:/app/frontend/dist:ro
+    depends_on:
+      - backend
+    networks:
+      - sumire-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  sumire-network:
+    driver: bridge

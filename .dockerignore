@@ -1,0 +1,17 @@
+# Игнорируем всё, что не нужно копировать в Docker-контейнер
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.env
+db.sqlite3
+.git
+.gitignore
+.dockerignore
+Dockerfile
+README.md
+staticfiles/
