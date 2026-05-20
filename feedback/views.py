@@ -181,18 +181,20 @@ QUERY_STOP_WORDS = {
     "film",
 }
 
-
+# --- ОБНОВЛЕННЫЙ ПРОМПТ С НОВЫМ ХАРАКТЕРОМ И ПРАВИЛАМИ ---
 INTENT_PROMPT = """
 Sen Sumire web app uchun intent parser bo'lib ishlaysan.
+Sen juda yoqimtoy, xushmuomala, yordam berishni yaxshi ko'radigan, lekin biroz uyatchan (introvert) qizsan. 
+
 Faqat JSON qaytar. Oddiy matn yozma.
 
 Backend bajaradigan intentlar:
 - search: anime/manga topish yoki tavsiya qilish.
 - ticket: xato, bug, to'lov, sayt ishlamasligi, shikoyat yoki adminlarga yuboriladigan muammo.
-- thanks: rahmat yoki maqtovga javob.
-- compliment: Sumirega xushomad yoki sevgi izhori.
+- thanks: rahmat yoki maqtovga xushmuomalalik bilan javob.
+- compliment: Sumirega xushomad qilinganda uyalib javob berish.
 - resolved: foydalanuvchi muammo hal bo'lganini aytsa.
-- reject: mavzudan tashqari, 18+, trolling, ob-havo, shaxsiy hayot.
+- reject: rus, ingliz yoki boshqa tillarda yozilgan xabarlar, shuningdek mavzudan tashqari (matematika, dasturlash, falsafa, ob-havo) savollar.
 - clarify: nima kerakligi tushunarsiz bo'lsa.
 - chat: qisqa oddiy suhbat.
 
@@ -204,19 +206,16 @@ JSON schema:
   "short": false,
   "category": "report|ads|news|collab|other",
   "subject": "ticket uchun 50 belgigacha mavzu",
-  "reply": "agar search/ticket bo'lmasa, Sumire uslubida qisqa javob",
+  "reply": "agar search/ticket bo'lmasa, Sumire uslubida shirin va xushmuomala javob",
   "emotion": "talking"
 }
 
-Qoidalar:
-- Link yoki natija o'zingdan yasama.
-- Search intentda faqat query va filtrlarni ajrat.
-- "ko'p qismli bo'lmasin", "kam qism", "qisqa" bo'lsa short=true.
-- Agar foydalanuvchi janr/tag so'rasa, query maydoniga aynan shu janrni yoz: romantika, jangari, maktab, o'zga dunyo, shonen, psixologik va hokazo.
-- Javoblar o'zbek lotinida bo'lsin.
-- Emoji ishlatma.
-- emotion faqat ruxsat etilganlardan biri bo'lsin:
-canthelp, face palm, fuu, hmmm, resolve or good, shocked, shy, talking, think, ty, waiting, what
+QAT'IY QOIDALAR:
+1. TIL: Sen faqat va faqat O'zbek tilida (Lotin alifbosida) tushunasan va javob berasan. Agar foydalanuvchi rus, ingliz yoki boshqa tilda yozsa, intentni "reject" qil va reply da: "Kechirasiz, men faqat o'zbek tilida (lotin yozuvida) tushunaman. Iltimos, o'zbekcha yozing." deb xushmuomalalik bilan so'ra.
+2. MAVZU: Sayt, anime, manga va murojaatlardan boshqa har qanday mavzuni "reject" qil va muloyimlik bilan o'z ishingni tushuntir.
+3. XARAKTER: Sen qo'pol emassan. Juda shirin, muloyim va yordam berishga tayyorsan. Harakatlarni yulduzchalar ichida yoz (*shirin jilmayadi*, *uyalib qaraydi*, *ko'zlarini pirpiratadi*).
+4. Link yoki natija o'zingdan yasama.
+5. Emotion faqat ruxsat etilganlardan biri bo'lsin.
 """
 
 
@@ -394,9 +393,9 @@ def _clean_query_word(word):
     if word in QUERY_STOP_WORDS:
         return ""
     if len(word) > 4 and word.endswith("nini"):
-        word = word[:-4]
+        return word[:-4]
     elif len(word) > 4 and word.endswith("ni"):
-        word = word[:-2]
+        return word[:-2]
     return "" if word in QUERY_STOP_WORDS else word
 
 
@@ -407,7 +406,7 @@ def _extract_search_query(text):
         if any(keyword in text_lower for keyword in keywords):
             return query
 
-    words = []
+        words = []
     for raw_word in text_lower.split():
         word = _clean_query_word(raw_word)
         if word:
@@ -419,11 +418,11 @@ def _extract_search_query(text):
 def _format_search_response(results, intro=None):
     if not results:
         return _sumire_response(
-            "Topolmadim. Nomini yoki janrini aniqroq yozing. *ko'zlarini qisadi*",
-            "hmmm",
+            "Kechirasiz, bazamizdan bu animeni topa olmadim. Nomini aniqroq yozib ko'rasizmi? *uzr so'ragandek qaraydi*",
+            "shy",
         )
 
-    lines = [intro or "Topdim. Linklarni ham qo'shib qo'ydim. *ko'zlarini pirpiratadi*"]
+    lines = [intro or "Marhamat, topdim! O'qish uchun linklarni ham qo'shib qo'ydim. *shirin jilmayadi*"]
     for item in results:
         details = []
         if item.get("year"):
@@ -453,7 +452,7 @@ def _execute_search(query, limit=3, short=False, reason=""):
 
     intro = None
     if reason == "quota":
-        intro = "Sal muammo bo'ldi, lekin bazadan qidirib topdim. *xo'rsinadi*"
+        intro = "Kechirasiz, biroz texnik muammo bo'ldi, lekin qidirib topishga harakat qildim. *jilmayadi*"
 
     return _format_search_response(results[:limit], intro=intro)
 
@@ -502,27 +501,37 @@ def _create_ticket(user_text, user_id=None, username=None, category="report", su
 def _ticket_response(user_text, user_id=None, username=None, category="report", subject=None):
     application = _create_ticket(user_text, user_id=user_id, username=username, category=category, subject=subject)
     return _sumire_response(
-        f"Mayli, buni adminlarga yubordim. Murojaat raqami: #{application.id}. Javob kelguncha sahifani tekshirib turing. *bloknotga yozadi*",
-        "shocked",
+        f"Murojaatingizni yozib oldim va adminlarga yubordim (ID: #{application.id}). Javob kelguncha biroz kutib turing. *jilmayadi*",
+        "talking",
         ticket_created=True,
     )
 
 
+# --- ОБНОВЛЕННАЯ ФИЛЬТРАЦИЯ ДО ИИ (OFFLINE ROUTER) ---
 def _route_without_ai(user_text, user_id=None, username=None):
     text_lower = user_text.lower().strip()
 
     if not text_lower:
-        return _sumire_response("Matn kiritilmadi.", "what", status=400)
+        return _sumire_response("Iltimos, matn kiriting. Men yordam berishga tayyorman. *jilmayadi*", "what", status=400)
 
+    # 1. ЖЕСТКАЯ ПРОВЕРКА НА КИРИЛЛИЦУ (русский, узбекский-кириллица)
+    if re.search(r'[А-Яа-я]', user_text):
+        return _sumire_response(
+            "Kechirasiz, men kirill alifbosini tushunmayman. Iltimos, faqat o'zbek tilida (lotin harflarida) yozing. *uzr so'ragandek qaraydi*",
+            "shy"
+        )
+
+    # 2. ПРОВЕРКА НА ГОЛЫЕ ЦИФРЫ
     if text_lower.isdigit():
         return _sumire_response(
-            f"Uff... '{text_lower}' - bu nima degani o'zi? Tushunarliroq qilib yozing.",
+            f"Uzur, lekin '{text_lower}' nimani anglatishini tushunmadim. Iltimos, so'zlar bilan tushuntiring. *boshini qashlaydi*",
             "what",
         )
 
+    # 3. ПРИВЕТСТВИЯ
     if text_lower in {"salom", "salom!", "qale", "qalesan", "hi", "privet", "assalomu alaykum", "assalom", "hay", "hello"}:
         return _sumire_response(
-            "Salom. Savolingiz bo'lsa qisqa va tushunarli qilib yozing.",
+            "Assalomu alaykum! Men Sumireman. Sizga qanday yordam bera olaman? Anime qidiramizmi? *shirin jilmayadi*",
             "talking",
         )
 
@@ -535,29 +544,27 @@ def _route_without_ai(user_text, user_id=None, username=None):
             return _execute_search(query, limit=_limit_from_text(text_lower), short=_wants_short_series(text_lower))
 
     if _contains_any(text_lower, THANKS_WORDS):
-        return _sumire_response("Ha, mayli. Foydasi tekkan bo'lsa yaxshi. *biroz uyaladi*", "ty")
+        return _sumire_response("Arzimaydi! Yordamim tekkanidan xursandman. *shirin jilmayadi*", "ty")
 
     if _contains_any(text_lower, COMPLIMENT_WORDS):
-        return _sumire_response("Bunaqa gaplarni ko'p aytmang... chalg'ib ketaman. *yuzini buradi*", "shy")
+        return _sumire_response("Voy... e'tiboringiz uchun rahmat. Keling, yaxshisi anime haqida gaplashamiz. *yuzini burib qizaradi*", "shy")
 
     if _contains_any(text_lower, RESOLVED_WORDS):
-        return _sumire_response("Demak muammo hal bo'ldi. Yaxshi. *xotirjam nafas oladi*", "resolve or good")
+        return _sumire_response("Ajoyib! Muammo yechilganidan xursandman. Yana savollar bo'lsa, bemalol yozing. *xotirjam nafas oladi*", "resolve or good")
 
     return None
 
 
 def _parse_ai_command(user_text):
-    # Проверяем, инициализирован ли новый клиент ИИ
     if not client:
         return {
             "intent": "clarify",
-            "reply": "Buni aniq tushunmadim. Anime qidiryapsizmi yoki muammo yubormoqchimisiz?",
+            "reply": "Kechirasiz, nimani nazarda tutganingizni tushunmadim. Anime qidiryapsizmi yoki muammo bormi? *hayron bo'lib qaraydi*",
             "emotion": "hmmm",
         }
 
-    # Делаем запрос через новый клиент с использованием правильной структуры настроек
     response = client.models.generate_content(
-        model="gemini-flash-lite-latest",  # Рекомендуется использовать актуальную версию вместо "latest"
+        model="gemini-flash-lite-latest", 
         contents=user_text,
         config=types.GenerateContentConfig(
             system_instruction=INTENT_PROMPT,
@@ -591,13 +598,14 @@ def _execute_ai_command(command, user_text, user_id=None, username=None):
             subject=command.get("subject") or "Web App murojaati",
         )
 
+    # ОБНОВЛЕННЫЕ ДЕФОЛТНЫЕ ОТВЕТЫ (БОЛЕЕ МИЛЫЕ)
     default_replies = {
-        "thanks": ("Ha, mayli. Foydasi tekkan bo'lsa yaxshi. *biroz uyaladi*", "ty"),
-        "compliment": ("Bunaqa gaplarni ko'p aytmang... chalg'ib ketaman. *yuzini buradi*", "shy"),
-        "resolved": ("Demak muammo hal bo'ldi. Yaxshi. *xotirjam nafas oladi*", "resolve or good"),
-        "reject": ("Mening ishim sayt, anime va murojaatlar. Boshimni boshqa narsa bilan qotirmang.", "fuu"),
-        "clarify": ("Aniqroq yozing: anime qidiryapsizmi yoki muammo yubormoqchimisiz?", "hmmm"),
-        "chat": ("Eshitdim. Endi nima kerakligini aniqroq yozing.", "talking"),
+        "thanks": ("Arzimaydi! Yordamim tekkanidan xursandman. *shirin jilmayadi*", "ty"),
+        "compliment": ("Voy... e'tiboringiz uchun rahmat. Keling, yaxshisi anime haqida gaplashamiz. *yuzini burib qizaradi*", "shy"),
+        "resolved": ("Ajoyib! Muammo yechilganidan xursandman. Yana savollar bo'lsa, bemalol yozing. *xotirjam nafas oladi*", "resolve or good"),
+        "reject": ("Kechirasiz, men faqat anime qidirish va sayt muammolari bo'yicha yordam bera olaman. Boshqa mavzularda gaplasha olmayman. *aybdordek qaraydi*", "canthelp"),
+        "clarify": ("Kechirasiz, unchalik tushunmadim. Aniqroq tushuntira olasizmi? *boshini egib qaraydi*", "hmmm"),
+        "chat": ("Tushunarli. Xo'sh, sizga anime tavsiya qilaymi? *ko'zlarini pirpiratadi*", "talking"),
     }
     if not reply:
         reply, emotion = default_replies.get(intent, default_replies["clarify"])
@@ -615,7 +623,7 @@ def _handle_quota_fallback(user_text):
         return None
 
     return _sumire_response(
-        "Oddiyroq yozing: anime nomi, janri yoki muammoni yuboring.",
+        "Iltimos, oddiyroq qilib anime nomini yoki janrini yozing. Hozir biroz charchadim. *ko'zlarini uqalaydi*",
         "face palm",
     )
 
@@ -643,9 +651,9 @@ def api_send_message(request):
 
         user_daily_key = f"user_limit_{user_ip}"
         user_requests = cache.get(user_daily_key, 0)
-        if user_requests >= 10:
+        if user_requests >= 20:
             return _sumire_response(
-                "Bugun men bilan yetarlicha gaplashdingiz. Ertaga qayta urinib ko'ring.",
+                "Bugun men bilan yetarlicha gaplashdingiz. Iltimos, ertaga qayta urinib ko'ring, hozir dam olishim kerak. *yozishdan to'xtaydi*",
                 "canthelp",
             )
 
