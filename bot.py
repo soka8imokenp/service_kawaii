@@ -30,18 +30,18 @@ async def start(message: types.Message):
 # 2. Обработчик твоих ответов (Reply)
 @dp.message(F.reply_to_message)
 async def handle_admin_reply(message: types.Message):
-    # Проверяем, что отвечаешь именно ты
+    # Проверяем, что отвечаешь именно ты (админ)
     if message.from_user.id == ADMIN_ID:
         
         # Берем текст из сообщения, на которое ты отвечаешь
         original_text = message.reply_to_message.text or message.reply_to_message.caption
         
         if original_text:
-            # Ищем #id12345678 в тексте
-            match = re.search(r"#id(\d+)", original_text)
+            # Ищем строку "User: 123456789" в тексте сообщения от бэкенда
+            match = re.search(r"User:\s*(\d+)", original_text)
             
             if match:
-                target_user_id = match.group(1)
+                target_user_id = match.group(1) # Это и есть настоящий Telegram ID пользователя!
                 try:
                     # Отправляем твой ответ пользователю
                     await bot.send_message(
@@ -53,7 +53,7 @@ async def handle_admin_reply(message: types.Message):
                 except Exception as e:
                     await message.answer(f"❌ Xatolik: Foydalanuvchi botni bloklagan bo'lishi mumkin.\n\n{e}")
             else:
-                # Если #id не найден, бот ничего не делает (чтобы не мешать обычному общению)
+                # Если User ID не найден, бот ничего не делает (чтобы не мешать обычному общению)
                 pass
 
 async def main():

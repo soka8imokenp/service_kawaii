@@ -98,87 +98,26 @@ ALLOWED_EMOTIONS = {
 APPLICATION_CATEGORIES = {"news", "ads", "report", "collab", "other"}
 
 SEARCH_WORDS = (
-    "anime",
-    "manga",
-    "manhwa",
-    "janr",
-    "janridagi",
-    "turdagi",
-    "tag",
-    "tavsiya",
-    "topib",
-    "top",
-    "qidir",
-    "link",
-    "havola",
-    "korish",
-    "ko'rish",
+    "anime", "manga", "manhwa", "janr", "janridagi", "turdagi", "tag", "tavsiya",
+    "topib", "top", "qidir", "link", "havola", "korish", "ko'rish",
 )
 SUPPORT_WORDS = (
-    "xato",
-    "bug",
-    "ishlamayapti",
-    "ishlamadi",
-    "ochilmayapti",
-    "kirmayapti",
-    "tolov",
-    "to'lov",
-    "pul",
-    "oplata",
-    "muammo",
-    "shikoyat",
-    "adminga",
-    "adminlarga",
+    "xato", "bug", "ishlamayapti", "ishlamadi", "ochilmayapti", "kirmayapti",
+    "tolov", "to'lov", "pul", "oplata", "muammo", "shikoyat", "adminga", "adminlarga",
 )
 THANKS_WORDS = ("rahmat", "raxmat", "tashakkur", "thanks", "zor", "zo'r")
 COMPLIMENT_WORDS = ("chiroylisan", "yoqimtoy", "yaxshisan", "sevaman", "love")
 RESOLVED_WORDS = ("ishladi", "hal boldi", "hal bo'ldi", "tuzaldi", "hammasi ishlayapti")
 SHORT_SERIES_WORDS = (
-    "ko'p qisimlik bo'lmasin",
-    "ko'p qismli bo'lmasin",
-    "kop qisimlik bolmasin",
-    "kop qismli bolmasin",
-    "ko'p qisimlik",
-    "ko'p qismli",
-    "kop qisimlik",
-    "kop qismli",
-    "kam qism",
-    "kam qisim",
-    "qisqa",
+    "ko'p qisimlik bo'lmasin", "ko'p qismli bo'lmasin", "kop qisimlik bolmasin",
+    "kop qismli bolmasin", "ko'p qisimlik", "ko'p qismli", "kop qisimlik",
+    "kop qismli", "kam qism", "kam qisim", "qisqa",
 )
 QUERY_STOP_WORDS = {
-    "menga",
-    "anime",
-    "manga",
-    "manhwa",
-    "ni",
-    "nini",
-    "topib",
-    "top",
-    "ber",
-    "tavsiya",
-    "qil",
-    "qilib",
-    "qidir",
-    "link",
-    "linkini",
-    "havola",
-    "tashab",
-    "tashlab",
-    "iltimos",
-    "faqat",
-    "bolmasin",
-    "bo'lmasin",
-    "kop",
-    "ko'p",
-    "qisimlik",
-    "qismli",
-    "qisim",
-    "qism",
-    "kam",
-    "serial",
-    "kino",
-    "film",
+    "menga", "anime", "manga", "manhwa", "ni", "nini", "topib", "top", "ber",
+    "tavsiya", "qil", "qilib", "qidir", "link", "linkini", "havola", "tashab",
+    "tashlab", "iltimos", "faqat", "bolmasin", "bo'lmasin", "kop", "ko'p",
+    "qisimlik", "qismli", "qisim", "qism", "kam", "serial", "kino", "film",
 }
 
 # --- ОБНОВЛЕННЫЙ ПРОМПТ С НОВЫМ ХАРАКТЕРОМ И ПРАВИЛАМИ ---
@@ -202,7 +141,7 @@ JSON schema:
 {
   "intent": "search|ticket|thanks|compliment|resolved|reject|clarify|chat",
   "query": "search uchun qisqa qidiruv so'zi, masalan naruto yoki romantik",
-  "limit": 3,
+  "limit": 5, // foydalanuvchi qancha so'rasa shuncha raqam qo'y, standart 5, maksimal 10.
   "short": false,
   "category": "report|ads|news|collab|other",
   "subject": "ticket uchun 50 belgigacha mavzu",
@@ -231,23 +170,19 @@ def _sumire_response(text, emotion="talking", ticket_created=False, status=200):
 def _first_value(data, keys):
     if not isinstance(data, dict):
         return None
-
     for key in keys:
         value = data.get(key)
         if value:
             return value
-
     return None
 
 
 def _absolute_url(value):
     if not value:
         return None
-
     value = str(value).strip()
     if value.startswith(("http://", "https://")):
         return value
-
     return urljoin(SEARCH_BASE_URL, value)
 
 
@@ -262,26 +197,8 @@ def _normalize_search_item(item):
     if not isinstance(item, dict):
         return item
 
-    title = _first_value(item, (
-        "title",
-        "title_uzb",
-        "title_org",
-        "name",
-        "uz_title",
-        "ru_title",
-        "original_title",
-        "english_title",
-    ))
-    raw_url = _first_value(item, (
-        "url",
-        "link",
-        "href",
-        "absolute_url",
-        "detail_url",
-        "watch_url",
-        "anime_url",
-        "path",
-    ))
+    title = _first_value(item, ("title", "title_uzb", "title_org", "name", "uz_title", "ru_title", "original_title", "english_title"))
+    raw_url = _first_value(item, ("url", "link", "href", "absolute_url", "detail_url", "watch_url", "anime_url", "path"))
 
     url = _absolute_url(raw_url)
     if not url:
@@ -314,13 +231,11 @@ def _normalize_search_item(item):
 def _limit_results(data, limit):
     if isinstance(data, list):
         return data[:limit]
-
     if isinstance(data, dict):
         for key in ("data", "results", "items"):
             value = data.get(key)
             if isinstance(value, list):
                 return value[:limit]
-
     return data
 
 
@@ -331,11 +246,8 @@ def search_manga_database(query: str, limit: int = 5) -> str:
             params={"q": query},
             timeout=5,
         )
-
         if response.status_code != 200:
-            return json.dumps({
-                "error": f"Baza {response.status_code} xatolik qaytardi. Hech narsa topilmadi."
-            }, ensure_ascii=False)
+            return json.dumps({"error": f"Baza {response.status_code} xatolik qaytardi. Hech narsa topilmadi."}, ensure_ascii=False)
 
         results = _limit_results(response.json(), limit)
         if isinstance(results, list):
@@ -348,16 +260,14 @@ def search_manga_database(query: str, limit: int = 5) -> str:
         return json.dumps({"error": "Baza bilan ulanishda xatolik yuz berdi."}, ensure_ascii=False)
 
 
-def _search_items(query, limit=8):
+def _search_items(query, limit=10):
     raw_results = search_manga_database(query, limit=limit)
     results = json.loads(raw_results)
 
     if isinstance(results, dict):
         return [] if results.get("error") else [results]
-
     if isinstance(results, list):
         return [item for item in results if isinstance(item, dict) and item.get("url")]
-
     return []
 
 
@@ -369,7 +279,6 @@ def _looks_like_search_request(text):
     text_lower = text.lower()
     if _contains_any(text_lower, SEARCH_WORDS):
         return True
-
     return any(alias in text_lower for aliases, _query in GENRE_ALIASES for alias in aliases)
 
 
@@ -381,8 +290,9 @@ def _wants_short_series(text):
     return _contains_any(text.lower(), SHORT_SERIES_WORDS)
 
 
-def _limit_from_text(text, default=3):
-    match = re.search(r"\b([1-5])\b", text)
+def _limit_from_text(text, default=5):
+    # Разрешаем находить числа от 1 до 10 для оффлайн роутера
+    match = re.search(r"\b([1-9]|10)\b", text)
     if match:
         return _safe_int(match.group(1), default)
     return default
@@ -406,7 +316,7 @@ def _extract_search_query(text):
         if any(keyword in text_lower for keyword in keywords):
             return query
 
-        words = []
+    words = []
     for raw_word in text_lower.split():
         word = _clean_query_word(raw_word)
         if word:
@@ -436,12 +346,13 @@ def _format_search_response(results, intro=None):
     return _sumire_response("\n\n".join(lines), "talking")
 
 
-def _execute_search(query, limit=3, short=False, reason=""):
+def _execute_search(query, limit=5, short=False, reason=""):
     query = (query or "").strip()
     if not query:
         return None
 
-    results = _search_items(query, limit=max(limit, 8))
+    # Ищем с запасом
+    results = _search_items(query, limit=max(limit, 10))
     if short:
         short_results = [
             item for item in results
@@ -507,33 +418,9 @@ def _ticket_response(user_text, user_id=None, username=None, category="report", 
     )
 
 
-# --- ОБНОВЛЕННАЯ ФИЛЬТРАЦИЯ ДО ИИ (OFFLINE ROUTER) ---
+# --- ФИЛЬТРАЦИЯ ТОЛЬКО ДЛЯ СБОЕВ (OFFLINE ROUTER / FALLBACK) ---
 def _route_without_ai(user_text, user_id=None, username=None):
     text_lower = user_text.lower().strip()
-
-    if not text_lower:
-        return _sumire_response("Iltimos, matn kiriting. Men yordam berishga tayyorman. *jilmayadi*", "what", status=400)
-
-    # 1. ЖЕСТКАЯ ПРОВЕРКА НА КИРИЛЛИЦУ (русский, узбекский-кириллица)
-    if re.search(r'[А-Яа-я]', user_text):
-        return _sumire_response(
-            "Kechirasiz, men kirill alifbosini tushunmayman. Iltimos, faqat o'zbek tilida (lotin harflarida) yozing. *uzr so'ragandek qaraydi*",
-            "shy"
-        )
-
-    # 2. ПРОВЕРКА НА ГОЛЫЕ ЦИФРЫ
-    if text_lower.isdigit():
-        return _sumire_response(
-            f"Uzur, lekin '{text_lower}' nimani anglatishini tushunmadim. Iltimos, so'zlar bilan tushuntiring. *boshini qashlaydi*",
-            "what",
-        )
-
-    # 3. ПРИВЕТСТВИЯ
-    if text_lower in {"salom", "salom!", "qale", "qalesan", "hi", "privet", "assalomu alaykum", "assalom", "hay", "hello"}:
-        return _sumire_response(
-            "Assalomu alaykum! Men Sumireman. Sizga qanday yordam bera olaman? Anime qidiramizmi? *shirin jilmayadi*",
-            "talking",
-        )
 
     if _looks_like_support_request(text_lower):
         return _ticket_response(user_text, user_id=user_id, username=username, category="report", subject="Web App muammo")
@@ -585,7 +472,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None):
     if intent == "search":
         return _execute_search(
             command.get("query") or _extract_search_query(user_text),
-            limit=min(max(_safe_int(command.get("limit"), 3), 1), 5),
+            limit=min(max(_safe_int(command.get("limit"), 5), 1), 10), # Увеличен лимит до 10
             short=bool(command.get("short")),
         )
 
@@ -598,7 +485,6 @@ def _execute_ai_command(command, user_text, user_id=None, username=None):
             subject=command.get("subject") or "Web App murojaati",
         )
 
-    # ОБНОВЛЕННЫЕ ДЕФОЛТНЫЕ ОТВЕТЫ (БОЛЕЕ МИЛЫЕ)
     default_replies = {
         "thanks": ("Arzimaydi! Yordamim tekkanidan xursandman. *shirin jilmayadi*", "ty"),
         "compliment": ("Voy... e'tiboringiz uchun rahmat. Keling, yaxshisi anime haqida gaplashamiz. *yuzini burib qizaradi*", "shy"),
@@ -638,11 +524,25 @@ def api_send_message(request):
         user_text = (data.get("text") or "").strip()
         user_id = data.get("user_id")
         username = data.get("username") or data.get("first_name") or ""
+        text_lower = user_text.lower()
 
-        direct_response = _route_without_ai(user_text, user_id=user_id, username=username)
-        if direct_response:
-            return direct_response
+        # 1. БАЗОВЫЕ ПРОВЕРКИ (чтобы не тратить квоту ИИ на мусор)
+        if not text_lower:
+            return _sumire_response("Iltimos, matn kiriting. Men yordam berishga tayyorman. *jilmayadi*", "what", status=400)
 
+        if re.search(r'[А-Яа-я]', user_text):
+            return _sumire_response(
+                "Kechirasiz, men kirill alifbosini tushunmayman. Iltimos, faqat o'zbek tilida (lotin harflarida) yozing. *uzr so'ragandek qaraydi*",
+                "shy"
+            )
+
+        if text_lower.isdigit():
+            return _sumire_response(
+                f"Uzur, lekin '{text_lower}' nimani anglatishini tushunmadim. Iltimos, so'zlar bilan tushuntiring. *boshini qashlaydi*",
+                "what",
+            )
+
+        # 2. RATE LIMITING
         user_ip = request.META.get("HTTP_X_FORWARDED_FOR")
         if user_ip:
             user_ip = user_ip.split(",")[0]
@@ -651,12 +551,14 @@ def api_send_message(request):
 
         user_daily_key = f"user_limit_{user_ip}"
         user_requests = cache.get(user_daily_key, 0)
+        
         if user_requests >= 20:
             return _sumire_response(
                 "Bugun men bilan yetarlicha gaplashdingiz. Iltimos, ertaga qayta urinib ko'ring, hozir dam olishim kerak. *yozishdan to'xtaydi*",
                 "canthelp",
             )
 
+        # 3. ОСНОВНАЯ ЛОГИКА - ИСПОЛЬЗУЕМ ИИ ПЕРВЫМ
         command = _parse_ai_command(user_text)
         cache.set(user_daily_key, user_requests + 1, timeout=86400)
         return _execute_ai_command(command, user_text, user_id=user_id, username=username)
@@ -665,8 +567,16 @@ def api_send_message(request):
         error_msg = str(exc).lower()
         print(f"API Error: {error_msg}")
 
+        # 4. ФОЛЛБЕК НА СЛУЧАЙ ОШИБКИ ИЛИ ЛИМИТОВ API
         if "429" in error_msg or "exhausted" in error_msg or "quota" in error_msg:
-            return _handle_quota_fallback(user_text if "user_text" in locals() else "")
+            fallback_response = _handle_quota_fallback(user_text if "user_text" in locals() else "")
+            if fallback_response:
+                return fallback_response
+
+        # Если ИИ упал, отдаем в оффлайн-роутер
+        fallback_response = _route_without_ai(user_text if "user_text" in locals() else "", user_id=user_id, username=username)
+        if fallback_response:
+            return fallback_response
 
         return _sumire_response(
             "Aloqa uzildi... Serverda qandaydir xatolik. *asabiy kompyuterni taqillatadi*",
