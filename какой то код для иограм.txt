@@ -1,0 +1,66 @@
+import os
+import re
+import django
+from aiogram import Bot, Router, F
+from aiogram.types import Message
+
+# Инициализируем Django, чтобы бот имел доступ к моделям
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+django.setup()
+
+from feedback.models import Application, Message as DBMessage
+
+router = Router()
+
+# Основной бот (токен Сумире), от имени которого уйдет сообщение в ЛС пользователю
+main_bot = Bot(token=os.getenv("BOT_TOKEN")) 
+
+@router.message(F.chat.id == int(os.getenv("ADMIN_CHAT_ID")), F.reply_to_message)
+async def handle_admin_reply_to_user(message: Message):
+    reply = message.reply_to_message
+    
+    # Регуляркой вытаскиваем ID тикета из текста: "YANGI SHIKOYAT #123"
+    match = re.search(r"YANGI SHIKOYAT #(\d+)", reply.text or reply.caption or "")
+    if not match:
+        return # Если реплайнули не на карточку тикета, игнорируем
+        
+    ticket_id = int(match.group(1))
+    admin_text = message.text # Текст ответа, который написал админ
+    
+    try:
+        # 1. Находим тикет в Django БД
+        application = Application.objects.get(id=ticket_id)
+        
+        # 2. Обновляем статус в Джанго для отчетности (в самом Web App это выводить не будем!)
+        application.is_answered = True
+        application.save()
+        
+        # 3. Фиксируем сообщение в бэкенд-таблице для истории внутри Django-админки
+        DBMessage.objects.create(
+            application=application,
+            text=admin_text,
+            is_from_admin=True
+        )
+        
+        # 4. ОТПРАВЛЯЕМ В ЛС ЧЕРЕЗ ОСНОВНОГО БОТА СУМИРЕ
+        user_notification = (
+            f"🌸 <b>Murojaatingiz bo'yicha administratsiya javobi:</b>\n"
+            f"━━━━━━━━━━━━━━\n"
+            f"{admin_text}\n"
+            f"━━━━━━━━━━━━━━\n"
+            f"<i>Yordam kerak bo'lsa, Web App ichida Sumirega yozishingiz mumkin.</i>"
+        )
+        
+        await main_bot.send_message(
+            chat_id=application.user_id,
+            text=user_notification,
+            parse_mode="HTML"
+        )
+        
+        # Ставим лайк или огонек на сообщение админа, чтобы группа видела: ответ успешно улетел юзеру
+        await message.react([{"type": "emoji", "emoji": "🔥"}])
+        
+    except Application.DoesNotExist:
+        await message.reply("❌ Xatolik: Bu shikoyat ID bazada topilmadi.")
+    except Exception as e:
+        await message.reply(f"❌ Xatolik: {str(e)}")

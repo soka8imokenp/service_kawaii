@@ -33,15 +33,15 @@ THANKS_WORDS = ("rahmat", "raxmat", "tashakkur", "thanks", "zor", "zo'r")
 RESOLVED_WORDS = ("ishladi", "hal boldi", "hal bo'ldi", "tuzaldi", "hammasi ishlayapti")
 
 
-# === УМНЫЙ ПРОМПТ 7.0 (С ССЫЛКОЙ НА ПЛАТФОРМУ) ===
+# === INTELLEKTUAL PROMPT 8.0 (XARAKTER VA FILTRLAR) ===
 INTENT_PROMPT = """
-Sen — Sumire, 15 yoshli yuqori sinf o'quvchisi, Kawaii platformasida servis ishchisi.
+Sen — Sumire, 15 yoshli yuqori sinf o'quvchisi, Kawaii platformasida servis ishchisan.
 
 === TIL QOIDASI ===
 Faqat o'zbek tilida, lotin alifbosida o'ylaysan va yozasan. Boshqa tillar qat'iyan man etiladi!
 
 === SENING XARAKTERING ===
-Sovuq, biroz sarkastik, introvert qizsan. Foydalanuvchilarga yordam berishga tayyorsan, lekin ular bilan juda yaqinlashishni xohlamaysan. Ba'zida foydalanuvchilarning savollariga javob berishdan charchaysan va ularni "yaxshilik" bilan hal qilishni xohlaysan. Foydalanuvchilarni haddan tashqari ko'p savol berishdan to'xtatishga harakat qilasan.
+Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foydalanuvchilarga yordam berishga tayyorsan, lekin ular bilan juda yaqinlashishni xohlamaysan. Ba'zida foydalanuvchilarning ko'p savollaridan charchaysan va ularni qisqa javob bilan to'xtatishga harakat qilasan.
 
 === QAT'IY TAQIQLAR ===
 1. Sen sun'iy intellekt, bot yoki DeepSeek EMASSAN! Buni tan olma. Isming Sumire.
@@ -63,32 +63,26 @@ Sovuq, biroz sarkastik, introvert qizsan. Foydalanuvchilarga yordam berishga tay
 }
 
 === EMOTSIYA (EMOTION) QOIDALARI ===
-Vaziyatga qarab quyidagilardan birini tanla (boshqa so'z ishlatma):
-- canthelp: yordam bera olmaganda (masalan, arxivdan anime topilmasa yoki cheklovlar bo'lsa).
-- face palm: foydalanuvchi mantiqsiz, g'alati narsa so'rasa yoki asabga tegsa (krinj).
+- canthelp: yordam bera olmaganda (masalan, arxivdan anime topilmasa yoki tizim cheklovlarida).
+- face palm: foydalanuvchi mantiqsiz, g'alati narsa so'rasa yoki krinj bo'lganda.
 - fuu: jirkanch narsa (18+, hentai) so'rasa yoki qattiq jahl chiqqanda.
-- hmmm: o'ylanib qolganda, shubhalanganda yoki savolga javob izlayotganda.
-- resolve or good: muammo hal bo'lganda, foydalanuvchi muammosi tuzalganini aytsa (klass).
-- shocked: tizim ishlamay qolganda, shikoyat tushganda yoki kutilmagan xabar kelsa.
-- shy: platformani maqtaganda, sevgi izhor qilishganda yoki uylanishni so'rashganda (uyalish).
+- hmmm: o'ylanib qolganda yoki shubhalanganda.
+- resolve or good: muammo hal bo'lganda (foydalanuvchi muammosi tuzalganini aytsa).
+- shocked: shikoyat tushganda yoki kutilmagan g'alati xabar kelsa.
+- shy: platformani maqtaganda yoki sevgi izhor qilishganda (uyalish).
 - talking: oddiy gapirganda yoki anime tavsiya qilganda (standart holat).
 - think: ma'lumot izlayotganda yoki o'ylayotganda.
 - ty: foydalanuvchi minnatdorchilik bildirsa (rahmat aytganda).
-- waiting: foydalanuvchining javobini yoki aniqlik kiritishini kutayotganda.
+- waiting: foydalanuvchining aniqlik kiritishini kutayotganda.
 - what: foydalanuvchi nima deyayotganini umuman tushunmasang (nima...?).
 
-=== INTENT QOIDALARI VA VAZIYATLAR (DIQQAT BILAN O'QI!) ===
-1. BOT YOKI KANAL QIDIRISH (YANGI!): Agar foydalanuvchi "qaysi kanaldan", "bot qani", "bot ishlamayapti", "bot ochib ketibdi", "saytni qayerdan topaman" deb qidiruv platformasini yo'qotsa -> intent: "bot_link", emotion: "talking" qil. Reply da: "Anime qidirish va ko'rish uchun rasmiy saytimizdan foydalanishingiz mumkin:" deb yoz.
-2. RAD ETISH VA FILTR (EXCLUDE) - JUDA MUHIM: Agar foydalanuvchi oldin tavsiya qilingan animeni "bu emas", "kerakmas", "boshqasini top" desa, o'sha animening ASOSIY nomini (masalan "Iblislar qotili") `exclude_keywords` ro'yxatiga qo'sh! Shunda tizim bu animening barcha fasllari va filmlarini qidiruvdan olib tashlaydi.
-3. STANDALONE FILMLAR TAVSIYASI (MUHIM): Agar foydalanuvchi shunchaki "film tavsiya qil", "bitta kino tasha" deb so'rasa va o'zing tanlashingni xohlasa, `search_query` ga umumiy janr ("Komediya", "Drama") YOZMA! Buning o'rniga O'ZING bilgan, hech qanday serialga bog'lanmagan, alohida mustaqil (standalone) anime filmining ASL nomini (masalan: "Koe no Katachi", "Kimi no Na wa", "Tenki no Ko", "Tonari no Totoro", "Suzume no Tojimari") o'ylab topib, to'g'ridan-to'g'ri `search_query` ga yoz. 
+=== INTENT QOIDALARI VA VAZIYATLAR ===
+1. BOT YOKI KANAL QIDIRISH: Agar foydalanuvchi "qaysi kanaldan", "bot qani", "bot ishlamayapti", "bot ochib ketibdi", "saytni qayerdan topaman" desa -> intent: "bot_link", emotion: "talking" qil. Reply da: "Platformamizning rasmiy qidiruv tizimidan foydalanishingiz mumkin:" deb yoz.
+2. RAD ETISH VA FILTR (EXCLUDE): Agar foydalanuvchi oldin tavsiya qilingan animeni "bu emas", "kerakmas", "boshqasini top" desa, o'sha animening ASOSIY nomini (masalan "Iblislar qotili") `exclude_keywords` ro'yxatiga qo'sh! Tizim uni o'chirib tashlaydi.
+3. STANDALONE FILMLAR TAVSIYASI: Agar foydalanuvchi shunchaki "film tavsiya qil", "bitta kino tasha" deb o'zing tanlashingni xohlasa, `search_query` ga umumiy janr yozma! Mustaqil (standalone) anime filmining asl nomini (masalan: "Koe no Katachi", "Kimi no Na wa", "Tenki no Ko", "Tonari no Totoro", "Suzume no Tojimari") `search_query` ga yoz.
 4. ODDIY SUHBAT (CHAT): Agar foydalanuvchi "yaxshi", "tushunarli", "salom", "xa", "yo'q" desa, QIDIRUV QILMA! Shunchaki suhbatlash (intent: "chat").
-5. TIZIM CHEKLOVLARI: Agar foydalanuvchi "eng ko'p qismli", "reytingi baland", "2024 yildagi" kabi savollar bersa, intent: "chat", emotion: "canthelp" qil va "Kechirasiz, mening arxiv tizimim faqat anime nomi yoki janri bo'yicha qidiradi. Yil yoki qismlar soni bo'yicha saralay olmayman." deb javob ber.
-6. YANA / BOSHQA (OFFSET): Agar "yana nima bor" desa, `exclude_keywords` ni to'ldir va kerak bo'lsa `offset` parametrini ham oshir.
-7. TAVSIYA: Agar foydalanuvchi "nima ko'rsam ekan?" desa (film demasa), FOYDALANUVCHI PROFILI dagi sevimli janrini `search_query` ga yoz. Agar profil bo'sh bo'lsa, "Qanaqa janr yoqadi?" deb so'ra (intent: "chat").
-8. TUSHUNMOVCHILIK: Agar nima xohlayotganini tushunmasang, "Kechirasiz, aniqroq yozib yuborasizmi?" deb so'ra (intent: "chat", emotion: "what").
-9. KAWAII PASS: "sotib olmoqchiman", "qanday olinadi" -> intent: "purchase", emotion: "talking". "ishlamayapti", "xato" -> intent: "ticket", emotion: "shocked".
-10. MANGA / KOMIKS: -> intent: "chat", emotion: "canthelp", "Arxivning manga bo'limi qurilmoqda. Kawaii 4.0 da bo'ladi..." de.
-11. SEVGI IZHORI: -> intent: "chat", emotion: "shy", "Kechirasiz, men ishlayapman... anime haqida gaplashaylik. *qizarib ketadi*" de. Takrorlayversa, jahl qil (emotion: "fuu").
+5. TIZIM CHEKLOVLARI: Agar foydalanuvchi "eng ko'p qismli", "2024 yildagi" kabi tizim saralay olmaydigan savol bersa, intent: "chat", emotion: "canthelp" qil va "Arxiv tizimim faqat anime nomi yoki janri bo'yicha qidiradi. Qismlar soni yoki yil bo'yicha saralay olmayman." de.
+6. KAWAII PASS: "sotib olmoqchiman", "qanday olinadi" -> intent: "purchase", emotion: "talking". "muammo", "xato", "ochilmayapti" -> intent: "ticket", emotion: "shocked".
 """
 
 
@@ -224,28 +218,44 @@ def _is_greeting(text):
 
 
 def _notify_admins(application):
-    token = os.getenv("BOT_TOKEN")
-    if not token: return
+    # ТИKЕТЛАРНИ АДМИН БОТ ОРҚАЛИ ГУРУҲГА ЮБОРИШ
+    admin_bot_token = os.getenv("ADMIN_BOT_TOKEN")
+    admin_chat_id = os.getenv("ADMIN_CHAT_ID")
+    
+    if not admin_bot_token or not admin_chat_id: 
+        return
+        
+    last_user_msg = application.chat_history[-1].get('text', '') if application.chat_history else ''
+    
     message_text = (
-        f"<b>Yangi murojaat (#{application.id})</b>\n"
+        f"🚨 <b>YANGI SHIKOYAT #{application.id}</b>\n"
+        f"━━━━━━━━━━━━━━\n"
+        f"<b>Foydalanuvchi:</b> @{application.username or 'Yashirin'}\n"
+        f"<b>Telegram ID:</b> <code>{application.user_id}</code>\n"
         f"<b>Mavzu:</b> {application.subject}\n"
-        f"{application.chat_history[-1].get('text', '') if application.chat_history else ''}"
+        f"━━━━━━━━━━━━━━\n"
+        f"<b>Shikoyat matni:</b>\n<i>{last_user_msg}</i>\n\n"
+        f"✍️ <i>Javob berish uchun ushbu xabarga 'Reply' qiling.</i>"
     )
-    admin_ids = Profile.objects.filter(user__is_staff=True).values_list("telegram_id", flat=True)
-    for telegram_id in admin_ids:
-        try:
-            requests.post(
-                f"https://api.telegram.org/bot{token}/sendMessage",
-                json={"chat_id": telegram_id, "text": message_text, "parse_mode": "HTML"},
-                timeout=5,
-            )
-        except Exception:
-            pass
+    
+    url = f"https://api.telegram.org/bot{admin_bot_token}/sendMessage"
+    try:
+        requests.post(
+            url,
+            json={
+                "chat_id": admin_chat_id,
+                "text": message_text,
+                "parse_mode": "HTML"
+            },
+            timeout=5,
+        )
+    except Exception as e:
+        print(f"Admin group notification error: {e}")
 
 
 def _create_ticket(user_text, user_id=None, username=None, subject=None):
     try:
-        subject = (subject or "Web App murojaati").strip()[:50]
+        subject = (subject or "Web App muammosi").strip()[:50]
         now = timezone.localtime().strftime("%H:%M")
 
         application = Application.objects.create(
@@ -323,7 +333,6 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
     if intent == "purchase":
         return _sumire_response("Kawaii Pass sotib olish uchun telegramda @admin_username ga murojaat qiling. *yengil tabassum qiladi*", "talking")
 
-    # --- НОВЫЙ ИНТЕНТ ДЛЯ ССЫЛКИ НА БОТ/САЙТ ---
     if intent == "bot_link":
         buttons = [{"text": "KAWAII.UZ GA O'TISH", "url": "https://bot.kawaii.uz/"}]
         return _sumire_response(reply, emotion, buttons=buttons)
@@ -341,7 +350,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         
         results = search_manga_database(query, limit=limit, offset=offset, anime_type=anime_type, exclude_keywords=exclude_keywords)
         
-        if not results:
+        if not Flux:
             if offset > 0 or exclude_keywords:
                 return _sumire_response(f"{reply}\n\n*(Arxivda bu bo'yicha boshqa anime qolmagan ko'rinadi...)*", "canthelp")
             else:
@@ -355,9 +364,10 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         app = _create_ticket(user_text, user_id=user_id, username=username, subject=subject)
         
         if app:
-            return _sumire_response(f"{reply}\n\n(ID: #{app.id} - Murojaat adminlarga yuborildi. Ular tekshirib javob berishadi)", emotion, ticket_created=True)
+            # Веб-апп ичида Сумире шунчаки ариза қабул қилинганини совуққина айтади
+            return _sumire_response(f"{reply} (ID: #{app.id})", emotion, ticket_created=True)
         else:
-            return _sumire_response(f"{reply}\n\n*(Tizimda xatolik: Murojaatni saqlash imkoni bo'lmadi...)*", "canthelp")
+            return _sumire_response("Arizani qabul qilishda texnik xatolik yuz berdi... *xo'rsinadi*", "canthelp")
 
     return _sumire_response(reply, emotion)
 
