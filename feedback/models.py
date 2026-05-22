@@ -5,16 +5,24 @@ from django.contrib.auth.models import User
 
 
 class Profile(models.Model):
-    """Связка Django-пользователя с Telegram ID."""
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    telegram_id = models.BigIntegerField(unique=True, db_index=True)
+    """Связка Django-пользователя/админа с Telegram ID + Долгосрочная память Сумире."""
+    # Делаем user необязательным (null=True), чтобы обычные пользователи Mini App могли сохраняться без аккаунта админа
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile", null=True, blank=True)
+    telegram_id = models.BigIntegerField(unique=True, db_index=True, null=True, blank=True)
+    
+    # --- ДОЛГОСРОЧНАЯ ПАМЯТЬ СУМИРЕ ---
+    # Сюда Сумире автоматически сохраняет жанры, которые нравятся человеку
+    favorite_genres = models.CharField(max_length=255, blank=True, null=True, verbose_name="Sevimli janrlar (Xotira)")
 
     class Meta:
         verbose_name = "Profil"
         verbose_name_plural = "Profillar"
 
     def __str__(self):
-        return f"@{self.user.username} ({self.telegram_id})"
+        if self.user:
+            return f"@{self.user.username} ({self.telegram_id})"
+        return f"Foydalanuvchi ({self.telegram_id})"
+
 
 class Application(models.Model):
     TYPES = [
@@ -65,7 +73,7 @@ class Application(models.Model):
         super().save(*args, **kwargs)
 
     def send_telegram_notification(self):
-        """Простое текстовое уведомление без кнопок"""
+        """Простое текстовое уведомление в Telegram при ответе админа"""
         token = os.getenv("BOT_TOKEN")
         if not token:
             return
@@ -92,7 +100,7 @@ class Application(models.Model):
 
 
 class Message(models.Model):
-    """Нормализованная история сообщений по тикету."""
+    """Нормализованная история сообщений по тикету (для inline-отображения в админке)."""
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='messages')
     text = models.TextField(verbose_name="Xabar")
     is_from_admin = models.BooleanField(default=False, verbose_name="Admindan")

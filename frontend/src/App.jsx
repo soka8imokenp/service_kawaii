@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || window.location.origin).replace(/\/$/, '');
 
@@ -23,7 +24,9 @@ function App() {
   
   const [dialogue, setDialogue] = useState(initialText);
   const [displayedText, setDisplayedText] = useState("");
+  
   const [buttons, setButtons] = useState([]);
+  const [animeList, setAnimeList] = useState([]);
   
   const [userMessage, setUserMessage] = useState("");
   const [input, setInput] = useState('');
@@ -36,7 +39,6 @@ function App() {
   const [frame, setFrame] = useState(1);
   const [cooldown, setCooldown] = useState(0);
 
-  // Реф для твоей фоновой музыки
   const bgMusicRef = useRef(null);
   const [bgmStarted, setBgmStarted] = useState(false);
 
@@ -47,13 +49,11 @@ function App() {
       webApp.expand();
     }
 
-    // Загружаем твой Opus-файл
     bgMusicRef.current = new Audio('/audio/bgsound.opus');
     bgMusicRef.current.loop = true;
-    bgMusicRef.current.volume = 0.1// 
+    bgMusicRef.current.volume = 0.1;
   }, []);
 
-  // Запуск музыки по первому клику
   const handleFirstInteraction = () => {
     if (!bgmStarted && bgMusicRef.current) {
       bgMusicRef.current.play().catch(() => {});
@@ -61,7 +61,6 @@ function App() {
     }
   };
 
-  // Механика батареи
   useEffect(() => {
     const rechargeInterval = setInterval(() => {
       setBattery(prev => (prev < 100 ? prev + 1 : 100));
@@ -69,7 +68,6 @@ function App() {
     return () => clearInterval(rechargeInterval);
   }, []);
 
-  // Анимация эмоций
   useEffect(() => {
     let animInterval;
     if (isTyping) {
@@ -96,7 +94,6 @@ function App() {
     return () => clearInterval(animInterval);
   }, [isTyping, emotion]);
 
-  // Печатная машинка (Плавная)
   useEffect(() => {
     if (!dialogue) return;
 
@@ -146,13 +143,15 @@ function App() {
     setUserMessage(textToSent);
     setInput('');
     setIsLoading(true);
+    
     setButtons([]); 
+    setAnimeList([]);
     
     setEmotion('think');
     setDialogue("...");
     setBattery(prev => Math.max(0, prev - 25));
 
-    triggerHaptic('medium'); // Вибро при отправке
+    triggerHaptic('medium');
 
     try {
       const telegramUser = getTelegramUser();
@@ -175,15 +174,17 @@ function App() {
         .trim();
       
       setEmotion(data.emotion || 'talking');
+      
       if (data.buttons) setButtons(data.buttons);
+      if (data.anime_list) setAnimeList(data.anime_list);
 
       setDialogue(cleanResponse);
-      triggerHaptic('success'); // Вибро при успехе
+      triggerHaptic('success'); 
 
     } catch {
       setEmotion('canthelp'); 
       setDialogue("Aloqa uzildi... Server javob bermayapti.");
-      triggerHaptic('error'); // Вибро при ошибке
+      triggerHaptic('error'); 
     } finally {
       setIsLoading(false);
 
@@ -201,6 +202,25 @@ function App() {
   };
 
   const isBatteryLow = battery < 25;
+
+  // Настройки пружинной анимации для карточек аниме
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.12 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0, scale: 0.95 },
+    show: { 
+      y: 0, 
+      opacity: 1, 
+      scale: 1,
+      transition: { type: "spring", stiffness: 100, damping: 14 } 
+    }
+  };
 
   return (
     <div onClick={handleFirstInteraction} className="flex flex-col h-[100dvh] relative bg-[#05030a] font-ui selection:bg-fuchsia-500 selection:text-white overflow-hidden cursor-default">
@@ -244,16 +264,23 @@ function App() {
           onError={(e) => { e.target.src = '/sumire-full.png'; }}
         />
         
-        {userMessage && (
-          <div className="absolute top-8 right-2 md:right-4 max-w-[80%] md:max-w-[65%] z-30">
-            <div className="bg-[#130b24]/95 backdrop-blur-md border border-fuchsia-500/50 p-2 md:p-3 shadow-[2px_2px_0_rgba(217,70,239,0.2)] text-right">
-              <p className="font-dialogue text-[#e2e8f0] text-xs md:text-sm tracking-wide break-words">
-                <span className="text-fuchsia-500 mr-1.5 opacity-80 font-ui text-[8px]">YOU:</span> 
-                {userMessage}
-              </p>
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {userMessage && (
+            <motion.div 
+              initial={{ opacity: 0, x: 30, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="absolute top-8 right-2 md:right-4 max-w-[80%] md:max-w-[65%] z-30"
+            >
+              <div className="bg-[#130b24]/95 backdrop-blur-md border border-fuchsia-500/50 p-2 md:p-3 shadow-[2px_2px_0_rgba(217,70,239,0.2)] text-right">
+                <p className="font-dialogue text-[#e2e8f0] text-xs md:text-sm tracking-wide break-words">
+                  <span className="text-fuchsia-500 mr-1.5 opacity-80 font-ui text-[8px]">YOU:</span> 
+                  {userMessage}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* ДИАЛОГОВАЯ КОРОБКА */}
@@ -263,24 +290,77 @@ function App() {
             <span className="text-[10px] md:text-xs text-white tracking-widest drop-shadow-[1px_1px_0_#000] mt-0.5 block">SUMIRE</span>
           </div>
           
-          <div className="bg-[#0a0710]/95 border-2 border-fuchsia-500/80 p-4 md:p-5 shadow-[4px_4px_0_rgba(0,0,0,0.8)] h-[130px] md:h-[160px] relative backdrop-blur-xl mt-2 flex flex-col justify-between">
+          <div className="bg-[#0a0710]/95 border-2 border-fuchsia-500/80 p-4 md:p-5 shadow-[4px_4px_0_rgba(0,0,0,0.8)] h-[130px] md:h-[160px] relative backdrop-blur-xl mt-2 flex flex-col">
             <div className="flex-1 overflow-y-auto no-scrollbar pr-1">
               <p className={`font-dialogue text-[18px] md:text-[23px] text-[#e2e8f0] leading-tight md:leading-snug tracking-wide whitespace-pre-wrap ${isBatteryLow && dialogue !== "..." ? 'opacity-80' : ''}`}>
                 {isBatteryLow && dialogue !== "..." && !isTyping ? "*(Quvvat past...)*\n" + displayedText : displayedText}
               </p>
 
+              {/* БЛОК С АНИМЕ (АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧЕК ОДНА ЗА ДРУГОЙ) */}
+              {!isTyping && animeList.length > 0 && (
+                <motion.div 
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  className="mt-3 flex flex-col gap-2"
+                >
+                  {animeList.map((anime, i) => (
+                    <motion.div 
+                      key={i} 
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.01, backgroundColor: "rgba(19, 11, 36, 0.8)" }}
+                      className="flex justify-between items-center bg-[#130b24]/60 border border-purple-900/50 p-2 shadow-sm"
+                    >
+                      <span className="text-[#e2e8f0] text-sm md:text-base font-dialogue tracking-wide pr-2 flex items-center">
+                        <svg 
+                          width="20" 
+                          height="20" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="text-fuchsia-500 mr-2 shrink-0"
+                        >
+                          <path d="M19.25 3H4.75A2.755 2.755 0 0 0 2 5.75v9.5A2.755 2.755 0 0 0 4.75 18h4.54l-.5 1.5H7.495V21h9v-1.5H15.2l-.5-1.5h4.54a2.755 2.755 0 0 0 2.75-2.75v-9.5A2.755 2.755 0 0 0 19.24 3h.01Zm-5.625 16.5h-3.25l.5-1.5h2.255l.5 1.5h-.005Zm6.875-4.25c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-9.5c0-.69.56-1.25 1.25-1.25h14.5c.69 0 1.25.56 1.25 1.25v9.5Z" fill="currentColor"/>
+                        </svg>
+                        <span className="line-clamp-2">{anime.name}</span>
+                      </span>
+                      <motion.a 
+                        href={anime.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex-shrink-0 bg-[#1b142c] hover:bg-fuchsia-600 text-fuchsia-400 hover:text-white border border-fuchsia-500 text-[8px] md:text-[10px] px-3 py-1.5 transition-all shadow-[2px_2px_0_#d946ef] flex items-center gap-1.5 whitespace-nowrap"
+                      >
+                        <span className="blink">▶</span> KO'RISH
+                      </motion.a>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+
+              {/* СИСТЕМНАЯ ССЫЛОЧНАЯ КНОПКА (НЕОНОВО-СИНЯЯ С ЭФФЕКТОМ ГЛИТЧ-ПРОЯВЛЕНИЯ) */}
               {!isTyping && buttons.length > 0 && (
-                <div className="mt-2.5 flex gap-2 flex-wrap">
+                <div className="mt-4 flex flex-col gap-3 pb-2">
                   {buttons.map((btn, i) => (
-                    <a 
+                    <motion.a 
                       key={i} 
                       href={btn.url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="bg-[#1b142c] hover:bg-fuchsia-600 text-fuchsia-400 hover:text-white border border-fuchsia-500 text-[8px] md:text-[10px] px-3 py-1.5 transition-all shadow-[2px_2px_0_#d946ef] active:translate-y-0.5 active:translate-x-0.5 active:shadow-none flex items-center gap-2"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ type: "spring", delay: 0.2 }}
+                      whileHover={{ scale: 1.01, boxShadow: "0px 0px 8px rgba(6,182,212,0.6)" }}
+                      whileTap={{ scale: 0.99 }}
+                      className="group relative flex items-center justify-center gap-3 w-full bg-[#05030a]/80 border-2 border-cyan-500/70 hover:border-cyan-400 text-cyan-400 hover:text-cyan-200 text-[10px] md:text-xs font-ui px-4 py-2.5 transition-all shadow-[4px_4px_0_rgba(6,182,212,0.5)]"
                     >
-                      <span className="blink">▶</span> {btn.text.toUpperCase()}
-                    </a>
+                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-cyan-500 animate-pulse"></div>
+                      <span className="tracking-widest drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]">
+                        {btn.text.toUpperCase()}
+                      </span>
+                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-cyan-500 animate-pulse"></div>
+                    </motion.a>
                   ))}
                 </div>
               )}
@@ -309,15 +389,17 @@ function App() {
             className="flex-1 bg-transparent mountaineer font-dialogue text-[#e2e8f0] text-base md:text-lg focus:outline-none placeholder-purple-900/70 w-full disabled:opacity-50"
           />
           
-          <button 
+          <motion.button 
             onClick={sendMessage}
             disabled={isLoading || !input.trim() || cooldown > 0 || isBatteryLow}
+            whileHover={(!isLoading && !isBatteryLow && cooldown === 0 && input.trim()) ? { scale: 1.02 } : {}}
+            whileTap={(!isLoading && !isBatteryLow && cooldown === 0 && input.trim()) ? { scale: 0.98 } : {}}
             className={`ml-1 md:ml-2 text-white text-[8px] md:text-[10px] px-3 md:px-6 py-2.5 md:py-3 border shadow-[2px_2px_0_#000] transition-all
               ${isBatteryLow 
                 ? 'bg-red-900/30 border-red-900/50 text-red-500 cursor-not-allowed'
                 : cooldown > 0 
                   ? 'bg-purple-900/50 border-fuchsia-300 text-gray-400 cursor-not-allowed opacity-70' 
-                  : 'bg-fuchsia-600 border-fuchsia-300 hover:bg-fuchsia-500 active:translate-y-0.5 active:translate-x-0.5 active:shadow-none'
+                  : 'bg-fuchsia-600 border-fuchsia-300 hover:bg-fuchsia-500'
               }`}
           >
             {isBatteryLow 
@@ -325,7 +407,7 @@ function App() {
               : cooldown > 0 
                 ? `KUTING (${cooldown}s)` 
                 : 'YUBORISH'}
-          </button>
+          </motion.button>
         </div>
       </div>
     </div>
