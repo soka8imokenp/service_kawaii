@@ -22,6 +22,15 @@ ADMIN_CHAT_ID = os.getenv("ADMIN_CHAT_ID")
 ADMIN_ID = os.getenv("ADMIN_ID")
 WEBAPP_URL = os.getenv("WEBAPP_URL")
 
+# Generate cache-busted URL to force Telegram to clear local webview cache
+webapp_url = WEBAPP_URL or ""
+if webapp_url:
+    if not webapp_url.endswith("/") and "?" not in webapp_url:
+        webapp_url = webapp_url + "/"
+    WEBAPP_URL_CACHE_BUSTER = f"{webapp_url}?v=10" if "?" not in webapp_url else f"{webapp_url}&v=10"
+else:
+    WEBAPP_URL_CACHE_BUSTER = ""
+
 # Initialize Bots
 main_bot = Bot(token=BOT_TOKEN)
 admin_bot = Bot(token=ADMIN_BOT_TOKEN) if ADMIN_BOT_TOKEN else None
@@ -32,7 +41,7 @@ dp = Dispatcher()
 @dp.message(Command("start"), F.chat.type == "private")
 async def start(message: types.Message):
     markup = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✍️ Murojaat qoldirish", web_app=WebAppInfo(url=WEBAPP_URL))]
+        [InlineKeyboardButton(text="✍️ Murojaat qoldirish", web_app=WebAppInfo(url=WEBAPP_URL_CACHE_BUSTER))]
     ])
     await message.answer(
         "Salom! Pastdagi tugmani bosing va murojaat qoldiring yoki savol bering.", 
@@ -147,6 +156,21 @@ if ADMIN_ID:
 
 async def main():
     print("Bots are starting...")
+    
+    # Programmatically set the Web App Menu Button to the cache-busted URL
+    if WEBAPP_URL_CACHE_BUSTER:
+        try:
+            from aiogram.types import MenuButtonWebApp, WebAppInfo
+            await main_bot.set_chat_menu_button(
+                menu_button=MenuButtonWebApp(
+                    text="Murojat",
+                    web_app=WebAppInfo(url=WEBAPP_URL_CACHE_BUSTER)
+                )
+            )
+            print(f"Successfully programmatically set Menu Button to: {WEBAPP_URL_CACHE_BUSTER}")
+        except Exception as e:
+            print(f"Failed to programmatically set Menu Button: {e}")
+
     active_bots = [main_bot]
     if admin_bot and admin_bot.token != main_bot.token:
         active_bots.append(admin_bot)
