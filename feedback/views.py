@@ -297,6 +297,9 @@ def _route_without_ai(user_text):
 
 
 def _parse_ai_command(user_text, chat_history_text="", profile=None):
+    if not client:
+        return {"intent": "chat", "reply": "Ulanishda muammo bor... *kompyuterga uradi*", "emotion": "shocked"}
+
     profile_context = ""
     if profile and profile.favorite_genres:
         profile_context = f"--- FOYDALANUVCHI PROFILI (XOTIRA) ---\nSevimli janrlari: {profile.favorite_genres}\n\n"
@@ -304,43 +307,20 @@ def _parse_ai_command(user_text, chat_history_text="", profile=None):
     history_context = f"--- OLDINGI KONTEKST ---\n{chat_history_text}\n\n" if chat_history_text else ""
     full_prompt = f"{profile_context}{history_context}--- YANGI XABAR ---\nUser: {user_text}"
 
-    # 1. Try Gemini first if configured
-    if gemini_client:
-        try:
-            response = gemini_client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=full_prompt,
-                config=types.GenerateContentConfig(
-                    system_instruction=INTENT_PROMPT,
-                    response_mime_type="application/json",
-                    temperature=0.3,
-                ),
-            )
-            return json.loads(response.text)
-        except Exception as e:
-            print(f"Gemini API Error: {e}")
-            if not client:
-                return {"intent": "chat", "reply": "Miyam og'rib ketdi... *peshonasini ushlaydi*", "emotion": "face palm"}
-
-    # 2. Try DeepSeek / OpenAI if configured
-    if client:
-        try:
-            response = client.chat.completions.create(
-                model="deepseek-chat",
-                messages=[
-                    {"role": "system", "content": INTENT_PROMPT},
-                    {"role": "user", "content": full_prompt}
-                ],
-                response_format={"type": "json_object"},
-                temperature=0.3, 
-            )
-            return json.loads(response.choices[0].message.content)
-        except Exception as e:
-            print(f"DeepSeek API Error: {e}")
-            return {"intent": "chat", "reply": "Miyam og'rib ketdi... *peshonasini ushlaydi*", "emotion": "face palm"}
-
-    # If no AI client is initialized
-    return {"intent": "chat", "reply": "Ulanishda muammo bor... *kompyuterga uradi*", "emotion": "shocked"}
+    try:
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[
+                {"role": "system", "content": INTENT_PROMPT},
+                {"role": "user", "content": full_prompt}
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.3, 
+        )
+        return json.loads(response.choices[0].message.content)
+    except Exception as e:
+        print(f"DeepSeek API Error: {e}")
+        return {"intent": "chat", "reply": "Miyam og'rib ketdi... *peshonasini ushlaydi*", "emotion": "face palm"}
 
 
 def _execute_ai_command(command, user_text, user_id=None, username=None, profile=None):
