@@ -105,23 +105,9 @@ if ADMIN_CHAT_ID:
                 await message.reply("❌ Xatolik: Bu ariza ID bazada topilmadi.")
                 return
                 
-            # Send PM via Sumire bot
-            user_notification = (
-                f"🌸 <b>Murojaatingiz bo'yicha administratsiya javobi:</b>\n"
-                f"━━━━━━━━━━━━━━\n"
-                f"{admin_text}\n"
-                f"━━━━━━━━━━━━━━\n"
-                f"<i>Yordam kerak bo'lsa, Web App ichida Sumirega yozishingiz mumkin.</i>"
-            )
-            
-            await main_bot.send_message(
-                chat_id=user_id,
-                text=user_notification,
-                parse_mode="HTML"
-            )
-            
-            # React with 🔥 on the admin message to show success
+            # React with 🔥 on the admin message to show success (message is automatically sent via Django model's save method)
             await message.react([{"type": "emoji", "emoji": "🔥"}])
+            
             
         except Exception as e:
             await message.reply(f"❌ Xatolik: {str(e)}")
