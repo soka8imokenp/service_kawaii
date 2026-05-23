@@ -283,7 +283,7 @@ function App() {
       </div>
 
       {/* ЭКРАН ПЕРСОНАЖА */}
-      <div className="flex-1 relative z-10 flex flex-col justify-end items-center overflow-hidden">
+      <div className="flex-1 relative z-10 flex flex-col justify-end items-center overflow-visible">
         <img 
           src={`/service/${emotion}/${frame}.webp`} 
           alt={`Sumire-${emotion}`} 
