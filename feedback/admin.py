@@ -25,7 +25,7 @@ class ApplicationAdminForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        fields = ["user_id", "username", "subject"]
+        fields = "__all__"
 
 
 @admin.register(Application)
