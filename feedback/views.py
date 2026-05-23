@@ -445,8 +445,17 @@ def api_send_message(request):
             chat_history.append({"role": "User", "text": user_text})
             chat_history.append({"role": "Sumire", "text": reply_text})
             cache.set(history_key, chat_history[-6:], timeout=3600)
+
+            # Permanently save chat log to Profile for admin review/analysis
+            if profile:
+                now_time = timezone.localtime().strftime("%H:%M")
+                p_history = list(profile.chat_history) if profile.chat_history else []
+                p_history.append({"role": "user", "text": user_text, "time": now_time})
+                p_history.append({"role": "admin", "text": reply_text, "time": now_time})
+                profile.chat_history = p_history
+                profile.save()
         except Exception as e:
-            print(f"History cache error: {e}")
+            print(f"History cache/db error: {e}")
 
         return ai_response
 
