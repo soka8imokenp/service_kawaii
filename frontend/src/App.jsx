@@ -9,6 +9,13 @@ const getTelegramUser = () => {
     if (tg) {
       tg.ready();
       tg.expand();
+      try {
+        if (typeof tg.requestFullscreen === 'function') {
+          tg.requestFullscreen();
+        }
+      } catch (fsErr) {
+        console.warn('requestFullscreen is not supported on this client version:', fsErr);
+      }
       const user = tg.initDataUnsafe?.user;
       if (user && user.id) {
         return user;
@@ -60,6 +67,13 @@ function App() {
     if (webApp) {
       webApp.ready();
       webApp.expand();
+      try {
+        if (typeof webApp.requestFullscreen === 'function') {
+          webApp.requestFullscreen();
+        }
+      } catch (fsErr) {
+        console.warn('requestFullscreen is not supported on this client:', fsErr);
+      }
     }
 
     bgMusicRef.current = new Audio('/audio/bgsound.opus');
