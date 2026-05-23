@@ -41,6 +41,35 @@ async def start(message: types.Message):
 
 # 2. Handler for admin reply in the admin group
 # It listens to ADMIN_CHAT_ID for replies
+from asgiref.sync import sync_to_async
+
+@sync_to_async
+def process_admin_reply_db(ticket_id, admin_text):
+    try:
+        application = Application.objects.get(id=ticket_id)
+        
+        # Sync chat history JSON
+        from django.utils import timezone
+        now_time = timezone.localtime().strftime("%H:%M")
+        new_message = {"role": "admin", "text": admin_text, "time": now_time}
+        
+        history = list(application.chat_history) if application.chat_history else []
+        history.append(new_message)
+        application.chat_history = history
+        
+        application.is_answered = True
+        application.save()
+        
+        # Create DB Message record
+        DBMessage.objects.create(
+            application=application,
+            text=admin_text,
+            is_from_admin=True
+        )
+        return application.user_id
+    except Application.DoesNotExist:
+        return None
+
 if ADMIN_CHAT_ID:
     try:
         ADMIN_CHAT_ID_INT = int(ADMIN_CHAT_ID)
@@ -60,29 +89,14 @@ if ADMIN_CHAT_ID:
         admin_text = message.text
         
         try:
-            # 1. Find ticket in Django DB
-            application = Application.objects.get(id=ticket_id)
+            # Execute DB query safely in synchronous context
+            user_id = await process_admin_reply_db(ticket_id, admin_text)
             
-            # 2. Update status in Django and sync chat_history JSON
-            from django.utils import timezone
-            now_time = timezone.localtime().strftime("%H:%M")
-            new_message = {"role": "admin", "text": admin_text, "time": now_time}
-            
-            history = list(application.chat_history) if application.chat_history else []
-            history.append(new_message)
-            application.chat_history = history
-            
-            application.is_answered = True
-            application.save()
-            
-            # 3. Create Message record
-            DBMessage.objects.create(
-                application=application,
-                text=admin_text,
-                is_from_admin=True
-            )
-            
-            # 4. Send PM via Sumire bot
+            if not user_id:
+                await message.reply("❌ Xatolik: Bu ariza ID bazada topilmadi.")
+                return
+                
+            # Send PM via Sumire bot
             user_notification = (
                 f"🌸 <b>Murojaatingiz bo'yicha administratsiya javobi:</b>\n"
                 f"━━━━━━━━━━━━━━\n"
@@ -92,7 +106,7 @@ if ADMIN_CHAT_ID:
             )
             
             await main_bot.send_message(
-                chat_id=application.user_id,
+                chat_id=user_id,
                 text=user_notification,
                 parse_mode="HTML"
             )
@@ -100,10 +114,10 @@ if ADMIN_CHAT_ID:
             # React with 🔥 on the admin message to show success
             await message.react([{"type": "emoji", "emoji": "🔥"}])
             
-        except Application.DoesNotExist:
-            await message.reply("❌ Xatolik: Bu ariza ID bazada topilmadi.")
         except Exception as e:
             await message.reply(f"❌ Xatolik: {str(e)}")
+            
+
 
 # 3. Fallback PM reply handler for direct messages from admin
 if ADMIN_ID:

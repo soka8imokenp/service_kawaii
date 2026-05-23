@@ -109,9 +109,10 @@ class Application(models.Model):
         }
 
         try:
-            requests.post(url, json=payload, timeout=5)
+            r = requests.post(url, json=payload, timeout=5)
+            print(f"Telegram notification sent to {self.user_id}. Status: {r.status_code}, Response: {r.text}", flush=True)
         except Exception as e:
-            print(f"Telegram notification error: {e}")
+            print(f"Telegram notification error: {e}", flush=True)
 
 
 class Message(models.Model):
