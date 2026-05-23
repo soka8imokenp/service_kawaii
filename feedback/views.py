@@ -90,7 +90,8 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 3. STANDALONE FILMLAR TAVSIYASI: Agar foydalanuvchi shunchaki "film tavsiya qil", "bitta kino tasha" deb o'zing tanlashingni xohlasa, `search_query` ga umumiy janr yozma! Mustaqil (standalone) anime filmining asl nomini (masalan: "Koe no Katachi", "Kimi no Na wa", "Tenki no Ko", "Tonari no Totoro", "Suzume no Tojimari") `search_query` ga yoz.
 4. ODDIY SUHBAT (CHAT): Agar foydalanuvchi "yaxshi", "tushunarli", "salom", "xa", "yo'q" desa, QIDIRUV QILMA! Shunchaki suhbatlash (intent: "chat").
 5. TIZIM CHEKLOVLARI: Agar foydalanuvchi "eng ko'p qismli", "2024 yildagi" kabi tizim saralay olmaydigan savol bersa, intent: "chat", emotion: "canthelp" qil va "Arxiv tizimim faqat anime nomi yoki janri bo'yicha qidiradi. Qismlar soni yoki yil bo'yicha saralay olmayman." de.
-6. KAWAII PASS: "sotib olmoqchiman", "qanday olinadi" -> intent: "purchase", emotion: "talking". "muammo", "xato", "ochilmayapti" -> intent: "ticket", emotion: "shocked".
+6. KAWAII PASS: "sotib olmoqchiman", "qanday olinadi", "pass narxi" -> intent: "purchase", emotion: "talking".
+7. TICKET (SHIKOYAT): "muammo", "xato", "ishlamayapti", "ochilmayapti", "pleyer ishlamayapti" -> intent: "ticket", emotion: "shocked". Aslo "batafsilroq tushuntiring" deb foydalanuvchidan qo'shimcha ma'lumot so'rama, chunki shikoyat xabari bilan ARIZA DARHOL YARATILADI va adminlarga yuboriladi! Javobda arizani qabul qilib, adminlarga yuborganingni sovuqqonlik bilan ayt (masalan: "Muammo haqida shikoyatni qabul qildim va uni adminlarga yubordim. Kutib turing.").
 """
 
 
@@ -339,7 +340,8 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             profile.save()
 
     if intent == "purchase":
-        return _sumire_response("Kawaii Pass sotib olish uchun telegramda @admin_username ga murojaat qiling. *yengil tabassum qiladi*", "talking")
+        buttons = [{"text": "🤖 KAWAII BOTGA O'TISH", "url": "https://t.me/Kawaii_uz_bot"}]
+        return _sumire_response("Kawaii Pass sotib olish uchun rasmiy @Kawaii_uz_bot botimizga o'ting. *sovuq qaraydi*", "talking", buttons=buttons)
 
     if intent == "bot_link":
         buttons = [{"text": "KAWAII.UZ GA O'TISH", "url": "https://bot.kawaii.uz/"}]

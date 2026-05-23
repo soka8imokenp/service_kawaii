@@ -257,7 +257,7 @@ function App() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#05030a]/40 to-[#05030a] z-10 pointer-events-none"></div>
 
       {/* HUD ПАНЕЛЬ */}
-      <div className="relative z-20 flex justify-between items-start p-2 md:p-4">
+      <div style={{ paddingTop: 'calc(var(--tg-safe-area-inset-top, 0px) + 42px)' }} className="relative z-20 flex justify-between items-start px-2 pb-2 md:p-4">
         <div className="bg-[#0f0a1c]/90 backdrop-blur-md border-l-2 md:border-l-4 border-fuchsia-500 px-2 py-1 md:px-4 md:py-1.5 shadow-[2px_2px_0_rgba(0,0,0,0.5)] flex items-center gap-2">
           <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-fuchsia-500 animate-pulse"></div>
           <h2 className="text-[8px] md:text-[10px] text-fuchsia-100 tracking-widest mt-0.5">SYS.ARCHIVE</h2>
