@@ -63,7 +63,15 @@ if ADMIN_CHAT_ID:
             # 1. Find ticket in Django DB
             application = Application.objects.get(id=ticket_id)
             
-            # 2. Update status in Django
+            # 2. Update status in Django and sync chat_history JSON
+            from django.utils import timezone
+            now_time = timezone.localtime().strftime("%H:%M")
+            new_message = {"role": "admin", "text": admin_text, "time": now_time}
+            
+            history = list(application.chat_history) if application.chat_history else []
+            history.append(new_message)
+            application.chat_history = history
+            
             application.is_answered = True
             application.save()
             

@@ -1,0 +1,337 @@
+/* 🌸 Sumire Premium Admin Stylesheet 🌸 */
+
+/* Import premium modern typography */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+body, input, select, textarea, button {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+}
+
+/* 1. Header & Navigation */
+#header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%) !important;
+    padding: 16px 24px !important;
+    border-bottom: none !important;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.25) !important;
+}
+
+#branding h1 {
+    font-weight: 800 !important;
+    font-size: 22px !important;
+    letter-spacing: -0.5px !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+#branding h1::before {
+    content: "🌸" !important;
+    margin-right: 10px !important;
+    font-size: 24px !important;
+    animation: pulse 2s infinite alternate !important;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+}
+
+#user-tools {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+#user-tools a {
+    color: #ffffff !important;
+    border-bottom: 1px dashed rgba(255,255,255,0.6) !important;
+    text-decoration: none !important;
+    transition: all 0.2s !important;
+}
+
+#user-tools a:hover {
+    color: #ffe4e6 !important;
+    border-bottom-color: #ffffff !important;
+}
+
+/* Breadcrumbs bar styling */
+.breadcrumbs {
+    background: #ffffff !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 12px 24px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02) !important;
+}
+
+.breadcrumbs a {
+    color: #6366f1 !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+}
+
+.breadcrumbs a:hover {
+    color: #4f46e5 !important;
+    text-decoration: underline !important;
+}
+
+/* 2. Main Content Layout & Dashboard */
+#content {
+    padding: 30px 40px !important;
+    background: #f8fafc !important;
+    min-height: calc(100vh - 130px) !important;
+}
+
+h1 {
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    font-size: 26px !important;
+    letter-spacing: -0.5px !important;
+    margin-bottom: 24px !important;
+}
+
+.dashboard .module {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    overflow: hidden !important;
+    margin-bottom: 30px !important;
+}
+
+.dashboard .module caption {
+    background: #f1f5f9 !important;
+    padding: 14px 20px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.dashboard .module caption a {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    text-decoration: none !important;
+    letter-spacing: -0.3px !important;
+}
+
+/* 3. List Views & Tables */
+#changelist {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden !important;
+}
+
+.results-wrapper {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+}
+
+#changelist table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
+
+#changelist table thead th {
+    background: #f8fafc !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+    padding: 14px 18px !important;
+    color: #475569 !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+#changelist table tbody tr {
+    transition: all 0.2s !important;
+}
+
+#changelist table tbody tr:nth-child(even) {
+    background: #f8fafc !important;
+}
+
+#changelist table tbody tr:hover {
+    background: #f1f5f9 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+#changelist table tbody td {
+    padding: 14px 18px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    font-size: 14px !important;
+    color: #334155 !important;
+}
+
+#changelist table tbody th a {
+    color: #6366f1 !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+}
+
+#changelist table tbody th a:hover {
+    color: #4f46e5 !important;
+    text-decoration: underline !important;
+}
+
+/* Custom list filter column */
+#changelist-filter {
+    background: #ffffff !important;
+    border-left: 1px solid #e2e8f0 !important;
+    padding: 20px !important;
+}
+
+#changelist-filter h2 {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    border-bottom: 2px solid #6366f1 !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 16px !important;
+}
+
+#changelist-filter li a {
+    color: #475569 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    display: block !important;
+    transition: all 0.2s !important;
+}
+
+#changelist-filter li a:hover, #changelist-filter li.selected a {
+    background: #eeebff !important;
+    color: #6366f1 !important;
+    font-weight: 600 !important;
+}
+
+/* 4. Form & Styling Details */
+.module h2 {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    font-size: 16px !important;
+    padding: 14px 20px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+fieldset {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin-bottom: 30px !important;
+    background: #ffffff !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02) !important;
+}
+
+.form-row {
+    padding: 16px 20px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.form-row label {
+    font-weight: 600 !important;
+    color: #334155 !important;
+    font-size: 14px !important;
+}
+
+input[type="text"], input[type="password"], textarea, select {
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+    color: #0f172a !important;
+    transition: all 0.2s !important;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+    outline: none !important;
+}
+
+/* Styled text area for admin response specifically */
+textarea[name="admin_reply_field"] {
+    border: 2px solid #8b5cf6 !important;
+    background: #fdfeff !important;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.05) !important;
+}
+
+textarea[name="admin_reply_field"]:focus {
+    border-color: #ec4899 !important;
+    box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.15) !important;
+}
+
+/* 5. Buttons & Action bars */
+.submit-row {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 16px 24px !important;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.02) !important;
+    display: flex !important;
+    gap: 10px !important;
+    justify-content: flex-end !important;
+}
+
+.submit-row input, .submit-row a {
+    padding: 10px 20px !important;
+    font-weight: 700 !important;
+    font-size: 13.5px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+}
+
+.submit-row input[type="submit"].default {
+    background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%) !important;
+    border: none !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.1) !important;
+}
+
+.submit-row input[type="submit"].default:hover {
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+.submit-row input[type="submit"] {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1.5px solid #cbd5e1 !important;
+}
+
+.submit-row input[type="submit"]:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+.submit-row .deletelink {
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+    border: 1.5px solid #fca5a5 !important;
+    font-weight: 700 !important;
+    padding: 10px 20px !important;
+    display: inline-block !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+}
+
+.submit-row .deletelink:hover {
+    background: #fecaca !important;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.15) !important;
+}
+
+/* Custom interactive animation for Visual Chat */
+.sumire-chat-wrapper {
+    animation: fadeIn 0.4s ease-out !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}

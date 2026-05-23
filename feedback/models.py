@@ -73,19 +73,34 @@ class Application(models.Model):
         super().save(*args, **kwargs)
 
     def send_telegram_notification(self):
-        """Простое текстовое уведомление в Telegram при ответе админа"""
+        """Mijozga Telegram orqali admin javobini yuborish"""
         token = os.getenv("BOT_TOKEN")
         if not token:
             return
 
         url = f"https://api.telegram.org/bot{token}/sendMessage"
         
-        message_text = (
-            f"🌸 <b>Sizning murojaatingizga javob berildi!</b>\n"
-            f"━━━━━━━━━━━━━━\n"
-            f"<b>Mavzu:</b> {self.subject}\n\n"
-            f"Javobni o'qish uchun bot menyusidagi ilovani oching."
-        )
+        reply_text = ""
+        if self.chat_history:
+            last_msg = self.chat_history[-1]
+            if last_msg.get('role') == 'admin':
+                reply_text = last_msg.get('text', '')
+
+        if reply_text:
+            message_text = (
+                f"🌸 <b>Murojaatingiz bo'yicha administratsiya javobi:</b>\n"
+                f"━━━━━━━━━━━━━━\n"
+                f"{reply_text}\n"
+                f"━━━━━━━━━━━━━━\n"
+                f"<i>Yordam kerak bo'lsa, Web App ichida Sumirega yozishingiz mumkin.</i>"
+            )
+        else:
+            message_text = (
+                f"🌸 <b>Sizning murojaatingizga javob berildi!</b>\n"
+                f"━━━━━━━━━━━━━━\n"
+                f"<b>Mavzu:</b> {self.subject}\n\n"
+                f"Javobni o'qish uchun bot menyusidagi ilovani oching."
+            )
 
         payload = {
             "chat_id": self.user_id,
