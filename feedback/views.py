@@ -4,6 +4,8 @@ import re
 from urllib.parse import urljoin
 
 from openai import OpenAI
+from google import genai
+from google.genai import types
 import requests
 from django.core.cache import cache
 from django.http import JsonResponse
@@ -14,6 +16,7 @@ from .models import Application, Message, Profile
 
 
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 client = None
 if DEEPSEEK_API_KEY:
@@ -21,6 +24,11 @@ if DEEPSEEK_API_KEY:
         api_key=DEEPSEEK_API_KEY.strip(),
         base_url="https://api.deepseek.com/v1"
     )
+
+gemini_client = None
+if GEMINI_API_KEY:
+    gemini_client = genai.Client(api_key=GEMINI_API_KEY.strip())
+
 
 SEARCH_BASE_URL = "https://bot.kawaii.uz"
 
@@ -289,9 +297,6 @@ def _route_without_ai(user_text):
 
 
 def _parse_ai_command(user_text, chat_history_text="", profile=None):
-    if not client:
-        return {"intent": "chat", "reply": "Ulanishda muammo bor... *kompyuterga uradi*", "emotion": "shocked"}
-
     profile_context = ""
     if profile and profile.favorite_genres:
         profile_context = f"--- FOYDALANUVCHI PROFILI (XOTIRA) ---\nSevimli janrlari: {profile.favorite_genres}\n\n"
@@ -299,20 +304,43 @@ def _parse_ai_command(user_text, chat_history_text="", profile=None):
     history_context = f"--- OLDINGI KONTEKST ---\n{chat_history_text}\n\n" if chat_history_text else ""
     full_prompt = f"{profile_context}{history_context}--- YANGI XABAR ---\nUser: {user_text}"
 
-    response = client.chat.completions.create(
-        model="deepseek-chat",
-        messages=[
-            {"role": "system", "content": INTENT_PROMPT},
-            {"role": "user", "content": full_prompt}
-        ],
-        response_format={"type": "json_object"},
-        temperature=0.3, 
-    )
+    # 1. Try Gemini first if configured
+    if gemini_client:
+        try:
+            response = gemini_client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=full_prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=INTENT_PROMPT,
+                    response_mime_type="application/json",
+                    temperature=0.3,
+                ),
+            )
+            return json.loads(response.text)
+        except Exception as e:
+            print(f"Gemini API Error: {e}")
+            if not client:
+                return {"intent": "chat", "reply": "Miyam og'rib ketdi... *peshonasini ushlaydi*", "emotion": "face palm"}
 
-    try:
-        return json.loads(response.choices[0].message.content)
-    except Exception:
-        return {"intent": "chat", "reply": "Miyam og'rib ketdi... *peshonasini ushlaydi*", "emotion": "face palm"}
+    # 2. Try DeepSeek / OpenAI if configured
+    if client:
+        try:
+            response = client.chat.completions.create(
+                model="deepseek-chat",
+                messages=[
+                    {"role": "system", "content": INTENT_PROMPT},
+                    {"role": "user", "content": full_prompt}
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.3, 
+            )
+            return json.loads(response.choices[0].message.content)
+        except Exception as e:
+            print(f"DeepSeek API Error: {e}")
+            return {"intent": "chat", "reply": "Miyam og'rib ketdi... *peshonasini ushlaydi*", "emotion": "face palm"}
+
+    # If no AI client is initialized
+    return {"intent": "chat", "reply": "Ulanishda muammo bor... *kompyuterga uradi*", "emotion": "shocked"}
 
 
 def _execute_ai_command(command, user_text, user_id=None, username=None, profile=None):

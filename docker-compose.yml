@@ -32,6 +32,7 @@ services:
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
       BOT_TOKEN: ${BOT_TOKEN}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
       ADMIN_BOT_TOKEN: ${ADMIN_BOT_TOKEN}
       ADMIN_CHAT_ID: ${ADMIN_CHAT_ID}
     depends_on:
@@ -54,6 +55,7 @@ services:
       WEBAPP_URL: ${WEBAPP_URL}
       ADMIN_BOT_TOKEN: ${ADMIN_BOT_TOKEN}
       ADMIN_CHAT_ID: ${ADMIN_CHAT_ID}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
       DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_password}@db:5432/${POSTGRES_DB:-sumire_db}
     depends_on:
       db:
