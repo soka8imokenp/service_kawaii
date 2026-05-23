@@ -22,4 +22,4 @@ COPY . /app/
 
 # Default command for the backend service (migrations, collectstatic, run gunicorn)
 # Note: For the 'bot' service, we will override this command in docker-compose
-CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn core.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py createcachetable && python manage.py collectstatic --noinput && gunicorn core.wsgi:application --bind 0.0.0.0:8000"]

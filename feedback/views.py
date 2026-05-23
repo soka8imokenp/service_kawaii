@@ -397,28 +397,46 @@ def api_send_message(request):
         if direct_response:
             return direct_response
 
+        # Determine client IP and secure TG User ID
         user_ip = request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0] or request.META.get("REMOTE_ADDR", "unknown")
-        user_daily_key = f"user_limit_{user_ip}"
+        user_id_int = _safe_int(user_id)
+
+        from django.conf import settings
+
+        # Production security: Require valid Telegram user_id to prevent external spammers/crawlers
+        if not settings.DEBUG and user_id_int <= 0:
+            return _sumire_response("Faqat Telegram bot ichidan foydalanishga ruxsat berilgan. *sovuq qaraydi*", "fuu", status=403)
+
+        # Cache key for daily request rate-limiting and chat history
+        if user_id_int > 0:
+            user_daily_key = f"user_limit_tg_{user_id_int}"
+            history_key = f"chat_history_tg_{user_id_int}"
+        else:
+            user_daily_key = f"user_limit_ip_{user_ip}"
+            history_key = f"chat_history_ip_{user_ip}"
+
         user_requests = cache.get(user_daily_key, 0)
         
+        # Limit to 30 requests per day per user (IP/Telegram ID)
         if user_requests >= 30:
             return _sumire_response("Bugun judayam ko'p savol berding. Charchadim. Ertaga kel... *ko'zlarini yopadi*", "fuu")
 
         profile = None
-        if user_id:
+        if user_id_int > 0:
             try:
-                profile, _ = Profile.objects.get_or_create(telegram_id=user_id)
+                profile, _ = Profile.objects.get_or_create(telegram_id=user_id_int)
             except Exception as e:
                 print(f"Profile error: {e}")
 
-        history_key = f"chat_history_{user_ip}"
         chat_history = cache.get(history_key, [])
         history_text = "\n".join([f"{msg['role']}: {msg['text']}" for msg in chat_history])
 
         command = _parse_ai_command(user_text, history_text, profile)
+        
+        # Save request increment
         cache.set(user_daily_key, user_requests + 1, timeout=86400)
         
-        ai_response = _execute_ai_command(command, user_text, user_id=user_id, username=username, profile=profile)
+        ai_response = _execute_ai_command(command, user_text, user_id=user_id_int, username=username, profile=profile)
 
         try:
             reply_data = json.loads(ai_response.content.decode('utf-8'))
