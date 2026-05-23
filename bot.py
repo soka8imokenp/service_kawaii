@@ -1,23 +1,35 @@
 import os
-from dotenv import load_dotenv
-import asyncio
 import re
+import asyncio
+from dotenv import load_dotenv
+import django
+
+# Initialize Django environment
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+django.setup()
+
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
+from feedback.models import Application, Message as DBMessage
 
 load_dotenv()
 
-# Настройки
-TOKEN = os.getenv("BOT_TOKEN")
-ADMIN_ID = int(os.getenv("ADMIN_ID")) # ID должен быть числом для aiogram
+# Settings
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_BOT_TOKEN = os.getenv("ADMIN_BOT_TOKEN") or BOT_TOKEN
+ADMIN_CHAT_ID = os.getenv("ADMIN_CHAT_ID")
+ADMIN_ID = os.getenv("ADMIN_ID")
 WEBAPP_URL = os.getenv("WEBAPP_URL")
 
-bot = Bot(token=TOKEN)
+# Initialize Bots
+main_bot = Bot(token=BOT_TOKEN)
+admin_bot = Bot(token=ADMIN_BOT_TOKEN) if ADMIN_BOT_TOKEN else None
+
 dp = Dispatcher()
 
-# 1. Команда /start для открытия Mini App
-@dp.message(Command("start"))
+# 1. Start command in PM
+@dp.message(Command("start"), F.chat.type == "private")
 async def start(message: types.Message):
     markup = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="✍️ Murojaat qoldirish", web_app=WebAppInfo(url=WEBAPP_URL))]
@@ -27,41 +39,103 @@ async def start(message: types.Message):
         reply_markup=markup
     )
 
-# 2. Обработчик твоих ответов (Reply)
-@dp.message(F.reply_to_message)
-async def handle_admin_reply(message: types.Message):
-    # Проверяем, что отвечаешь именно ты (админ)
-    if message.from_user.id == ADMIN_ID:
+# 2. Handler for admin reply in the admin group
+# It listens to ADMIN_CHAT_ID for replies
+if ADMIN_CHAT_ID:
+    try:
+        ADMIN_CHAT_ID_INT = int(ADMIN_CHAT_ID)
+    except ValueError:
+        ADMIN_CHAT_ID_INT = 0
+
+    @dp.message(F.chat.id == ADMIN_CHAT_ID_INT, F.reply_to_message)
+    async def handle_admin_reply_to_user(message: types.Message):
+        reply = message.reply_to_message
         
-        # Берем текст из сообщения, на которое ты отвечаешь
-        original_text = message.reply_to_message.text or message.reply_to_message.caption
-        
-        if original_text:
-            # Ищем строку "User: 123456789" в тексте сообщения от бэкенда
-            match = re.search(r"User:\s*(\d+)", original_text)
+        # Regex to extract ticket ID: "YANGI SHIKOYAT #123"
+        match = re.search(r"YANGI SHIKOYAT #(\d+)", reply.text or reply.caption or "")
+        if not match:
+            return
             
-            if match:
-                target_user_id = match.group(1) # Это и есть настоящий Telegram ID пользователя!
-                try:
-                    # Отправляем твой ответ пользователю
-                    await bot.send_message(
-                        chat_id=target_user_id,
-                        text=f"✉️ <b>Qo'llab-quvvatlash xizmatidan javob:</b>\n\n{message.text}",
-                        parse_mode="HTML"
-                    )
-                    await message.answer("✅ Javob foydalanuvchiga yuborildi!")
-                except Exception as e:
-                    await message.answer(f"❌ Xatolik: Foydalanuvchi botni bloklagan bo'lishi mumkin.\n\n{e}")
-            else:
-                # Если User ID не найден, бот ничего не делает (чтобы не мешать обычному общению)
-                pass
+        ticket_id = int(match.group(1))
+        admin_text = message.text
+        
+        try:
+            # 1. Find ticket in Django DB
+            application = Application.objects.get(id=ticket_id)
+            
+            # 2. Update status in Django
+            application.is_answered = True
+            application.save()
+            
+            # 3. Create Message record
+            DBMessage.objects.create(
+                application=application,
+                text=admin_text,
+                is_from_admin=True
+            )
+            
+            # 4. Send PM via Sumire bot
+            user_notification = (
+                f"🌸 <b>Murojaatingiz bo'yicha administratsiya javobi:</b>\n"
+                f"━━━━━━━━━━━━━━\n"
+                f"{admin_text}\n"
+                f"━━━━━━━━━━━━━━\n"
+                f"<i>Yordam kerak bo'lsa, Web App ichida Sumirega yozishingiz mumkin.</i>"
+            )
+            
+            await main_bot.send_message(
+                chat_id=application.user_id,
+                text=user_notification,
+                parse_mode="HTML"
+            )
+            
+            # React with 🔥 on the admin message to show success
+            await message.react([{"type": "emoji", "emoji": "🔥"}])
+            
+        except Application.DoesNotExist:
+            await message.reply("❌ Xatolik: Bu ariza ID bazada topilmadi.")
+        except Exception as e:
+            await message.reply(f"❌ Xatolik: {str(e)}")
+
+# 3. Fallback PM reply handler for direct messages from admin
+if ADMIN_ID:
+    try:
+        ADMIN_ID_INT = int(ADMIN_ID)
+    except ValueError:
+        ADMIN_ID_INT = 0
+
+    @dp.message(F.chat.type == "private", F.reply_to_message, F.from_user.id == ADMIN_ID_INT)
+    async def handle_direct_admin_reply(message: types.Message):
+        original_text = message.reply_to_message.text or message.reply_to_message.caption
+        if not original_text:
+            return
+            
+        match = re.search(r"User:\s*(\d+)", original_text)
+        if match:
+            target_user_id = int(match.group(1))
+            try:
+                await main_bot.send_message(
+                    chat_id=target_user_id,
+                    text=f"✉️ <b>Qo'llab-quvvatlash xizmatidan javob:</b>\n\n{message.text}",
+                    parse_mode="HTML"
+                )
+                await message.answer("✅ Javob foydalanuvchiga yuborildi!")
+            except Exception as e:
+                await message.answer(f"❌ Xatolik: Foydalanuvchi botni bloklagan bo'лишi mumkin.\n\n{e}")
 
 async def main():
-    print("Bot ishga tushdi va ishlashga tayyor...")
-    await dp.start_polling(bot)
+    print("Bots are starting...")
+    active_bots = [main_bot]
+    if admin_bot and admin_bot.token != main_bot.token:
+        active_bots.append(admin_bot)
+        print("Polling both Sumire Bot and Admin Group Bot...")
+    else:
+        print("Polling Sumire Bot...")
+
+    await dp.start_polling(*active_bots)
 
 if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("Bot o‘chirildi")
+        print("Bots stopped.")
