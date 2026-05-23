@@ -1,0 +1,26 @@
+# Multi-stage Dockerfile for Nginx and React Frontend build
+FROM node:20-alpine AS frontend-builder
+WORKDIR /app/frontend
+
+# Copy frontend configuration files and install dependencies
+COPY frontend/package*.json ./
+RUN npm ci
+
+# Copy frontend codebase
+COPY frontend/ ./
+
+# Build the production React app (outputs to /app/frontend/dist)
+RUN npm run build
+
+# Stage 2: Serve using Nginx
+FROM nginx:alpine
+
+# Copy customized Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy frontend built assets from builder stage
+COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

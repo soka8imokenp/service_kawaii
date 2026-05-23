@@ -350,7 +350,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         
         results = search_manga_database(query, limit=limit, offset=offset, anime_type=anime_type, exclude_keywords=exclude_keywords)
         
-        if not Flux:
+        if not results:
             if offset > 0 or exclude_keywords:
                 return _sumire_response(f"{reply}\n\n*(Arxivda bu bo'yicha boshqa anime qolmagan ko'rinadi...)*", "canthelp")
             else:
