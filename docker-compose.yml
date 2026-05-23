@@ -67,11 +67,13 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - backend
     volumes:
       - static_volume:/app/staticfiles:ro
       - media_volume:/app/media:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
 
 volumes:
   postgres_data:
