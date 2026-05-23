@@ -4,7 +4,20 @@ import { motion, AnimatePresence } from 'framer-motion'
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || window.location.origin).replace(/\/$/, '');
 
 const getTelegramUser = () => {
-  return window.Telegram?.WebApp?.initDataUnsafe?.user || {};
+  try {
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      const user = tg.initDataUnsafe?.user;
+      if (user && user.id) {
+        return user;
+      }
+    }
+  } catch (e) {
+    console.error('Telegram WebApp init error:', e);
+  }
+  return {};
 };
 
 // --- Haptic Feedback (Вибрация для Telegram) ---
@@ -160,7 +173,7 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text: textToSent,
-          user_id: telegramUser.id || 123456789,
+          user_id: telegramUser.id || 0,
           username: telegramUser.username || '',
           first_name: telegramUser.first_name || '',
         }),

@@ -175,8 +175,6 @@ h1 {
 
 #changelist table tbody tr:hover {
     background: rgba(124, 58, 237, 0.1) !important;
-    transform: translateY(-0.5px) !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2) !important;
 }
 
 #changelist table tbody td {
@@ -186,10 +184,21 @@ h1 {
     color: #cbd5e1 !important;
 }
 
+#changelist table tbody th {
+    padding: 14px 18px !important;
+    border-bottom: 1px solid #1f2937 !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
 #changelist table tbody th a {
     color: #a78bfa !important;
     font-weight: 600 !important;
     text-decoration: none !important;
+    cursor: pointer !important;
+    display: inline-block !important;
+    position: relative !important;
+    z-index: 2 !important;
 }
 
 #changelist table tbody th a:hover {

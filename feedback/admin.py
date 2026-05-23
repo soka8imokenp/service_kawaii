@@ -32,8 +32,9 @@ class ApplicationAdminForm(forms.ModelForm):
 class ApplicationAdmin(admin.ModelAdmin):
     form = ApplicationAdminForm
 
-    list_display = ("id", "subject", "username", "created_at")
-    search_fields = ("id", "username", "subject")
+    list_display = ("ticket_id", "subject", "username", "created_at")
+    list_display_links = ("ticket_id", "subject")
+    search_fields = ("username", "subject")
     exclude = ("category", "chat_history", "is_answered", "is_closed")
     readonly_fields = ("chat_history_bubbles", "created_at")
 
@@ -54,6 +55,11 @@ class ApplicationAdmin(admin.ModelAdmin):
         css = {
             'all': ('css/admin.css',)
         }
+
+    def ticket_id(self, obj):
+        return format_html('<strong>#{}</strong>', obj.id)
+    ticket_id.short_description = "ID"
+    ticket_id.admin_order_field = "id"
 
     def chat_history_bubbles(self, obj):
         if not obj or not obj.chat_history:
