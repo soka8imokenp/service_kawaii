@@ -34,6 +34,7 @@ class ApplicationAdmin(admin.ModelAdmin):
 
     list_display = ("id", "subject", "username", "created_at")
     search_fields = ("id", "username", "subject")
+    exclude = ("category", "chat_history", "is_answered", "is_closed")
     readonly_fields = ("chat_history_bubbles", "created_at")
 
     fieldsets = (
