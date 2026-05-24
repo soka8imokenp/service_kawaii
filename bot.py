@@ -79,6 +79,35 @@ def process_admin_reply_db(ticket_id, admin_text):
     except Application.DoesNotExist:
         return None
 
+@sync_to_async
+def close_ticket_db(ticket_id):
+    try:
+        application = Application.objects.get(id=ticket_id)
+        if application.is_closed:
+            return "already_closed", application
+        
+        application.is_closed = True
+        application.is_answered = True
+        
+        # Add a visual indicator in the chat history
+        from django.utils import timezone
+        now_time = timezone.localtime().strftime("%H:%M")
+        new_message = {"role": "admin", "text": "[Murojaat yopildi / Ticket closed]", "time": now_time}
+        history = list(application.chat_history) if application.chat_history else []
+        history.append(new_message)
+        application.chat_history = history
+        
+        application.save()
+        
+        DBMessage.objects.create(
+            application=application,
+            text="[Murojaat admin tomonidan yopildi]",
+            is_from_admin=True
+        )
+        return "success", application
+    except Application.DoesNotExist:
+        return "not_found", None
+
 if ADMIN_CHAT_ID:
     try:
         ADMIN_CHAT_ID_INT = int(ADMIN_CHAT_ID)
@@ -89,14 +118,59 @@ if ADMIN_CHAT_ID:
     async def handle_admin_reply_to_user(message: types.Message):
         reply = message.reply_to_message
         
-        # Regex to extract ticket ID: "YANGI SHIKOYAT #123"
-        match = re.search(r"YANGI SHIKOYAT #(\d+)", reply.text or reply.caption or "")
+        # Regex to extract ticket ID: "YANGI SHIKOYAT #123" or "YANGI XABAR #123"
+        match = re.search(r"YANGI (?:SHIKOYAT|XABAR) #(\d+)", reply.text or reply.caption or "")
         if not match:
             return
             
         ticket_id = int(match.group(1))
-        admin_text = message.text
+        admin_text = message.text or ""
         
+        # Check for closing commands
+        cleaned_text = admin_text.strip().lower()
+        close_triggers = ["/close", "/yopish", "close", "yopish", "muammo hal boldi", "hal boldi"]
+        is_close_cmd = (cleaned_text in close_triggers) or cleaned_text.startswith("/close ") or cleaned_text.startswith("/yopish ")
+        
+        if is_close_cmd:
+            try:
+                status, application = await close_ticket_db(ticket_id)
+                if status == "not_found":
+                    await message.reply("❌ Xatolik: Murojaat topilmadi.")
+                    return
+                elif status == "already_closed":
+                    await message.reply("ℹ️ Ushbu murojaat allaqachon yopilgan.")
+                    return
+                
+                # Send PM notification to the user via the main bot
+                try:
+                    await main_bot.send_message(
+                        chat_id=application.user_id,
+                        text=(
+                            f"🌸 <b>Sizning murojaatingiz yopildi!</b>\n"
+                            f"━━━━━━━━━━━━━━\n"
+                            f"<b>Mavzu:</b> {application.subject}\n\n"
+                            f"Bizga murojaat qilganingiz uchun rahmat! Murojaatingiz admin tomonidan muvaffaqiyatli yopildi. "
+                            f"Agar sizda yangi savollar tug'ilsa, Web App orqali yangi murojaat yaratishingiz mumkin."
+                        ),
+                        parse_mode="HTML"
+                    )
+                except Exception as pm_err:
+                    print(f"Failed to send PM notification to user {application.user_id}: {pm_err}", flush=True)
+                
+                # Reply to the admin in the group chat and react with 👍
+                await message.reply(
+                    f"✅ <b>Murojaat #{ticket_id} muvaffaqiyatli yopildi!</b>\n"
+                    f"Foydalanuvchiga yopilganligi haqida xabar yuborildi."
+                )
+                try:
+                    await message.react([{"type": "emoji", "emoji": "👍"}])
+                except Exception:
+                    pass
+                return
+            except Exception as e:
+                await message.reply(f"❌ Xatolik yopishda: {str(e)}")
+                return
+            
         try:
             # Execute DB query safely in synchronous context
             user_id = await process_admin_reply_db(ticket_id, admin_text)
@@ -139,6 +213,89 @@ if ADMIN_ID:
                 await message.answer("✅ Javob foydalanuvchiga yuborildi!")
             except Exception as e:
                 await message.answer(f"❌ Xatolik: Foydalanuvchi botni bloklagan bo'лишi mumkin.\n\n{e}")
+
+# 4. Handler for user messages in PM (private chat)
+# It forwards messages to the admin group if they have an active ticket
+# Otherwise, it shows them how to open the Web App
+@dp.message(F.chat.type == "private")
+async def handle_user_pm(message: types.Message):
+    # Ignore commands (already handled by command handlers)
+    if message.text and message.text.startswith("/"):
+        return
+        
+    user_id = message.from_user.id
+    username = message.from_user.username
+    text = message.text or "[Fayl yoki Rasm yuborildi]"
+
+    @sync_to_async
+    def process_pm_in_db(uid, uname, msg_text):
+        try:
+            # Find the latest open ticket for this user
+            application = Application.objects.filter(user_id=uid, is_closed=False).order_by('-id').first()
+            if not application:
+                return None
+                
+            # Sync chat history JSON
+            from django.utils import timezone
+            now_time = timezone.localtime().strftime("%H:%M")
+            new_message = {"role": "user", "text": msg_text, "time": now_time}
+            
+            history = list(application.chat_history) if application.chat_history else []
+            history.append(new_message)
+            application.chat_history = history
+            
+            application.is_answered = False
+            application.save()
+            
+            # Create DB Message record
+            DBMessage.objects.create(
+                application=application,
+                text=msg_text,
+                is_from_admin=False
+            )
+            return application.id
+        except Exception as e:
+            print(f"Error processing PM in DB: {e}")
+            return None
+
+    ticket_id = await process_pm_in_db(user_id, username, text)
+
+    if ticket_id:
+        # Forward to admin group chat
+        admin_chat_id = os.getenv("ADMIN_CHAT_ID")
+        if admin_chat_id:
+            try:
+                admin_chat_id_int = int(admin_chat_id)
+                msg_text = (
+                    f"🚨 <b>YANGI XABAR #{ticket_id} (Suhbatdan)</b>\n"
+                    f"━━━━━━━━━━━━━━\n"
+                    f"<b>Foydalanuvchi:</b> @{username or 'Yashirin'}\n"
+                    f"<b>Telegram ID:</b> <code>{user_id}</code>\n"
+                    f"━━━━━━━━━━━━━━\n"
+                    f"<b>Foydalanuvchi javobi:</b>\n<i>{text}</i>\n\n"
+                    f"✍️ <i>Javob berish uchun ushbu xabarga 'Reply' qiling.</i>"
+                )
+                
+                # Send via admin bot
+                await admin_bot.send_message(
+                    chat_id=admin_chat_id_int,
+                    text=msg_text,
+                    parse_mode="HTML"
+                )
+            except Exception as e:
+                print(f"Failed to forward PM to admin group: {e}")
+    else:
+        # Show Web App button if no active ticket
+        markup = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="✍️ Murojaat qoldirish", web_app=WebAppInfo(url=WEBAPP_URL_CACHE_BUSTER))]
+        ])
+        await message.answer(
+            "🌸 <b>Murojaat qoldirish yoki Sumire bilan gaplashish uchun pastdagi tugmani bosing:</b>\n\n"
+            "<i>(Siz yozgan xabarlar faqat faol murojaatingiz bo'lsagina adminlarga yuboriladi!)</i>",
+            reply_markup=markup,
+            parse_mode="HTML"
+        )
+
 
 async def main():
     print("Bots are starting...")
