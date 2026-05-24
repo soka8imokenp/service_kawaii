@@ -66,8 +66,11 @@ class Application(models.Model):
                     last_msg = self.chat_history[-1]
                     # Только если автор сообщения — админ
                     if last_msg.get('role') == 'admin':
-                        self.is_answered = True
-                        self.send_telegram_notification()
+                        # Не отправляем стандартное уведомление о новом ответе, если это закрытие тикета
+                        last_text = last_msg.get('text', '')
+                        if not (last_text.startswith("[Murojaat yopildi") or "Ticket closed" in last_text):
+                            self.is_answered = True
+                            self.send_telegram_notification()
             except Application.DoesNotExist:
                 pass
         
