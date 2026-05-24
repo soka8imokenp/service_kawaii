@@ -83,9 +83,19 @@ def process_admin_reply_db(ticket_id, admin_text):
 def close_ticket_db(ticket_id):
     try:
         application = Application.objects.get(id=ticket_id)
-        if application.is_closed:
+        
+        # Check if they have any open tickets
+        has_open = Application.objects.filter(user_id=application.user_id, is_closed=False).exists()
+        if application.is_closed and not has_open:
             return "already_closed", application
         
+        # Close all active tickets for this user to avoid legacy open tickets leaking PMs
+        Application.objects.filter(user_id=application.user_id, is_closed=False).update(
+            is_closed=True,
+            is_answered=True
+        )
+        
+        # Make sure our specific ticket instance is marked as closed and saved with a visual history indicator
         application.is_closed = True
         application.is_answered = True
         

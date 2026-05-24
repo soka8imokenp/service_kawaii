@@ -267,8 +267,16 @@ def _create_ticket(user_text, user_id=None, username=None, subject=None):
         subject = (subject or "Web App muammosi").strip()[:50]
         now = timezone.localtime().strftime("%H:%M")
 
+        uid_int = _safe_int(user_id) if user_id else 0
+        if uid_int:
+            # Close all previous open tickets for this user to keep a single active ticket channel
+            Application.objects.filter(user_id=uid_int, is_closed=False).update(
+                is_closed=True,
+                is_answered=True
+            )
+
         application = Application.objects.create(
-            user_id=_safe_int(user_id) if user_id else 0,
+            user_id=uid_int,
             username=username or "",
             category="report",
             subject=subject,
