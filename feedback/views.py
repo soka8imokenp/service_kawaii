@@ -566,9 +566,11 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         season_num = _extract_season_number(user_text)
         has_final = "final" in user_text.lower() or "8" in user_text.lower() or "oxirgi" in user_text.lower()
         
-        # Check if the current message is a follow-up (does not contain an explicit new title)
-        current_query_explicit = _extract_broad_search_query(user_text, [])
-        is_follow_up = not current_query_explicit or len(current_query_explicit.strip()) < 3
+        # Check if the current message is a follow-up (does not contain the explicit anime title or its parts)
+        query_words_clean = [w for w in re.split(r'\W+', query_lower) if len(w) > 2]
+        user_words_clean = [w for w in re.split(r'\W+', user_text.lower()) if len(w) > 2]
+        has_overlap = any(qw in user_text.lower() or any(qw in uw or uw in qw for uw in user_words_clean) for qw in query_words_clean)
+        is_follow_up = not has_overlap
         
         if is_follow_up:
             if season_num is None:
