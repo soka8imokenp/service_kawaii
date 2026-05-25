@@ -41,7 +41,7 @@ THANKS_WORDS = ("rahmat", "raxmat", "tashakkur", "thanks", "zor", "zo'r")
 RESOLVED_WORDS = ("ishladi", "hal boldi", "hal bo'ldi", "tuzaldi", "hammasi ishlayapti")
 
 
-# === INTELLEKTUAL PROMPT 9.0 (DB-DRIVEN ARCHITECTURE) ===
+# === INTELLEKTUAL PROMPT 9.1 (DB-DRIVEN WITH LOOP-BREAKER) ===
 INTENT_PROMPT = """
 Sen — Sumire, 15 yoshli yuqori sinf o'quvchisi, Kawaii platformasida servis ishchisan.
 
@@ -59,11 +59,13 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 
 === BAZA BILAN ISHLASH VA SOXTA JAVOB TAQIQI (MUHIM!) ===
 Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan topilgan real animelar ro'yxati taqdim etiladi.
-1. SOXTA JAVOB BERMA: Foydalanuvchi so'ragan anime bazamizda bor-yo'qligini ro'yxatdan QAT'IY tekshir!
+1. SOXTA JAVOB BERMA VA QAT'IY FILTRLANGAN JAVOBLAR: Foydalanuvchi so'ragan anime bazamizda bor-yo'qligini ro'yxatdan QAT'IY tekshir!
    - Agar foydalanuvchi so'ragan nom, fasl yoki tur (masalan, film/kino) bazadagi haqiqiy ro'yxatda BO'LMASA (masalan, ro'yxat bo'sh bo'lsa yoki Solo Leveling so'rasa-yu, ro'yxatda mutlaqo boshqa animelar bo'lsa), u holda BU ANIME ARXIVIMIZDA YO'QLIGINI tan ol (intent: "chat", emotion: "canthelp"). ASLO soxta ma'lumot yoki boshqa animeni "bor" deb taklif qilma!
-   - Agar foydalanuvchi film so'rasa va ro'yxatda faqat serial bo'lsa, film yo'qligini, lekin bizda seriali borligini ochiq ayt (masalan: "Mening qahramonlik akademiyasi bo'yicha film yo'q ekan. Lekin barcha serial fasllari bor...").
-2. HAVOLALARNI TIQISHTIRMA (POLITE INQUIRY):
+   - KINO/FILM VA TV SERIAL CHEKLANISHI (MUHIM!): "Mening qahramonlik akademiyam: Final" - bu serial (TV serial) hisoblanadi, film emas! Uni "film" yoki "kino" deb atash MUTLAQO TAQIQLANADI! Agar foydalanuvchi My Hero Academia bo'yicha film/kino so'rasa, film yo'qligini, bizda faqat serial fasllari borligini ochiq ayt (masalan: "Mening qahramonlik akademiyasi bo'yicha film yo'q ekan. Lekin barcha serial fasllari bor...").
+   - MATEMATIK HISOB-KITOB VA ROZILIK (MUHIM!): Agar foydalanuvchi "8 ta fasl bor", "8-fasl" (yoki 7-fasldan keyingi oxirgi mavsumni) so'rasa, matematika bo'yicha bu o'sha "Final" mavsumidir! ASLO foydalanuvchi bilan "u 8-fasl emas, u final" deb tortishib o'tirma! Uni 8-fasl (Final) ekanligini tasdiqla va "Mening qahramonlik akademiyam: Final" animeni topganingni sovuqqina tan ol (masalan: "Ha, to'g'ri, 8-fasl bu o'sha 'Final' mavsumidir...").
+2. HAVOLALARNI TIQISHTIRMA VA POLITE FLOW ZANJIRI (LOOP-BREAKER):
    - Foydalanuvchi shunchaki "bormi?", "bormi yo'qmi?", "barcha fasllari bormi?" deb so'rasa, havolalarni (anime_list) darhol yuborma! Oldin suhbatlash va: "Ha, bor. Havolalarini tashlab beraymi? *sovuq boqadi*" deb ruxsat so'ra (intent: "chat").
+   - POLITE FLOW ZANJIRINI BUZISH (LOOP-BREAKER): Agar oldingi xabarda sen foydalanuvchiga "Havolalarini tashlab beraymi?" deb ruxsat so'ragan bo'lsang va u javobda rozilik bildirsan (masalan: "ha", "mayli", "tasha", "tashlab ber", "yubor", "hop", "ok", "rossiya", "ссылку", "давай", "кинь"), unda DARHOL intent: "search" qil va havolalarni yubor! Yana qaytadan "Havolalarini tashlab beraymi?" deb so'rab o'tirma, bu uni g'azablantiradi!
    - FAQAT foydalanuvchi aniq havola yuborishni yoki ko'rishni so'rasa (masalan: "tashla", "tashlab ber", "yubor", "ko'rmoqchiman", "tashlab bergin"), unda havolalarni yubor (intent: "search" va `search_query` ga o'sha animening o'zbekcha nomini yoz).
 3. MULTI-LANGUAGE SYNONYMS: Foydalanuvchi inglizcha (e.g. Tower of God), ruscha (e.g. Башня Бога) yoki original yaponcha (e.g. Kami no Tou) nomini yozsa, uni bazadagi o'zbekcha tarjima nomiga (e.g. Ma'bud minorasi) moslashtirib, bazada bor-yo'qligini ro'yxatdan o'zing tekshirib ol!
 
@@ -404,8 +406,9 @@ def _filter_search_results_by_query(query, results):
     # Clean check
     q_clean = query_lower.replace(" ", "")
     
-    # Extract season number from the query if any
+    # Extract season number and final keywords from the query if any
     query_season = _extract_season_number(query_lower)
+    query_has_final = any(k in query_lower for k in ["final", "nihoya", "yakun", "oxirgi"])
     
     # Remove common conversational words in Uzbek, Russian, English
     common_stop_words = {
@@ -449,15 +452,39 @@ def _filter_search_results_by_query(query, results):
         
         # 1. Season matching check
         title_season = _extract_season_number(title_lower)
-        if query_season is not None:
-            if title_season is not None:
-                if title_season != query_season:
+        title_has_final = any(k in title_lower for k in ["final", "nihoya", "yakun", "oxirgi"])
+        
+        # Mathematical alignment: treat My Hero Academia Final as Season 8
+        is_hero_academy = any(k in title_lower for k in ["qahramon", "hero", "akademiya"])
+        if title_has_final and is_hero_academy:
+            title_season = 8
+            
+        # Map query season 8 to final status for My Hero Academia
+        effective_query_has_final = query_has_final
+        if query_season == 8 and is_hero_academy:
+            effective_query_has_final = True
+            
+        # If the query restricts the search to a specific season or Final:
+        if (query_season is not None) or effective_query_has_final:
+            # Rule A: If we are searching for Final, only allow titles that are Final
+            if effective_query_has_final:
+                if not title_has_final:
                     continue
+            # Rule B: If we are NOT searching for Final, exclude any titles that are Final
             else:
-                # If query season is not 1, we expect the title to either have a season or match exactly
-                if query_season != 1:
+                if title_has_final:
                     continue
                     
+            # Rule C: Season number check for non-final requests
+            if not effective_query_has_final and query_season is not None:
+                if title_season is not None:
+                    if title_season != query_season:
+                        continue
+                else:
+                    # If query season is not 1, we expect the title to either have a season or match exactly
+                    if query_season != 1:
+                        continue
+                        
         # 2. Check if the full query (without spaces) is inside the title (without spaces)
         if q_clean in t_clean or t_clean in q_clean:
             filtered.append(r)
@@ -500,7 +527,7 @@ def _filter_search_results_by_query(query, results):
     return filtered
 
 
-def _execute_ai_command(command, user_text, user_id=None, username=None, profile=None):
+def _execute_ai_command(command, user_text, user_id=None, username=None, profile=None, chat_history=None):
     intent = command.get("intent", "chat")
     emotion = command.get("emotion", "talking")
     reply = command.get("reply", "Nima deyishni ham bilmayman...").strip()
@@ -534,6 +561,33 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         limit = min(max(_safe_int(command.get("limit"), 3), 1), 10)
         offset = _safe_int(command.get("offset"), 0)
         
+        # Reinforce search query with season/final keywords from current message and chat history
+        query_lower = query.lower()
+        season_num = _extract_season_number(user_text)
+        if season_num is None:
+            for msg in reversed(chat_history or []):
+                if msg.get('role') in ['User', 'user']:
+                    season_num = _extract_season_number(msg.get('text', ''))
+                    if season_num is not None:
+                        break
+        
+        has_final = "final" in user_text.lower() or "8" in user_text.lower() or "oxirgi" in user_text.lower()
+        if not has_final:
+            for msg in reversed(chat_history or []):
+                if msg.get('role') in ['User', 'user']:
+                    prev_lower = msg.get('text', '').lower()
+                    if "final" in prev_lower or "8" in prev_lower or "oxirgi" in prev_lower:
+                        has_final = True
+                        break
+                        
+        if has_final:
+            if "final" not in query_lower:
+                query = f"{query} Final"
+        elif season_num is not None:
+            season_str = f"{season_num}-fasl"
+            if season_str not in query_lower and str(season_num) not in query_lower:
+                query = f"{query} {season_str}"
+                
         # Check if the user is asking about seasons count or completeness
         user_msg_lower = user_text.lower()
         asking_seasons = any(k in user_msg_lower for k in [
@@ -541,12 +595,14 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             "sezon", "sezn", "skolko", "polnost", "barcha", "qaysi"
         ])
         
-        # If the user specified a particular season number, they are NOT asking a general question
-        if _extract_season_number(user_text) is not None:
+        # If the user specified a particular season number or "final", they are NOT asking a general question
+        if _extract_season_number(user_text) is not None or "final" in user_msg_lower:
             asking_seasons = False
         
         if asking_seasons:
             limit = 20  # Show all unique seasons
+        elif (season_num is not None) or has_final:
+            limit = 1   # Set limit to 1 for specific season / final requests
             
         # Query 50 items to have a larger pool for filtering, so that fuzzy mismatches are correctly filtered out
         results = search_manga_database(query, limit=50, offset=0, anime_type=anime_type, exclude_keywords=exclude_keywords)
@@ -746,7 +802,7 @@ def api_send_message(request):
                 seconds_until_midnight = max(int((midnight - now_tz).total_seconds()), 1)
                 cache.set(user_daily_key, user_requests + 1, timeout=seconds_until_midnight)
         
-        ai_response = _execute_ai_command(command, user_text, user_id=user_id_int, username=username, profile=profile)
+        ai_response = _execute_ai_command(command, user_text, user_id=user_id_int, username=username, profile=profile, chat_history=chat_history)
 
         try:
             reply_data = json.loads(ai_response.content.decode('utf-8'))
