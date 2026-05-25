@@ -331,6 +331,64 @@ def _parse_ai_command(user_text, chat_history_text="", profile=None):
         print(f"DeepSeek API Error: {e}")
         return {"intent": "chat", "reply": "Miyam og'rib ketdi... *peshonasini ushlaydi*", "emotion": "face palm"}
 
+def _filter_search_results_by_query(query, results):
+    if not query or not results:
+        return []
+        
+    query_lower = query.lower().strip()
+    
+    # Remove common conversational words in Uzbek, Russian, English
+    common_stop_words = {
+        "bormi", "bormi?", "anime", "animeni", "kino", "serial", "shikoyat", "xabar", 
+        "uz", "uzb", "the", "a", "an", "of", "and", "or", "in", "on", "at", "to", "for",
+        "mening", "sening", "bizning", "ularning", "u", "bu", "shu", "o'sha"
+    }
+    
+    import re
+    # Extract query words
+    query_words = [w for w in re.split(r'\W+', query_lower) if len(w) > 1 and w not in common_stop_words]
+    
+    if not query_words:
+        # If no significant query words remain, try with all words
+        query_words = [w for w in re.split(r'\W+', query_lower) if len(w) > 0]
+        
+    if not query_words:
+        return []
+        
+    filtered = []
+    for r in results:
+        title_lower = r.get('title', '').lower()
+        
+        # 1. Check if the full query (without spaces) is inside the title (without spaces)
+        q_clean = query_lower.replace(" ", "")
+        t_clean = title_lower.replace(" ", "")
+        if q_clean in t_clean or t_clean in q_clean:
+            filtered.append(r)
+            continue
+            
+        # 2. Check if at least one of the significant query words matches a word in the title
+        title_words = [w for w in re.split(r'\W+', title_lower) if len(w) > 0]
+        
+        # Check for exact word matches or close matches
+        has_overlap = False
+        for qw in query_words:
+            # Check if qw matches any word in the title exactly
+            if qw in title_words:
+                has_overlap = True
+                break
+            # Also check if tw contains qw or tw starts with qw for prefix matching
+            for tw in title_words:
+                if len(qw) >= 3 and (qw in tw or tw in qw):
+                    has_overlap = True
+                    break
+            if has_overlap:
+                break
+                
+        if has_overlap:
+            filtered.append(r)
+            
+    return filtered
+
 
 def _execute_ai_command(command, user_text, user_id=None, username=None, profile=None):
     intent = command.get("intent", "chat")
@@ -366,15 +424,30 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         limit = min(max(_safe_int(command.get("limit"), 3), 1), 10)
         offset = _safe_int(command.get("offset"), 0)
         
-        results = search_manga_database(query, limit=limit, offset=offset, anime_type=anime_type, exclude_keywords=exclude_keywords)
+        # Query 50 items to have a larger pool for filtering, so that fuzzy mismatches are correctly filtered out
+        results = search_manga_database(query, limit=50, offset=0, anime_type=anime_type, exclude_keywords=exclude_keywords)
         
-        if not results:
+        # Apply custom word-overlap matching to filter out fallback/irrelevant results
+        filtered_results = _filter_search_results_by_query(query, results)
+        
+        # Paginate manually if offset/limit are specified
+        paginated_results = filtered_results[offset : offset + limit]
+        
+        if not paginated_results:
             if offset > 0 or exclude_keywords:
-                return _sumire_response(f"{reply}\n\n*(Arxivda bu bo'yicha boshqa anime qolmagan ko'rinadi...)*", "canthelp")
+                return _sumire_response(f"Kechirasiz, arxivda '{query}' bo'yicha boshqa anime qolmagan ko'rinadi... *elkasini qisadi*", "canthelp")
             else:
-                return _sumire_response(f"Arxivdan '{query}' nomli animeni topolmadim. Balki hali saytga yuklanmagandir. *elkasini qisadi*", "canthelp")
+                # Custom detailed response with alternative language suggestions as requested by the user
+                return _sumire_response(
+                    f"Kechirasiz, '{query}' nomli anime bizning arxivimizda topilmadi. 🌸\n\n"
+                    f"Balki u hali saytga yuklanmagandir yoki boshqa tilda yozilgandir. Qidiruv aniq ishlashi uchun, "
+                    f"iltimos, animening <b>inglizcha, ruscha</b> yoki <b>original yaponcha (romaji)</b> nomini yuborib ko'ring "
+                    f"(masalan: <i>Attack on Titan</i> yoki <i>Shingeki no Kyojin</i>). "
+                    f"Shunda uni aniqroq qidirib ko'raman! *senga qaraydi*",
+                    "canthelp"
+                )
             
-        anime_list = _format_search_results(results)
+        anime_list = _format_search_results(paginated_results)
         return _sumire_response(reply, emotion, anime_list=anime_list)
 
     if intent == "ticket":
