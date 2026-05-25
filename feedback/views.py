@@ -529,7 +529,23 @@ def api_send_message(request):
             user_daily_key = f"user_limit_ip_{user_ip}"
             history_key = f"chat_history_ip_{user_ip}"
 
-        user_requests = cache.get(user_daily_key, 0)
+        # Retrieve count BEFORE the current request from DatabaseCache
+        user_requests = cache.get(user_daily_key)
+        if user_requests is None:
+            user_requests = 0
+            
+            # Calculate remaining seconds until Tashkent midnight to reset automatically every day
+            import datetime
+            now_tz = timezone.localtime()
+            midnight = timezone.make_aware(
+                datetime.datetime.combine(now_tz.date() + datetime.timedelta(days=1), datetime.time.min)
+            )
+            seconds_until_midnight = max(int((midnight - now_tz).total_seconds()), 1)
+            
+            # Initialize with 1 request and correct TTL
+            cache.set(user_daily_key, 1, timeout=seconds_until_midnight)
+        else:
+            user_requests = int(user_requests)
         
         # Limit to 30 requests per day per user (IP/Telegram ID)
         if user_requests >= 30:
@@ -547,8 +563,19 @@ def api_send_message(request):
 
         command = _parse_ai_command(user_text, history_text, profile)
         
-        # Save request increment
-        cache.set(user_daily_key, user_requests + 1, timeout=86400)
+        # Increment request count without resetting the existing key's TTL
+        if user_requests > 0:
+            try:
+                cache.incr(user_daily_key)
+            except ValueError:
+                # Fallback if key evaporated between checks
+                import datetime
+                now_tz = timezone.localtime()
+                midnight = timezone.make_aware(
+                    datetime.datetime.combine(now_tz.date() + datetime.timedelta(days=1), datetime.time.min)
+                )
+                seconds_until_midnight = max(int((midnight - now_tz).total_seconds()), 1)
+                cache.set(user_daily_key, user_requests + 1, timeout=seconds_until_midnight)
         
         ai_response = _execute_ai_command(command, user_text, user_id=user_id_int, username=username, profile=profile)
 
