@@ -561,25 +561,30 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         limit = min(max(_safe_int(command.get("limit"), 3), 1), 10)
         offset = _safe_int(command.get("offset"), 0)
         
-        # Reinforce search query with season/final keywords from current message and chat history
+        # Reinforce search query with season/final keywords
         query_lower = query.lower()
         season_num = _extract_season_number(user_text)
-        if season_num is None:
-            for msg in reversed(chat_history or []):
-                if msg.get('role') in ['User', 'user']:
-                    season_num = _extract_season_number(msg.get('text', ''))
-                    if season_num is not None:
-                        break
-        
         has_final = "final" in user_text.lower() or "8" in user_text.lower() or "oxirgi" in user_text.lower()
-        if not has_final:
-            for msg in reversed(chat_history or []):
-                if msg.get('role') in ['User', 'user']:
-                    prev_lower = msg.get('text', '').lower()
-                    if "final" in prev_lower or "8" in prev_lower or "oxirgi" in prev_lower:
-                        has_final = True
-                        break
-                        
+        
+        # Check if the current message is a follow-up (does not contain an explicit new title)
+        current_query_explicit = _extract_broad_search_query(user_text, [])
+        is_follow_up = not current_query_explicit or len(current_query_explicit.strip()) < 3
+        
+        if is_follow_up:
+            if season_num is None:
+                for msg in reversed(chat_history or []):
+                    if msg.get('role') in ['User', 'user']:
+                        season_num = _extract_season_number(msg.get('text', ''))
+                        if season_num is not None:
+                            break
+            if not has_final:
+                for msg in reversed(chat_history or []):
+                    if msg.get('role') in ['User', 'user']:
+                        prev_lower = msg.get('text', '').lower()
+                        if "final" in prev_lower or "8" in prev_lower or "oxirgi" in prev_lower:
+                            has_final = True
+                            break
+                            
         if has_final:
             if "final" not in query_lower:
                 query = f"{query} Final"
@@ -654,14 +659,14 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                 seasons_text = "\n".join(seasons_text_list)
                 
                 reply = (
-                    f"🌸 <b>Ha, arxivimizda ushbu animening jami {len(unique_seasons)} ta fasli bor!</b>\n\n"
+                    f"<b>Ha, arxivimizda ushbu animening jami {len(unique_seasons)} ta fasli bor!</b>\n\n"
                     f"Barcha topilgan fasllar:\n{seasons_text}\n\n"
                     f"Qaysi faslini tomosha qilishni xohlaysiz? Qidiruv natijalaridan tanlang:"
                 )
                 # Show all unique seasons as buttons/anime_list
                 paginated_results = [r for label, r in unique_seasons]
             elif len(unique_seasons) == 1:
-                reply = f"🌸 Arxivimizda ushbu animening faqat 1 ta fasli mavjud! Uni hoziroq tomosha qilishingiz mumkin. *senga tikiladi*"
+                reply = f"Arxivimizda ushbu animening faqat 1 ta fasli mavjud! Uni hoziroq tomosha qilishingiz mumkin. *senga tikiladi*"
                 paginated_results = [unique_seasons[0][1]]
             else:
                 paginated_results = []
@@ -674,7 +679,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             else:
                 # Custom detailed response with alternative language suggestions as requested by the user
                 return _sumire_response(
-                    f"Kechirasiz, '{query}' nomli anime bizning arxivimizda topilmadi. 🌸\n\n"
+                    f"Kechirasiz, '{query}' nomli anime bizning arxivimizda topilmadi.\n\n"
                     f"Balki u hali saytga yuklanmagandir yoki boshqa tilda yozilgandir. Qidiruv aniq ishlashi uchun, "
                     f"iltimos, animening <b>inglizcha, ruscha</b> yoki <b>original yaponcha (romaji)</b> nomini yuborib ko'ring "
                     f"(masalan: <i>Attack on Titan</i> yoki <i>Shingeki no Kyojin</i>). "

@@ -156,7 +156,7 @@ if ADMIN_CHAT_ID:
                     await main_bot.send_message(
                         chat_id=application.user_id,
                         text=(
-                            f"🌸 <b>Sizning murojaatingiz yopildi!</b>\n"
+                            f"<b>Sizning murojaatingiz yopildi!</b>\n"
                             f"━━━━━━━━━━━━━━\n"
                             f"<b>Mavzu:</b> {application.subject}\n\n"
                             f"Bizga murojaat qilganingiz uchun rahmat! Murojaatingiz admin tomonidan muvaffaqiyatli yopildi. "
@@ -300,7 +300,7 @@ async def handle_user_pm(message: types.Message):
             [InlineKeyboardButton(text="✍️ Murojaat qoldirish", web_app=WebAppInfo(url=WEBAPP_URL_CACHE_BUSTER))]
         ])
         await message.answer(
-            "🌸 <b>Murojaat qoldirish yoki Sumire bilan gaplashish uchun pastdagi tugmani bosing:</b>\n\n"
+            "<b>Murojaat qoldirish yoki Sumire bilan gaplashish uchun pastdagi tugmani bosing:</b>\n\n"
             "<i>(Siz yozgan xabarlar faqat faol murojaatingiz bo'lsagina adminlarga yuboriladi!)</i>",
             reply_markup=markup,
             parse_mode="HTML"
