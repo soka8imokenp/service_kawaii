@@ -92,6 +92,7 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 5. TIZIM CHEKLOVLARI: Agar foydalanuvchi "eng ko'p qismli", "2024 yildagi" kabi tizim saralay olmaydigan savol bersa, intent: "chat", emotion: "canthelp" qil va "Arxiv tizimim faqat anime nomi yoki janri bo'yicha qidiradi. Qismlar soni yoki yil bo'yicha saralay olmayman." de.
 6. KAWAII PASS: "sotib olmoqchiman", "qanday olinadi", "pass narxi" -> intent: "purchase", emotion: "talking".
 7. TICKET (SHIKOYAT): "muammo", "xato", "ishlamayapti", "ochilmayapti", "pleyer ishlamayapti" -> intent: "ticket", emotion: "shocked". Aslo "batafsilroq tushuntiring" deb foydalanuvchidan qo'shimcha ma'lumot so'rama, chunki shikoyat xabari bilan ARIZA DARHOL YARATILADI va adminlarga yuboriladi! "Kutib turing" yoki "Kuting" so'zlarini javobda MUTLAQO ISHLATMA, chunki foydalanuvchi ekranda kutib o'tirmasligi kerak. Buning o'rniga arizani qabul qilib adminlarga yuborganingni va tez orada javob berishga harakat qilishlarini ayt (masalan: "Shikoyatni qabul qilib adminlarga yubordim. Tez orada javob berishga harakat qilishadi.").
+8. O'ZBEKCHA ANIME NOMALARI QOIDASI (MUSTAQIL QIDIRUV): Arxiv bazamizda animelar asosan o'zbekcha nomlari bilan saqlanadi. Shuning uchun, foydalanuvchi animeni qaysi tilda so'rashidan qat'iy nazar (inglizcha "Tower of God", yaponcha "Kami no tou", ruscha "Башня Бога"), sen "search_query" ga FAQAT shu animening O'zbekcha tarjima nomini yozishing kerak! Misollar: "Tower of God" / "Kami no tou" -> "Ma'bud minorasi"; "Demon Slayer" -> "Iblislar qotili"; "Attack on Titan" -> "Titanlar hujumi"; "Jujutsu Kaisen" -> "Afsuniy jang"; "My Hero Academia" -> "Mening qahramonlik akademiyam"; "Death Note" -> "O'lim daftari"; "Solo Leveling" -> "Solo Leveling".
 """
 
 
@@ -346,14 +347,31 @@ def _filter_search_results_by_query(query, results):
     
     import re
     # Extract query words
-    query_words = [w for w in re.split(r'\W+', query_lower) if len(w) > 1 and w not in common_stop_words]
+    # IGNORE 2-letter particles (like "no", "to", "in") if we have larger words in the query
+    raw_words = [w for w in re.split(r'\W+', query_lower) if len(w) > 0 and w not in common_stop_words]
+    has_large_words = any(len(w) > 2 for w in raw_words)
     
+    if has_large_words:
+        query_words = [w for w in raw_words if len(w) > 2]
+    else:
+        query_words = [w for w in raw_words if len(w) > 1]
+        
     if not query_words:
-        # If no significant query words remain, try with all words
         query_words = [w for w in re.split(r'\W+', query_lower) if len(w) > 0]
         
     if not query_words:
         return []
+        
+    # Dictionary of popular cross-language synonyms to allow matching even if search query wasn't translated
+    synonyms = {
+        "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "bashnya boga", "ma'bud", "minorasi"},
+        "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "klinok", "iblislar", "qotili"},
+        "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "ataka titanov", "titanlar", "hujumi"},
+        "afsuniy jang": {"jujutsu kaisen", "magicheskaya bitva", "afsuniy", "jang"},
+        "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "moya geroyskaya", "qahramonlik", "akademiyam"},
+        "o'lim daftari": {"death note", "tetrad smerti", "o'lim", "daftari"},
+        "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
+    }
         
     filtered = []
     for r in results:
@@ -366,7 +384,22 @@ def _filter_search_results_by_query(query, results):
             filtered.append(r)
             continue
             
-        # 2. Check if at least one of the significant query words matches a word in the title
+        # 2. Check popular synonyms fallback
+        matched_synonym = False
+        for uz_name, syn_set in synonyms.items():
+            if uz_name in title_lower:
+                for syn in syn_set:
+                    if syn in query_lower:
+                        matched_synonym = True
+                        break
+            if matched_synonym:
+                break
+                
+        if matched_synonym:
+            filtered.append(r)
+            continue
+            
+        # 3. Check if at least one of the significant query words matches a word in the title
         title_words = [w for w in re.split(r'\W+', title_lower) if len(w) > 0]
         
         # Check for exact word matches or close matches
