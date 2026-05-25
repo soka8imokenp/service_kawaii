@@ -92,7 +92,8 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 5. TIZIM CHEKLOVLARI: Agar foydalanuvchi "eng ko'p qismli", "2024 yildagi" kabi tizim saralay olmaydigan savol bersa, intent: "chat", emotion: "canthelp" qil va "Arxiv tizimim faqat anime nomi yoki janri bo'yicha qidiradi. Qismlar soni yoki yil bo'yicha saralay olmayman." de.
 6. KAWAII PASS: "sotib olmoqchiman", "qanday olinadi", "pass narxi" -> intent: "purchase", emotion: "talking".
 7. TICKET (SHIKOYAT): "muammo", "xato", "ishlamayapti", "ochilmayapti", "pleyer ishlamayapti" -> intent: "ticket", emotion: "shocked". Aslo "batafsilroq tushuntiring" deb foydalanuvchidan qo'shimcha ma'lumot so'rama, chunki shikoyat xabari bilan ARIZA DARHOL YARATILADI va adminlarga yuboriladi! "Kutib turing" yoki "Kuting" so'zlarini javobda MUTLAQO ISHLATMA, chunki foydalanuvchi ekranda kutib o'tirmasligi kerak. Buning o'rniga arizani qabul qilib adminlarga yuborganingni va tez orada javob berishga harakat qilishlarini ayt (masalan: "Shikoyatni qabul qilib adminlarga yubordim. Tez orada javob berishga harakat qilishadi.").
-8. O'ZBEKCHA ANIME NOMALARI QOIDASI (MUSTAQIL QIDIRUV): Arxiv bazamizda animelar asosan o'zbekcha nomlari bilan saqlanadi. Shuning uchun, foydalanuvchi animeni qaysi tilda so'rashidan qat'iy nazar (inglizcha "Tower of God", yaponcha "Kami no tou", ruscha "Башня Бога"), sen "search_query" ga FAQAT shu animening O'zbekcha tarjima nomini yozishing kerak! Misollar: "Tower of God" / "Kami no tou" -> "Ma'bud minorasi"; "Demon Slayer" -> "Iblislar qotili"; "Attack on Titan" -> "Titanlar hujumi"; "Jujutsu Kaisen" -> "Afsuniy jang"; "My Hero Academia" -> "Mening qahramonlik akademiyam"; "Death Note" -> "O'lim daftari"; "Solo Leveling" -> "Solo Leveling".
+8. O'ZBEKCHA ANIME NOMALARI VA SEZONLAR QOIDASI (MUSTAQIL QIDIRUV): Arxiv bazamizda animelar asosan o'zbekcha nomlari bilan saqlanadi. Foydalanuvchi qaysi tilda so'rashidan qat'iy nazar, "search_query" ga FAQAT shu animening O'zbekcha tarjima nomini yozishing kerak! Misollar: "Tower of God" -> "Ma'bud minorasi"; "Demon Slayer" -> "Iblislar qotili"; "Attack on Titan" -> "Titanlar hujumi"; "My Hero Academia" -> "Mening qahramonlik akademiyam".
+AGAR foydalanuvchi ma'lum bir faslni/mavsumni so'rasa (masalan: "6-fasl", "2-fasl"), sen "search_query" ga o'sha fasl nomini ham qo'shib yozishing shart! Misol: "akademiya 6-fasl" desa -> "Mening qahramonlik akademiyam 6-fasl".
 """
 
 
@@ -457,6 +458,16 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         limit = min(max(_safe_int(command.get("limit"), 3), 1), 10)
         offset = _safe_int(command.get("offset"), 0)
         
+        # Check if the user is asking about seasons count or completeness
+        user_msg_lower = user_text.lower()
+        asking_seasons = any(k in user_msg_lower for k in [
+            "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "fasllar", 
+            "sezon", "sezn", "skolko", "polnost", "barcha", "qaysi"
+        ])
+        
+        if asking_seasons:
+            limit = 10  # Increase limit to show all seasons at once
+            
         # Query 50 items to have a larger pool for filtering, so that fuzzy mismatches are correctly filtered out
         results = search_manga_database(query, limit=50, offset=0, anime_type=anime_type, exclude_keywords=exclude_keywords)
         
@@ -485,6 +496,35 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                     "canthelp"
                 )
             
+        # Generate dynamic response for seasons/completeness questions
+        if asking_seasons and filtered_results:
+            seasons_found = []
+            for r in filtered_results:
+                t = r.get('title', '')
+                import re
+                fasl_match = re.search(r'(\d+-fasl|final|fasl\s*\d+|ustaxona\s*jangi|shahzodaning\s*qaytishi)', t.lower())
+                if fasl_match:
+                    seasons_found.append(t)
+                else:
+                    seasons_found.append(f"{t} (1-fasl)")
+            
+            if len(seasons_found) > 1:
+                # Remove duplicates while keeping ordering
+                unique_seasons = []
+                seen_titles = set()
+                for s in seasons_found:
+                    clean_s = s.split(" (")[0].strip()
+                    if clean_s not in seen_titles:
+                        seen_titles.add(clean_s)
+                        unique_seasons.append(s)
+                
+                seasons_text = "\n".join([f"• {s}" for s in unique_seasons])
+                reply = (
+                    f"🌸 <b>Ha, arxivimizda ushbu animening jami {len(unique_seasons)} ta fasli mavjud!</b>\n\n"
+                    f"Barcha topilgan fasllar:\n{seasons_text}\n\n"
+                    f"Qaysi faslini tomosha qilishni xohlaysiz? Havolalardan birini tanlang:"
+                )
+
         anime_list = _format_search_results(paginated_results)
         return _sumire_response(reply, emotion, anime_list=anime_list)
 
