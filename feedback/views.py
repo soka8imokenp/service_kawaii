@@ -333,11 +333,40 @@ def _parse_ai_command(user_text, chat_history_text="", profile=None):
         print(f"DeepSeek API Error: {e}")
         return {"intent": "chat", "reply": "Miyam og'rib ketdi... *peshonasini ushlaydi*", "emotion": "face palm"}
 
+def _extract_season_number(text):
+    if not text:
+        return None
+    text_lower = text.lower()
+    
+    # Matches patterns like: 6-fasl, 6 fasl, 6-sezon, 6 sezon, 6-mavsum, 6 mavsum, season 6, 6 season, fasl 6, sezon 6, 6
+    match = re.search(
+        r'(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона))|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)\s*-?\s*(\d+)))',
+        text_lower
+    )
+    if match:
+        return int(match.group(1) or match.group(2))
+        
+    # Check for any isolated digit between 1 and 20 that is not a year (1900-2100)
+    digits = re.findall(r'\b\d+\b', text_lower)
+    for d in digits:
+        val = int(d)
+        if 1 <= val <= 20:
+            if not (1900 <= val <= 2100):
+                return val
+    return None
+
+
 def _filter_search_results_by_query(query, results):
     if not query or not results:
         return []
         
     query_lower = query.lower().strip()
+    
+    # Clean check
+    q_clean = query_lower.replace(" ", "")
+    
+    # Extract season number from the query if any
+    query_season = _extract_season_number(query_lower)
     
     # Remove common conversational words in Uzbek, Russian, English
     common_stop_words = {
@@ -353,9 +382,9 @@ def _filter_search_results_by_query(query, results):
     has_large_words = any(len(w) > 2 for w in raw_words)
     
     if has_large_words:
-        query_words = [w for w in raw_words if len(w) > 2]
+        query_words = [w for w in raw_words if len(w) > 2 or w.isdigit()]
     else:
-        query_words = [w for w in raw_words if len(w) > 1]
+        query_words = [w for w in raw_words if len(w) > 1 or w.isdigit()]
         
     if not query_words:
         query_words = [w for w in re.split(r'\W+', query_lower) if len(w) > 0]
@@ -377,15 +406,25 @@ def _filter_search_results_by_query(query, results):
     filtered = []
     for r in results:
         title_lower = r.get('title', '').lower()
-        
-        # 1. Check if the full query (without spaces) is inside the title (without spaces)
-        q_clean = query_lower.replace(" ", "")
         t_clean = title_lower.replace(" ", "")
+        
+        # 1. Season matching check
+        title_season = _extract_season_number(title_lower)
+        if query_season is not None:
+            if title_season is not None:
+                if title_season != query_season:
+                    continue
+            else:
+                # If query season is not 1, we expect the title to either have a season or match exactly
+                if query_season != 1:
+                    continue
+                    
+        # 2. Check if the full query (without spaces) is inside the title (without spaces)
         if q_clean in t_clean or t_clean in q_clean:
             filtered.append(r)
             continue
             
-        # 2. Check popular synonyms fallback
+        # 3. Check popular synonyms fallback
         matched_synonym = False
         for uz_name, syn_set in synonyms.items():
             if uz_name in title_lower:
@@ -400,25 +439,23 @@ def _filter_search_results_by_query(query, results):
             filtered.append(r)
             continue
             
-        # 3. Check if at least one of the significant query words matches a word in the title
+        # 4. Check word-overlap with min(2, len(query_words)) threshold
         title_words = [w for w in re.split(r'\W+', title_lower) if len(w) > 0]
-        
-        # Check for exact word matches or close matches
-        has_overlap = False
+        matches_count = 0
         for qw in query_words:
-            # Check if qw matches any word in the title exactly
             if qw in title_words:
-                has_overlap = True
-                break
-            # Also check if tw contains qw or tw starts with qw for prefix matching
+                matches_count += 1
+                continue
+            matched_fuzzy = False
             for tw in title_words:
-                if len(qw) >= 3 and (qw in tw or tw in qw):
-                    has_overlap = True
+                if len(qw) >= 3 and len(tw) >= 3 and (qw in tw or tw in qw):
+                    matched_fuzzy = True
                     break
-            if has_overlap:
-                break
+            if matched_fuzzy:
+                matches_count += 1
                 
-        if has_overlap:
+        required_matches = min(2, len(query_words))
+        if matches_count >= required_matches:
             filtered.append(r)
             
     return filtered
@@ -465,8 +502,12 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             "sezon", "sezn", "skolko", "polnost", "barcha", "qaysi"
         ])
         
+        # If the user specified a particular season number, they are NOT asking a general question
+        if _extract_season_number(user_text) is not None:
+            asking_seasons = False
+        
         if asking_seasons:
-            limit = 10  # Increase limit to show all seasons at once
+            limit = 20  # Show all unique seasons
             
         # Query 50 items to have a larger pool for filtering, so that fuzzy mismatches are correctly filtered out
         results = search_manga_database(query, limit=50, offset=0, anime_type=anime_type, exclude_keywords=exclude_keywords)
@@ -479,8 +520,58 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             results_any = search_manga_database(query, limit=50, offset=0, anime_type="", exclude_keywords=exclude_keywords)
             filtered_results = _filter_search_results_by_query(query, results_any)
             
-        # Paginate manually if offset/limit are specified
-        paginated_results = filtered_results[offset : offset + limit]
+        # Paginate manually if offset/limit are specified (unless we are showing all unique seasons)
+        if asking_seasons and filtered_results:
+            # Group results by season number to count accurately and list in order
+            seasons_by_num = {}
+            implicit_season_1 = []
+            
+            for r in filtered_results:
+                t = r.get('title', '')
+                t_lower = t.lower()
+                is_final = any(k in t_lower for k in ["final", "nihoya", "yakun"])
+                s_num = _extract_season_number(t)
+                
+                if is_final:
+                    seasons_by_num['final'] = r
+                elif s_num is not None:
+                    seasons_by_num[s_num] = r
+                else:
+                    implicit_season_1.append(r)
+            
+            if 1 not in seasons_by_num and implicit_season_1:
+                seasons_by_num[1] = implicit_season_1[0]
+                
+            unique_seasons = []
+            for s in sorted([k for k in seasons_by_num.keys() if isinstance(k, int)]):
+                unique_seasons.append((s, seasons_by_num[s]))
+            if 'final' in seasons_by_num:
+                unique_seasons.append(('Final', seasons_by_num['final']))
+                
+            if len(unique_seasons) > 1:
+                seasons_text_list = []
+                for label, r in unique_seasons:
+                    title = r.get('title', '')
+                    if isinstance(label, int):
+                        seasons_text_list.append(f"• {label}-fasl: {title}")
+                    else:
+                        seasons_text_list.append(f"• Final: {title}")
+                seasons_text = "\n".join(seasons_text_list)
+                
+                reply = (
+                    f"🌸 <b>Ha, arxivimizda ushbu animening jami {len(unique_seasons)} ta fasli bor!</b>\n\n"
+                    f"Barcha topilgan fasllar:\n{seasons_text}\n\n"
+                    f"Qaysi faslini tomosha qilishni xohlaysiz? Qidiruv natijalaridan tanlang:"
+                )
+                # Show all unique seasons as buttons/anime_list
+                paginated_results = [r for label, r in unique_seasons]
+            elif len(unique_seasons) == 1:
+                reply = f"🌸 Arxivimizda ushbu animening faqat 1 ta fasli mavjud! Uni hoziroq tomosha qilishingiz mumkin. *senga tikiladi*"
+                paginated_results = [unique_seasons[0][1]]
+            else:
+                paginated_results = []
+        else:
+            paginated_results = filtered_results[offset : offset + limit]
         
         if not paginated_results:
             if offset > 0 or exclude_keywords:
@@ -494,35 +585,6 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                     f"(masalan: <i>Attack on Titan</i> yoki <i>Shingeki no Kyojin</i>). "
                     f"Shunda uni aniqroq qidirib ko'raman! *senga qaraydi*",
                     "canthelp"
-                )
-            
-        # Generate dynamic response for seasons/completeness questions
-        if asking_seasons and filtered_results:
-            seasons_found = []
-            for r in filtered_results:
-                t = r.get('title', '')
-                import re
-                fasl_match = re.search(r'(\d+-fasl|final|fasl\s*\d+|ustaxona\s*jangi|shahzodaning\s*qaytishi)', t.lower())
-                if fasl_match:
-                    seasons_found.append(t)
-                else:
-                    seasons_found.append(f"{t} (1-fasl)")
-            
-            if len(seasons_found) > 1:
-                # Remove duplicates while keeping ordering
-                unique_seasons = []
-                seen_titles = set()
-                for s in seasons_found:
-                    clean_s = s.split(" (")[0].strip()
-                    if clean_s not in seen_titles:
-                        seen_titles.add(clean_s)
-                        unique_seasons.append(s)
-                
-                seasons_text = "\n".join([f"• {s}" for s in unique_seasons])
-                reply = (
-                    f"🌸 <b>Ha, arxivimizda ushbu animening jami {len(unique_seasons)} ta fasli mavjud!</b>\n\n"
-                    f"Barcha topilgan fasllar:\n{seasons_text}\n\n"
-                    f"Qaysi faslini tomosha qilishni xohlaysiz? Havolalardan birini tanlang:"
                 )
 
         anime_list = _format_search_results(paginated_results)
