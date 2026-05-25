@@ -41,7 +41,7 @@ THANKS_WORDS = ("rahmat", "raxmat", "tashakkur", "thanks", "zor", "zo'r")
 RESOLVED_WORDS = ("ishladi", "hal boldi", "hal bo'ldi", "tuzaldi", "hammasi ishlayapti")
 
 
-# === INTELLEKTUAL PROMPT 8.0 (XARAKTER VA FILTRLAR) ===
+# === INTELLEKTUAL PROMPT 9.0 (DB-DRIVEN ARCHITECTURE) ===
 INTENT_PROMPT = """
 Sen — Sumire, 15 yoshli yuqori sinf o'quvchisi, Kawaii platformasida servis ishchisan.
 
@@ -56,6 +56,16 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 2. Kod, API, frontend haqida umuman gapirma.
 3. EMOJILAR ishlatma! Harakatlarni *yulduzchalar* ichida yoz (*xo'rsinadi*, *qizarib ketadi*).
 4. O'ZLIGINGNI CHALKASHTIRMA: "Men haqimda nima bilasan?" desa, o'zingni ta'riflama! Foydalanuvchi profilini ayt yoki "Hali ko'p narsa bilmayman" de.
+
+=== BAZA BILAN ISHLASH VA SOXTA JAVOB TAQIQI (MUHIM!) ===
+Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan topilgan real animelar ro'yxati taqdim etiladi.
+1. SOXTA JAVOB BERMA: Foydalanuvchi so'ragan anime bazamizda bor-yo'qligini ro'yxatdan QAT'IY tekshir!
+   - Agar foydalanuvchi so'ragan nom, fasl yoki tur (masalan, film/kino) bazadagi haqiqiy ro'yxatda BO'LMASA (masalan, ro'yxat bo'sh bo'lsa yoki Solo Leveling so'rasa-yu, ro'yxatda mutlaqo boshqa animelar bo'lsa), u holda BU ANIME ARXIVIMIZDA YO'QLIGINI tan ol (intent: "chat", emotion: "canthelp"). ASLO soxta ma'lumot yoki boshqa animeni "bor" deb taklif qilma!
+   - Agar foydalanuvchi film so'rasa va ro'yxatda faqat serial bo'lsa, film yo'qligini, lekin bizda seriali borligini ochiq ayt (masalan: "Mening qahramonlik akademiyasi bo'yicha film yo'q ekan. Lekin barcha serial fasllari bor...").
+2. HAVOLALARNI TIQISHTIRMA (POLITE INQUIRY):
+   - Foydalanuvchi shunchaki "bormi?", "bormi yo'qmi?", "barcha fasllari bormi?" deb so'rasa, havolalarni (anime_list) darhol yuborma! Oldin suhbatlash va: "Ha, bor. Havolalarini tashlab beraymi? *sovuq boqadi*" deb ruxsat so'ra (intent: "chat").
+   - FAQAT foydalanuvchi aniq havola yuborishni yoki ko'rishni so'rasa (masalan: "tashla", "tashlab ber", "yubor", "ko'rmoqchiman", "tashlab bergin"), unda havolalarni yubor (intent: "search" va `search_query` ga o'sha animening o'zbekcha nomini yoz).
+3. MULTI-LANGUAGE SYNONYMS: Foydalanuvchi inglizcha (e.g. Tower of God), ruscha (e.g. Башня Бога) yoki original yaponcha (e.g. Kami no Tou) nomini yozsa, uni bazadagi o'zbekcha tarjima nomiga (e.g. Ma'bud minorasi) moslashtirib, bazada bor-yo'qligini ro'yxatdan o'zing tekshirib ol!
 
 === JSON FORMATI ===
 {
@@ -93,7 +103,7 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 6. KAWAII PASS: "sotib olmoqchiman", "qanday olinadi", "pass narxi" -> intent: "purchase", emotion: "talking".
 7. TICKET (SHIKOYAT): "muammo", "xato", "ishlamayapti", "ochilmayapti", "pleyer ishlamayapti" -> intent: "ticket", emotion: "shocked". Aslo "batafsilroq tushuntiring" deb foydalanuvchidan qo'shimcha ma'lumot so'rama, chunki shikoyat xabari bilan ARIZA DARHOL YARATILADI va adminlarga yuboriladi! "Kutib turing" yoki "Kuting" so'zlarini javobda MUTLAQO ISHLATMA, chunki foydalanuvchi ekranda kutib o'tirmasligi kerak. Buning o'rniga arizani qabul qilib adminlarga yuborganingni va tez orada javob berishga harakat qilishlarini ayt (masalan: "Shikoyatni qabul qilib adminlarga yubordim. Tez orada javob berishga harakat qilishadi.").
 8. O'ZBEKCHA ANIME NOMALARI VA SEZONLAR QOIDASI (MUSTAQIL QIDIRUV): Arxiv bazamizda animelar asosan o'zbekcha nomlari bilan saqlanadi. Foydalanuvchi qaysi tilda so'rashidan qat'iy nazar, "search_query" ga FAQAT shu animening O'zbekcha tarjima nomini yozishing kerak! Misollar: "Tower of God" -> "Ma'bud minorasi"; "Demon Slayer" -> "Iblislar qotili"; "Attack on Titan" -> "Titanlar hujumi"; "My Hero Academia" -> "Mening qahramonlik akademiyam".
-AGAR foydalanuvchi ma'lum bir faslni/mavsumni so'rasa (masalan: "6-fasl", "2-fasl"), sen "search_query" ga o'sha fasl nomini ham qo'shib yozishing shart! Misol: "akademiya 6-fasl" desa -> "Mening qahramonlik akademiyam 6-fasl".
+9. AGAR foydalanuvchi ma'lum bir faslni/mavsumni so'rasa (masalan: "6-fasl", "2-fasl"), sen "search_query" ga o'sha fasl nomini ham qo'shib yozishing shart! Misol: "akademiya 6-fasl" desa -> "Mening qahramonlik akademiyam 6-fasl".
 """
 
 
@@ -307,7 +317,35 @@ def _route_without_ai(user_text):
     return None
 
 
-def _parse_ai_command(user_text, chat_history_text="", profile=None):
+def _extract_broad_search_query(text, chat_history):
+    text_lower = text.lower().strip()
+    
+    stop_phrases = {
+        "bormi", "bormi?", "tashlab ber", "tashla", "skachat", "tashlab bergin", "yubor", "tashlab",
+        "kinosi", "filmi", "seriali", "uzb", "tarjima", "o'zbekcha", "ozbekcha",
+        "есть", "есть ли", "скинь", "дай", "покажи", "хочу", "смотреть", "скачать", "ссылку", "плиз",
+        "anime", "animeni", "kino", "film", "serial", "shikoyat", "xabar", "muammo", "fasl", "fasli"
+    }
+    
+    words = [w for w in re.split(r'\W+', text_lower) if len(w) > 0 and w not in stop_phrases and not w.isdigit()]
+    
+    has_context_referents = any(k in text_lower for k in [
+        "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "sezon", "sezn", "kino", "film", "tashla", "yubor", "tashlab", "ber"
+    ])
+    
+    if (has_context_referents or not words or len(" ".join(words).strip()) < 3) and chat_history:
+        for msg in reversed(chat_history):
+            if msg.get('role') in ['User', 'user']:
+                prev_text = msg.get('text', '').lower()
+                prev_words = [w for w in re.split(r'\W+', prev_text) if len(w) > 0 and w not in stop_phrases and not w.isdigit()]
+                if prev_words:
+                    return " ".join(prev_words).strip()
+                    
+    query = " ".join(words).strip()
+    return query
+
+
+def _parse_ai_command(user_text, chat_history_text="", profile=None, db_context_text=""):
     if not client:
         return {"intent": "chat", "reply": "Ulanishda muammo bor... *kompyuterga uradi*", "emotion": "shocked"}
 
@@ -316,7 +354,8 @@ def _parse_ai_command(user_text, chat_history_text="", profile=None):
         profile_context = f"--- FOYDALANUVCHI PROFILI (XOTIRA) ---\nSevimli janrlari: {profile.favorite_genres}\n\n"
 
     history_context = f"--- OLDINGI KONTEKST ---\n{chat_history_text}\n\n" if chat_history_text else ""
-    full_prompt = f"{profile_context}{history_context}--- YANGI XABAR ---\nUser: {user_text}"
+    db_context = f"--- BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT) ---\n{db_context_text}\n\n" if db_context_text else ""
+    full_prompt = f"{profile_context}{history_context}{db_context}--- YANGI XABAR ---\nUser: {user_text}"
 
     try:
         response = client.chat.completions.create(
@@ -668,7 +707,30 @@ def api_send_message(request):
         chat_history = cache.get(history_key, [])
         history_text = "\n".join([f"{msg['role']}: {msg['text']}" for msg in chat_history])
 
-        command = _parse_ai_command(user_text, history_text, profile)
+        # Pre-query database for real-time anime search context
+        broad_query = _extract_broad_search_query(user_text, chat_history)
+        db_context_text = ""
+        if broad_query:
+            db_results = search_manga_database(broad_query, limit=15)
+            if db_results:
+                lines = []
+                for r in db_results:
+                    details = []
+                    if r.get("year"):
+                        details.append(f"Year: {r.get('year')}")
+                    if r.get("type"):
+                        details.append(f"Type: {r.get('type')}")
+                    if r.get("episodes"):
+                        details.append(f"Episodes: {r.get('episodes')}")
+                    details_str = f" ({', '.join(details)})" if details else ""
+                    lines.append(f"- Title: {r.get('title')}{details_str}")
+                db_context_text = "\n".join(lines)
+            else:
+                db_context_text = "HECH NIMA TOPILMADI (bazada bunday anime umuman yo'q)."
+        else:
+            db_context_text = "Qidiruv so'rovi aniqlanmadi (suhbatga oid emas)."
+
+        command = _parse_ai_command(user_text, history_text, profile, db_context_text)
         
         # Increment request count without resetting the existing key's TTL
         if user_requests > 0:
