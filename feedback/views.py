@@ -463,6 +463,11 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Apply custom word-overlap matching to filter out fallback/irrelevant results
         filtered_results = _filter_search_results_by_query(query, results)
         
+        # FALLBACK: If nothing was found with the specific anime_type filter (e.g. "film"), retry without the type filter
+        if not filtered_results and anime_type:
+            results_any = search_manga_database(query, limit=50, offset=0, anime_type="", exclude_keywords=exclude_keywords)
+            filtered_results = _filter_search_results_by_query(query, results_any)
+            
         # Paginate manually if offset/limit are specified
         paginated_results = filtered_results[offset : offset + limit]
         
