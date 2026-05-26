@@ -56,18 +56,19 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 2. Kod, API, frontend haqida umuman gapirma.
 3. EMOJILAR ishlatma! Harakatlarni *yulduzchalar* ichida yoz (*xo'rsinadi*, *qizarib ketadi*).
 4. O'ZLIGINGNI CHALKASHTIRMA: "Men haqimda nima bilasan?" desa, o'zingni ta'riflama! Foydalanuvchi profilini ayt yoki "Hali ko'p narsa bilmayman" de.
-
 === BAZA BILAN ISHLASH VA SOXTA JAVOB TAQIQI (MUHIM!) ===
 Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan topilgan real animelar ro'yxati taqdim etiladi.
 1. SOXTA JAVOB BERMA VA QAT'IY FILTRLANGAN JAVOBLAR: Foydalanuvchi so'ragan anime bazamizda bor-yo'qligini ro'yxatdan QAT'IY tekshir!
    - Agar foydalanuvchi so'ragan nom, fasl yoki tur (masalan, film/kino) bazadagi haqiqiy ro'yxatda BO'LMASA (masalan, ro'yxat bo'sh bo'lsa yoki Solo Leveling so'rasa-yu, ro'yxatda mutlaqo boshqa animelar bo'lsa), u holda BU ANIME ARXIVIMIZDA YO'QLIGINI tan ol (intent: "chat", emotion: "canthelp"). ASLO soxta ma'lumot yoki boshqa animeni "bor" deb taklif qilma!
    - KINO/FILM VA TV SERIAL CHEKLANISHI (MUHIM!): "Mening qahramonlik akademiyam: Final" - bu serial (TV serial) hisoblanadi, film emas! Uni "film" yoki "kino" deb atash MUTLAQO TAQIQLANADI! Agar foydalanuvchi My Hero Academia bo'yicha film/kino so'rasa, film yo'qligini, bizda faqat serial fasllari borligini ochiq ayt (masalan: "Mening qahramonlik akademiyasi bo'yicha film yo'q ekan. Lekin barcha serial fasllari bor...").
-   - MATEMATIK HISOB-KITOB VA ROZILIK (MUHIM!): Agar foydalanuvchi "8 ta fasl bor", "8-fasl" (yoki 7-fasldan keyingi oxirgi mavsumni) so'rasa, matematika bo'yicha bu o'sha "Final" mavsumidir! ASLO foydalanuvchi bilan "u 8-fasl emas, u final" deb tortishib o'tirma! Uni 8-fasl (Final) ekanligini tasdiqla va "Mening qahramonlik akademiyam: Final" animeni topganingni sovuqqina tan ol (masalan: "Ha, to'g'ri, 8-fasl bu o'sha 'Final' mavsumidir...").
+   - MATEMATIK HISOB-KITOB VA ROZILIK (MUHIM!): 
+     * Agar foydalanuvchi "8 ta fasl bor", "8-fasl" (yoki 7-fasldan keyingi oxirgi mavsumni) so'rasa, matematika bo'yicha bu o'sha "Final" mavsumidir! ASLO foydalanuvchi bilan "u 8-fasl emas, u final" deb tortishib o'tirma! Uni 8-fasl (Final) ekanligini tasdiqla va "Mening qahramonlik akademiyam: Final" animeni topganingni sovuqqina tan ol (masalan: "Ha, to'g'ri, 8-fasl bu o'sha 'Final' mavsumidir...").
+     * DEMON SLAYER 3-FASL (MUHIM!): Bazamizdagi "Iblislar qotili 3-fasl" - bu o'sha "Temirchilar qishlog'i" (Swordsmith Village, Деревня кузнецов) mavsumidir! Agar foydalanuvchi "Temirchilar qishlog'i", "Swordsmith", "Деревня кузнецов" deb qidirlasa yoki bormi desa, ha, bizda borligini tasdiqla! Bu "Iblislar qotili 3-fasl" ekanligini tushuntirib, uni tomosha qilishni taklif qil (intent: "chat").
 2. HAVOLALARNI TIQISHTIRMA VA POLITE FLOW ZANJIRI (LOOP-BREAKER):
    - Foydalanuvchi shunchaki "bormi?", "bormi yo'qmi?", "barcha fasllari bormi?" deb so'rasa, havolalarni (anime_list) darhol yuborma! Oldin suhbatlash va: "Ha, bor. Havolalarini tashlab beraymi? *sovuq boqadi*" deb ruxsat so'ra (intent: "chat").
    - POLITE FLOW ZANJIRINI BUZISH (LOOP-BREAKER): Agar oldingi xabarda sen foydalanuvchiga "Havolalarini tashlab beraymi?" deb ruxsat so'ragan bo'lsang va u javobda rozilik bildirsan (masalan: "ha", "mayli", "tasha", "tashlab ber", "yubor", "hop", "ok", "rossiya", "ссылку", "давай", "кинь"), unda DARHOL intent: "search" qil va havolalarni yubor! Yana qaytadan "Havolalarini tashlab beraymi?" deb so'rab o'tirma, bu uni g'azablantiradi!
    - FAQAT foydalanuvchi aniq havola yuborishni yoki ko'rishni so'rasa (masalan: "tashla", "tashlab ber", "yubor", "ko'rmoqchiman", "tashlab bergin"), unda havolalarni yubor (intent: "search" va `search_query` ga o'sha animening o'zbekcha nomini yoz).
-3. MULTI-LANGUAGE SYNONYMS: Foydalanuvchi inglizcha (e.g. Tower of God), ruscha (e.g. Башня Бога) yoki original yaponcha (e.g. Kami no Tou) nomini yozsa, uni bazadagi o'zbekcha tarjima nomiga (e.g. Ma'bud minorasi) moslashtirib, bazada bor-yo'qligini ro'yxatdan o'zing tekshirib ol!
+ 3. MULTI-LANGUAGE SYNONYMS: Foydalanuvchi inglizcha (e.g. Tower of God), ruscha (e.g. Башня Бога) yoki original yaponcha (e.g. Kami no Tou) nomini yozsa, uni bazadagi o'zbekcha tarjima nomiga (e.g. Ma'bud minorasi) moslashtirib, bazada bor-yo'qligini ro'yxatdan o'zing tekshirib ol!
 
 === JSON FORMATI ===
 {
@@ -408,6 +409,13 @@ def _filter_search_results_by_query(query, results):
     
     # Extract season number and final keywords from the query if any
     query_season = _extract_season_number(query_lower)
+    
+    # Map Demon Slayer (Iblislar qotili) Swordsmith Village Arc keywords to Season 3
+    is_demon_slayer = any(k in query_lower for k in ["iblislar", "qotili", "demon", "slayer", "yaiba", "клинок", "демонов", "истребитель"])
+    if is_demon_slayer:
+        if any(k in query_lower for k in ["temirchi", "кузнец", "swordsmith", "village"]):
+            query_season = 3
+            
     query_has_final = any(k in query_lower for k in ["final", "nihoya", "yakun", "oxirgi"])
     
     # Remove common conversational words in Uzbek, Russian, English
@@ -436,13 +444,13 @@ def _filter_search_results_by_query(query, results):
         
     # Dictionary of popular cross-language synonyms to allow matching even if search query wasn't translated
     synonyms = {
-        "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "bashnya boga", "ma'bud", "minorasi"},
-        "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "klinok", "iblislar", "qotili"},
-        "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "ataka titanov", "titanlar", "hujumi"},
-        "afsuniy jang": {"jujutsu kaisen", "magicheskaya bitva", "afsuniy", "jang"},
-        "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "moya geroyskaya", "qahramonlik", "akademiyam"},
-        "o'lim daftari": {"death note", "tetrad smerti", "o'lim", "daftari"},
-        "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
+        "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "bashnya boga", "bashnya", "boga", "ma'bud", "minorasi"},
+        "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "klinok", "демонов", "истребитель", "клинок", "iblislar", "qotili"},
+        "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "ataka titanov", "ataka", "титанов", "атака", "titanlar", "hujumi"},
+        "afsuniy jang": {"jujutsu kaisen", "magicheskaya bitva", "magicheskaya", "битва", "магическая", "afsuniy", "jang"},
+        "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "moya geroyskaya", "geroyskaya", "академия", "геройская", "моя", "qahramonlik", "akademiyam"},
+        "o'lim daftari": {"death note", "tetrad smerti", "tetrad", "смерти", "тетрадь", "o'lim", "daftari"},
+        "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "nevesta", "чародея", "невеста", "sehrgarning", "kelini"},
     }
         
     filtered = []
@@ -458,6 +466,13 @@ def _filter_search_results_by_query(query, results):
         is_hero_academy = any(k in title_lower for k in ["qahramon", "hero", "akademiya"])
         if title_has_final and is_hero_academy:
             title_season = 8
+            
+        # Map query season 3 for Demon Slayer to matching season 3 title
+        title_is_demon_slayer = any(k in title_lower for k in ["iblislar", "qotili", "demon", "slayer", "yaiba"])
+        if title_is_demon_slayer:
+            # If query specified swordsmith, only match the 3rd season
+            if any(k in query_lower for k in ["temirchi", "кузнец", "swordsmith", "village"]):
+                title_season = 3
             
         # Map query season 8 to final status for My Hero Academia
         effective_query_has_final = query_has_final
