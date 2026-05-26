@@ -467,12 +467,7 @@ def _filter_search_results_by_query(query, results):
         if title_has_final and is_hero_academy:
             title_season = 8
             
-        # Map query season 3 for Demon Slayer to matching season 3 title
-        title_is_demon_slayer = any(k in title_lower for k in ["iblislar", "qotili", "demon", "slayer", "yaiba"])
-        if title_is_demon_slayer:
-            # If query specified swordsmith, only match the 3rd season
-            if any(k in query_lower for k in ["temirchi", "кузнец", "swordsmith", "village"]):
-                title_season = 3
+
             
         # Map query season 8 to final status for My Hero Academia
         effective_query_has_final = query_has_final
