@@ -626,6 +626,55 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             
         # Paginate manually if offset/limit are specified (unless we are showing all unique seasons)
         if asking_seasons and filtered_results:
+            # Filter filtered_results to only include titles that actually match the query name to prevent third-party hijacking
+            q_words = [w for w in re.split(r'\W+', query.lower()) if len(w) >= 3 and w not in ["fasl", "sezon", "season", "part", "mavsum"]]
+            q_synonyms = {
+                "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "ma'bud", "minorasi"},
+                "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "iblislar", "qotili"},
+                "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "titanlar", "hujumi"},
+                "afsuniy jang": {"jujutsu kaisen", "afsuniy", "jang"},
+                "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "qahramonlik", "akademiyam"},
+                "o'lim daftari": {"death note", "o'lim", "daftari"},
+                "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
+            }
+            
+            cleaned_filtered_results = []
+            for r in filtered_results:
+                t = r.get('title', '')
+                t_lower = t.lower()
+                
+                # Check exact or substring
+                if query.lower() in t_lower or t_lower in query.lower():
+                    cleaned_filtered_results.append(r)
+                    continue
+                    
+                # Check synonyms
+                matched_syn = False
+                for uz_name, syn_set in q_synonyms.items():
+                    if uz_name in t_lower:
+                        for syn in syn_set:
+                            if syn in query.lower():
+                                matched_syn = True
+                                break
+                    if matched_syn:
+                        break
+                if matched_syn:
+                    cleaned_filtered_results.append(r)
+                    continue
+                    
+                # Check word overlap
+                t_words = [w for w in re.split(r'\W+', t_lower) if len(w) >= 3]
+                overlap_count = 0
+                for qw in q_words:
+                    if qw in t_words or any(qw in tw or tw in qw for tw in t_words):
+                        overlap_count += 1
+                        
+                required_overlap = 1 if len(q_words) <= 2 else 2
+                if overlap_count >= required_overlap:
+                    cleaned_filtered_results.append(r)
+                    
+            filtered_results = cleaned_filtered_results
+            
             # Group results by season number to count accurately and list in order
             seasons_by_num = {}
             implicit_season_1 = []
