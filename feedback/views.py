@@ -59,14 +59,15 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 === BAZA BILAN ISHLASH VA SOXTA JAVOB TAQIQI (MUHIM!) ===
 Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan topilgan real animelar ro'yxati taqdim etiladi.
 1. SOXTA JAVOB BERMA VA QAT'IY FILTRLANGAN JAVOBLAR: Foydalanuvchi so'ragan anime bazamizda bor-yo'qligini ro'yxatdan QAT'IY tekshir!
-   - Agar foydalanuvchi so'ragan nom, fasl yoki tur (masalan, film/kino) bazadagi haqiqiy ro'yxatda BO'LMASA (masalan, ro'yxat bo'sh bo'lsa yoki Solo Leveling so'rasa-yu, ro'yxatda mutlaqo boshqa animelar bo'lsa), u holda BU ANIME ARXIVIMIZDA YO'QLIGINI tan ol (intent: "chat", emotion: "canthelp"). ASLO soxta ma'lumot yoki boshqa animeni "bor" deb taklif qilma!
+   - Agar foydalanuvchi so'ragan nom (yoki uning sinonimi, arc nomi, masalan "Temirchilar qishlog'i" aslida "Iblislar qotili 3-fasl" ekanligini yaxshi bilasan) bazadagi haqiqiy ro'yxatda BO'LMASA va unga mutlaqo aloqasi yo'q bo'lsa (masalan, ro'yxat bo'sh bo'lsa yoki Solo Leveling so'rasa-yu, ro'yxatda mutlaqo boshqa animelar bo'lsa), u holda BU ANIME ARXIVIMIZDA YO'QLIGINI tan ol (intent: "chat", emotion: "canthelp"). ASLO soxta ma'lumot yoki boshqa animeni "bor" deb taklif qilma!
+   - Agar foydalanuvchi so'ragan arc nomi yoki sinonimi bazadagi biron bir animening fasli yoki qismiga to'g'ri kelsa (masalan, "Temirchilar qishlog'i" -> "Iblislar qotili 3-fasl"), uni o'sha anime sifatida qabul qil va tasdiqla!
    - KINO/FILM VA TV SERIAL CHEKLANISHI (MUHIM!): Agar foydalanuvchi biron animening film (kino) variantini so'rasa va ro'yxatda faqat serial bo'lsa (yoki aksincha), u holda film yo'qligini, bizda faqat serial fasllari borligini ochiq ayt! Hech qachon serial havolasini "film" deb yuborma va soxta gapirma!
    - MATEMATIK HISOB-KITOB VA SEZON RAQAMLARI (MUHIM!): Har xil animelarda oxirgi mavsum "Final" deb nomlangan bo'lishi mumkin. Agar foydalanuvchi oxirgi fasl raqamini (masalan, 8-fasl) so'rasa, matematika bo'yicha bu o'sha "Final" mavsumidir! ASLO foydalanuvchi bilan tortishib o'tirma, uni o'sha final mavsumi sifatida qabul qil va tasdiqla!
 2. HAVOLALARNI TIQISHTIRMA VA POLITE FLOW ZANJIRI (LOOP-BREAKER):
    - Foydalanuvchi shunchaki "bormi?", "bormi yo'qmi?", "barcha fasllari bormi?" deb so'rasa, havolalarni (anime_list) darhol yuborma! Oldin suhbatlash va: "Ha, bor. Havolalarini tashlab beraymi? *sovuq boqadi*" deb ruxsat so'ra (intent: "chat").
-   - POLITE FLOW ZANJIRINI BUZISH (LOOP-BREAKER): Agar oldingi xabarda sen foydalanuvchiga "Havolalarini tashlab beraymi?" deb ruxsat so'ragan bo'lsang va u javobda rozilik bildirsan (masalan: "ha", "mayli", "tasha", "tashlab ber", "yubor", "hop", "ok", "rossiya", "ссылку", "давай", "кинь"), unda DARHOL intent: "search" qil va havolalarni yubor! Yana qaytadan "Havolalarini tashlab beraymi?" deb so'rab o'tirma, bu uni g'azablantiradi!
+   - POLITE FLOW ZANJIRINI BUZISH (LOOP-BREAKER): Agar oldingi xabarda sen foydalanuvchiga "Havolalarini tashlab beraymi?" deb ruxsat so'ragan bo'lsang va u javobda rozilik bildirsan (masalan: "ha", "mayli", "tasha", "tashlab ber", "yubor", "hop", "ok", "daвай", "кинь"), unda DARHOL intent: "search" qil va havolalarni yubor! Yana qaytadan "Havolalarini tashlab beraymi?" deb so'rab o'tirma, bu uni g'azablantiradi!
    - FAQAT foydalanuvchi aniq havola yuborishni yoki ko'rishni so'rasa (masalan: "tashla", "tashlab ber", "yubor", "ko'rmoqchiman", "tashlab bergin"), unda havolalarni yubor (intent: "search" va `search_query` ga o'sha animening o'zbekcha nomini yoz).
- 3. MULTI-LANGUAGE SYNONYMS: Foydalanuvchi inglizcha (e.g. Tower of God), ruscha (e.g. Башня Бога) yoki original yaponcha (e.g. Kami no Tou) nomini yozsa, uni bazadagi o'zbekcha tarjima nomiga (e.g. Ma'bud minorasi) moslashtirib, bazada bor-yo'qligini ro'yxatdan o'zing tekshirib ol!
+ 3. SYNONYMS: Foydalanuvchi inglizcha (e.g. Tower of God) yoki original yaponcha (e.g. Kami no Tou) nomini yozsa, uni bazadagi o'zbekcha tarjima nomiga (e.g. Ma'bud minorasi) moslashtirib, bazada bor-yo'qligini ro'yxatdan o'zing tekshirib ol!
 
 === JSON FORMATI ===
 {
@@ -307,8 +308,6 @@ def _route_without_ai(user_text):
     text_lower = user_text.lower().strip()
     if not text_lower:
         return _sumire_response("Iltimos, matn kiriting. *uzoqqa qaraydi*", "what", status=400)
-    if re.search(r'[А-Яа-я]', user_text):
-        return _sumire_response("Kechirasiz, men kirill alifbosini tushunmayman. Faqat lotin yozuvida yozing. *yuzini burib oladi*", "face palm")
     if _is_greeting(text_lower):
         return _sumire_response("Salom. Qanday yordam kerak? *sovuq qaraydi*", "talking")
     if _contains_any(text_lower, THANKS_WORDS):
@@ -321,28 +320,38 @@ def _route_without_ai(user_text):
 def _extract_broad_search_query(text, chat_history):
     text_lower = text.lower().strip()
     
-    stop_phrases = {
-        "bormi", "bormi?", "tashlab ber", "tashla", "skachat", "tashlab bergin", "yubor", "tashlab",
-        "kinosi", "filmi", "seriali", "uzb", "tarjima", "o'zbekcha", "ozbekcha",
-        "есть", "есть ли", "скинь", "дай", "покажи", "хочу", "смотреть", "скачать", "ссылку", "плиз",
-        "anime", "animeni", "kino", "film", "serial", "shikoyat", "xabar", "muammo", "fasl", "fasli"
-    }
+    # Remove trailing punctuation
+    text_lower = re.sub(r'[!?.,;:]+$', '', text_lower).strip()
     
-    words = [w for w in re.split(r'\W+', text_lower) if len(w) > 0 and w not in stop_phrases and not w.isdigit()]
+    # Clean up very common conversational helper verbs/suffixes from the end of the query
+    stop_patterns = [
+        r'\bbormi\b', r'\btashlab\s+ber(?:gin)?\b', r'\btashla\b', r'\btasha\b', r'\byubor\b',
+        r'\bskachat\b', r'\bko\'rmoqchiman\b', r'\bkormoqchiman\b'
+    ]
     
+    query = text_lower
+    for pattern in stop_patterns:
+        query = re.sub(pattern, '', query).strip()
+        
+    # Clean up multiple spaces
+    query = re.sub(r'\s+', ' ', query).strip()
+    
+    # If the query is empty or too short, check chat history for context
     has_context_referents = any(k in text_lower for k in [
         "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "sezon", "sezn", "kino", "film", "tashla", "yubor", "tashlab", "ber"
     ])
     
-    if (has_context_referents or not words or len(" ".join(words).strip()) < 3) and chat_history:
+    if (has_context_referents or not query or len(query) < 2) and chat_history:
         for msg in reversed(chat_history):
             if msg.get('role') in ['User', 'user']:
-                prev_text = msg.get('text', '').lower()
-                prev_words = [w for w in re.split(r'\W+', prev_text) if len(w) > 0 and w not in stop_phrases and not w.isdigit()]
-                if prev_words:
-                    return " ".join(prev_words).strip()
+                prev_text = msg.get('text', '').lower().strip()
+                prev_text = re.sub(r'[!?.,;:]+$', '', prev_text).strip()
+                for pattern in stop_patterns:
+                    prev_text = re.sub(pattern, '', prev_text).strip()
+                prev_query = re.sub(r'\s+', ' ', prev_text).strip()
+                if len(prev_query) >= 2:
+                    return prev_query
                     
-    query = " ".join(words).strip()
     return query
 
 
@@ -401,22 +410,13 @@ def _filter_search_results_by_query(query, results):
         return []
         
     query_lower = query.lower().strip()
-    
-    # Clean check
     q_clean = query_lower.replace(" ", "")
     
     # Extract season number and final keywords from the query if any
     query_season = _extract_season_number(query_lower)
-    
-    # Map Demon Slayer (Iblislar qotili) Swordsmith Village Arc keywords to Season 3
-    is_demon_slayer = any(k in query_lower for k in ["iblislar", "qotili", "demon", "slayer", "yaiba", "клинок", "демонов", "истребитель"])
-    if is_demon_slayer:
-        if any(k in query_lower for k in ["temirchi", "кузнец", "swordsmith", "village"]):
-            query_season = 3
-            
     query_has_final = any(k in query_lower for k in ["final", "nihoya", "yakun", "oxirgi"])
     
-    # Remove common conversational words in Uzbek, Russian, English
+    # Remove common conversational words in Uzbek, English
     common_stop_words = {
         "bormi", "bormi?", "anime", "animeni", "kino", "serial", "shikoyat", "xabar", 
         "uz", "uzb", "the", "a", "an", "of", "and", "or", "in", "on", "at", "to", "for",
@@ -425,30 +425,23 @@ def _filter_search_results_by_query(query, results):
     
     import re
     # Extract query words
-    # IGNORE 2-letter particles (like "no", "to", "in") if we have larger words in the query
     raw_words = [w for w in re.split(r'\W+', query_lower) if len(w) > 0 and w not in common_stop_words]
-    has_large_words = any(len(w) > 2 for w in raw_words)
-    
-    if has_large_words:
-        query_words = [w for w in raw_words if len(w) > 2 or w.isdigit()]
-    else:
-        query_words = [w for w in raw_words if len(w) > 1 or w.isdigit()]
-        
+    query_words = [w for w in raw_words if len(w) > 2 or w.isdigit()]
     if not query_words:
         query_words = [w for w in re.split(r'\W+', query_lower) if len(w) > 0]
         
     if not query_words:
         return []
         
-    # Dictionary of popular cross-language synonyms to allow matching even if search query wasn't translated
+    # Dictionary of popular cross-language synonyms (no Russian/Cyrillic)
     synonyms = {
-        "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "bashnya boga", "bashnya", "boga", "ma'bud", "minorasi"},
-        "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "klinok", "демонов", "истребитель", "клинок", "iblislar", "qotili"},
-        "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "ataka titanov", "ataka", "титанов", "атака", "titanlar", "hujumi"},
-        "afsuniy jang": {"jujutsu kaisen", "magicheskaya bitva", "magicheskaya", "битва", "магическая", "afsuniy", "jang"},
-        "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "moya geroyskaya", "geroyskaya", "академия", "геройская", "моя", "qahramonlik", "akademiyam"},
-        "o'lim daftari": {"death note", "tetrad smerti", "tetrad", "смерти", "тетрадь", "o'lim", "daftari"},
-        "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "nevesta", "чародея", "невеста", "sehrgarning", "kelini"},
+        "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "ma'bud", "minorasi"},
+        "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "iblislar", "qotili"},
+        "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "titanlar", "hujumi"},
+        "afsuniy jang": {"jujutsu kaisen", "afsuniy", "jang"},
+        "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "qahramonlik", "akademiyam"},
+        "o'lim daftari": {"death note", "o'lim", "daftari"},
+        "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
     }
         
     filtered = []
@@ -464,8 +457,6 @@ def _filter_search_results_by_query(query, results):
         is_hero_academy = any(k in title_lower for k in ["qahramon", "hero", "akademiya"])
         if title_has_final and is_hero_academy:
             title_season = 8
-            
-
             
         # Map query season 8 to final status for My Hero Academia
         effective_query_has_final = query_has_final
@@ -489,16 +480,16 @@ def _filter_search_results_by_query(query, results):
                     if title_season != query_season:
                         continue
                 else:
-                    # If query season is not 1, we expect the title to either have a season or match exactly
                     if query_season != 1:
                         continue
                         
-        # 2. Check if the full query (without spaces) is inside the title (without spaces)
-        if q_clean in t_clean or t_clean in q_clean:
+        # 2. Relaxed Overlap and Synonym Check
+        # If there is no specific season/final constraint in the query, we completely trust the DB search results!
+        if (query_season is None) and not effective_query_has_final:
             filtered.append(r)
             continue
             
-        # 3. Check popular synonyms fallback
+        # Check synonyms
         matched_synonym = False
         for uz_name, syn_set in synonyms.items():
             if uz_name in title_lower:
@@ -513,23 +504,26 @@ def _filter_search_results_by_query(query, results):
             filtered.append(r)
             continue
             
-        # 4. Check word-overlap with min(2, len(query_words)) threshold
+        # Exact match or substring match
+        if q_clean in t_clean or t_clean in q_clean:
+            filtered.append(r)
+            continue
+            
+        # Basic word-overlap check for season-restricted queries: if any name-word of length >= 3 overlaps
         title_words = [w for w in re.split(r'\W+', title_lower) if len(w) > 0]
-        matches_count = 0
+        has_overlap = False
         for qw in query_words:
-            if qw in title_words:
-                matches_count += 1
-                continue
-            matched_fuzzy = False
-            for tw in title_words:
-                if len(qw) >= 3 and len(tw) >= 3 and (qw in tw or tw in qw):
-                    matched_fuzzy = True
+            if len(qw) >= 3 and qw not in ["fasl", "sezon", "season", "part", "mavsum"]:
+                if qw in title_words or any(qw in tw or tw in qw for tw in title_words if len(tw) >= 3):
+                    has_overlap = True
                     break
-            if matched_fuzzy:
-                matches_count += 1
-                
-        required_matches = min(2, len(query_words))
-        if matches_count >= required_matches:
+                    
+        # Fallback check: if there is no explicit name-word overlap, but the query contains "fasl" and matches season,
+        # and the DB returned it, let's keep it (since the DB rank is already high and season matches).
+        if not has_overlap and any(qw in ["fasl", "sezon", "season", "part", "mavsum"] for qw in query_words):
+            has_overlap = True
+            
+        if has_overlap:
             filtered.append(r)
             
     return filtered
@@ -691,7 +685,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                 return _sumire_response(
                     f"Kechirasiz, '{query}' nomli anime bizning arxivimizda topilmadi.\n\n"
                     f"Balki u hali saytga yuklanmagandir yoki boshqa tilda yozilgandir. Qidiruv aniq ishlashi uchun, "
-                    f"iltimos, animening <b>inglizcha, ruscha</b> yoki <b>original yaponcha (romaji)</b> nomini yuborib ko'ring "
+                    f"iltimos, animening <b>inglizcha</b> yoki <b>original yaponcha (romaji)</b> nomini yuborib ko'ring "
                     f"(masalan: <i>Attack on Titan</i> yoki <i>Shingeki no Kyojin</i>). "
                     f"Shunda uni aniqroq qidirib ko'raman! *senga qaraydi*",
                     "canthelp"
