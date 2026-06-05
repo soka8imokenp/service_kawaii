@@ -17,8 +17,8 @@
 <link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">
 {% endif %}
 
-<!-- Link our premium theme CSS last to override defaults -->
-<link rel="stylesheet" href="{% static "css/admin.css" %}">
+<!-- Link our premium theme CSS last to override defaults with cache-busting -->
+<link rel="stylesheet" href="{% static 'css/admin.css' %}?v={% now 'U' %}">
 
 {% block extrahead %}{% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}

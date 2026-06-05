@@ -2196,7 +2196,7 @@ textarea[name="admin_reply_field"]:focus {
 
     /* Content Area bottom padding to avoid bottom navigation overlap */
     .saas-content {
-        padding: 16px 16px 85px 16px !important;
+        padding: 16px 16px 105px 16px !important;
         height: 100% !important;
         width: 100% !important;
         overflow-y: auto !important;
@@ -2238,27 +2238,26 @@ textarea[name="admin_reply_field"]:focus {
         align-items: center !important;
     }
 
-    /* Bottom Navigation Bar adaptation from Left Sidebar */
+    /* Premium Floating Glassmorphic Bottom Navigation Bar */
     .saas-sidebar {
         position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        height: 65px !important;
+        bottom: 16px !important;
+        left: 16px !important;
+        right: 16px !important;
+        width: calc(100% - 32px) !important;
+        height: 68px !important;
         flex-direction: row !important;
-        justify-content: space-between !important;
+        justify-content: space-around !important;
         align-items: center !important;
-        background: rgba(12, 12, 14, 0.9) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border-top: 1.5px solid rgba(255, 255, 255, 0.05) !important;
-        border-right: none !important;
-        border-radius: 0 !important;
-        padding: 0 16px !important;
+        background: rgba(18, 18, 22, 0.85) !important;
+        backdrop-filter: blur(25px) !important;
+        -webkit-backdrop-filter: blur(25px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 20px !important;
+        padding: 0 10px !important;
         margin: 0 !important;
         z-index: 1000 !important;
-        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
     }
 
     .saas-sidebar > div {
@@ -2288,6 +2287,7 @@ textarea[name="admin_reply_field"]:focus {
         flex-direction: row !important;
         justify-content: space-around !important;
         align-items: center !important;
+        flex: 0 0 auto !important;
         margin-top: 0 !important;
         padding-top: 0 !important;
         border-top: none !important;
@@ -2295,10 +2295,17 @@ textarea[name="admin_reply_field"]:focus {
     }
 
     .sidebar-item, .sidebar-btn-logout {
-        width: 44px !important;
-        height: 44px !important;
-        border-radius: 12px !important;
+        width: 46px !important;
+        height: 46px !important;
+        border-radius: 14px !important;
         margin: 0 !important;
+    }
+
+    .sidebar-item.active {
+        color: #ffffff !important;
+        background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%) !important;
+        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4) !important;
+        border: none !important;
     }
 
     .sidebar-item.active::before {
@@ -2331,7 +2338,7 @@ textarea[name="admin_reply_field"]:focus {
         margin: 8px 0 !important;
     }
 
-    /* Dashboard tickets table transformed to cards list on mobile */
+    /* Dashboard tickets table transformed to premium mobile rows (like transaction lists) */
     #saas-tickets-table thead {
         display: none !important; /* Hide header */
     }
@@ -2346,28 +2353,72 @@ textarea[name="admin_reply_field"]:focus {
     }
 
     #saas-tickets-table tr {
-        background: rgba(255, 255, 255, 0.015) !important;
-        border: 1px solid rgba(255, 255, 255, 0.04) !important;
-        border-radius: 16px !important;
-        padding: 16px !important;
-        margin-bottom: 14px !important;
         display: flex !important;
-        flex-direction: column !important;
-        gap: 10px !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        background: rgba(255, 255, 255, 0.015) !important;
+        border: 1px solid rgba(255, 255, 255, 0.03) !important;
+        border-radius: 16px !important;
+        padding: 12px 14px !important;
+        margin-bottom: 12px !important;
+        gap: 12px !important;
     }
 
     #saas-tickets-table td {
         padding: 0 !important;
         border: none !important;
-        text-align: left !important;
+        background: transparent !important;
     }
 
-    #saas-tickets-table tr td:last-child {
+    /* First TD: User badge and Username */
+    #saas-tickets-table tr td:nth-child(1) {
+        flex: 0 0 110px !important;
+        min-width: 110px !important;
+        overflow: hidden !important;
+    }
+
+    /* User username ellipsis truncation to prevent overflow */
+    .saas-user-cell {
         display: flex !important;
-        justify-content: flex-end !important;
-        margin-top: 8px !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.03) !important;
-        padding-top: 10px !important;
+        align-items: center !important;
+        gap: 8px !important;
+        min-width: 0 !important;
+    }
+    .saas-user-cell > div:last-child {
+        min-width: 0 !important;
+    }
+    .saas-user-cell > div:last-child > div:first-child {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* Second TD: Subject and Date */
+    #saas-tickets-table tr td:nth-child(2) {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        padding-left: 6px !important;
+    }
+
+    /* Subject text ellipsis truncation */
+    .saas-subject {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 140px !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+    }
+
+    /* Third TD: Status Badge - Hide to save mobile space */
+    #saas-tickets-table tr td:nth-child(3) {
+        display: none !important;
+    }
+
+    /* Fourth TD: Reply button */
+    #saas-tickets-table tr td:last-child {
+        flex: 0 0 auto !important;
     }
 
     /* Database card accordion tables stacking layout */
