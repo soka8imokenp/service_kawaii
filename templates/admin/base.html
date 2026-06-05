@@ -6,135 +6,220 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Load premium modern typography -->
+<!-- Load premium modern typography for desktop -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
-{% block extrastyle %}{% endblock %}
-{% if LANGUAGE_BIDI %}
-<link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">
+{% block dark-mode-vars %}
+  <link rel="stylesheet" href="{% static "admin/css/dark_mode.css" %}">
+  <script src="{% static "admin/js/theme.js" %}" defer></script>
+{% endblock %}
+{% if not is_popup and is_nav_sidebar_enabled %}
+  <link rel="stylesheet" href="{% static "admin/css/nav_sidebar.css" %}">
+  <script src="{% static 'admin/js/nav_sidebar.js' %}" defer></script>
 {% endif %}
-
-<!-- Link our premium theme CSS last to override defaults with cache-busting -->
-<link rel="stylesheet" href="{% static 'css/admin.css' %}?v={% now 'U' %}">
-
-{% block extrahead %}{% endblock %}
+{% block extrastyle %}{% endblock %}
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
+{% block responsive %}
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="{% static "admin/css/responsive.css" %}">
+    {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% static "admin/css/responsive_rtl.css" %}">{% endif %}
+{% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+
+<!-- Link our premium theme CSS last to override defaults on desktop with cache-busting -->
+<link rel="stylesheet" href="{% static 'css/admin.css' %}?v={% now 'U' %}">
+{% block extrahead %}{% endblock %}
 
 <!-- Load Lucide Icons CDN -->
 <script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+    /* Prevent Flash of Unstyled Content (FOUC) by hiding both layouts by default on load */
+    #container, .saas-layout {
+        display: none;
+    }
+</style>
 </head>
 
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
   data-admin-utc-offset="{% now "Z" %}">
+<a href="#content-start" class="skip-to-content-link">{% translate 'Skip to main content' %}</a>
 
 {% if not is_popup %}
-<!-- Center-Aligned Layout Wrapper -->
-<div class="saas-centered-wrapper">
-    <div class="saas-container">
-        
-        <!-- Left Sidebar -->
-        <div class="saas-sidebar">
-            <div>
-                <a href="{% url 'admin:index' %}" class="sidebar-brand" title="Bosh sahifa">
-                    <span>🌸</span>
-                </a>
-                
-                <div class="sidebar-menu">
-                    <a href="{% url 'admin:index' %}" class="sidebar-item" id="nav-home" title="Boshqaruv markazi">
-                        <i data-lucide="layout-dashboard" style="width: 20px; height: 20px;"></i>
-                        <span class="sidebar-text">Bosh sahifa</span>
-                    </a>
-                    <a href="/admin/feedback/application/" class="sidebar-item" id="nav-apps" title="Arizalar">
-                        <i data-lucide="message-square" style="width: 20px; height: 20px;"></i>
-                        <span class="sidebar-text">Arizalar</span>
-                    </a>
-                    <a href="/admin/feedback/profile/" class="sidebar-item" id="nav-profiles" title="Foydalanuvchi profillari">
-                        <i data-lucide="users" style="width: 20px; height: 20px;"></i>
-                        <span class="sidebar-text">Profillar</span>
-                    </a>
-                </div>
-            </div>
-            
-            <div class="sidebar-footer">
-                <a href="/admin/password_change/" class="sidebar-item" id="nav-settings" title="Parolni o'zgartirish">
-                    <i data-lucide="settings" style="width: 20px; height: 20px;"></i>
-                    <span class="sidebar-text">Sozlamalar</span>
-                </a>
-                <form action="{% url 'admin:logout' %}" method="post" id="saas-logout-form" style="display: none;">
-                    {% csrf_token %}
-                </form>
-                <button onclick="document.getElementById('saas-logout-form').submit();" class="sidebar-btn-logout" title="Chiqish">
-                    <i data-lucide="log-out" style="width: 20px; height: 20px;"></i>
-                    <span class="sidebar-text">Chiqish</span>
-                </button>
-            </div>
+<!-- ==========================================
+     1. Default Django Layout (Mobile / Fallback)
+     ========================================== -->
+<div id="container">
+    <!-- Header -->
+    {% block header %}
+    <div id="header">
+        <div id="branding">
+        {% block branding %}{% endblock %}
         </div>
+        {% block usertools %}
+        {% if has_permission %}
+        <div id="user-tools">
+            {% block welcome-msg %}
+                {% translate 'Welcome,' %}
+                <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+            {% endblock %}
+            {% block userlinks %}
+                {% if site_url %}
+                    <a href="{{ site_url }}">{% translate 'View site' %}</a> /
+                {% endif %}
+                {% if user.is_active and user.is_staff %}
+                    {% url 'django-admindocs-docroot' as docsroot %}
+                    {% if docsroot %}
+                        <a href="{{ docsroot }}">{% translate 'Documentation' %}</a> /
+                    {% endif %}
+                {% endif %}
+                {% if user.has_usable_password %}
+                <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a> /
+                {% endif %}
+                <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">{% translate 'Log out' %}</button>
+                </form>
+                {% include "admin/color_theme_toggle.html" %}
+            {% endblock %}
+        </div>
+        {% endif %}
+        {% endblock %}
+        {% block nav-global %}{% endblock %}
+    </div>
+    {% endblock %}
+    <!-- END Header -->
+
+    {% block nav-breadcrumbs %}
+      <nav aria-label="{% translate 'Breadcrumbs' %}">
+        {% block breadcrumbs %}
+          <div class="breadcrumbs">
+            <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+            {% if title %} &rsaquo; {{ title }}{% endif %}
+          </div>
+        {% endblock %}
+      </nav>
+    {% endblock %}
+
+    <div class="main" id="main">
+      {% if not is_popup and is_nav_sidebar_enabled %}
+        {% block nav-sidebar %}
+          {% include "admin/nav_sidebar.html" %}
+        {% endblock %}
+      {% endif %}
+      <div id="content-start" class="content" tabindex="-1">
+        {% block messages %}
+          {% if messages %}
+            <ul class="messagelist">{% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+            {% endfor %}</ul>
+          {% endif %}
+        {% endblock messages %}
         
-        <!-- Main Content Area -->
-        <div class="saas-content">
+        <!-- Content -->
+        <div id="content" class="{% block coltype %}colM{% endblock %}">
+          {% block pretitle %}{% endblock %}
+          {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+          {% block content_subtitle %}{% if subtitle %}<h2>{{ subtitle }}</h2>{% endif %}{% endblock %}
+          {% block content %}
+            {% block object-tools %}{% endblock %}
+            {{ content }}
+          {% endblock %}
+          {% block sidebar %}{% endblock %}
+          <br class="clear">
+        </div>
+        <!-- END Content -->
+        {% block footer %}<div id="footer"></div>{% endblock %}
+      </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     2. Custom Premium Layout (Desktop Only)
+     ========================================== -->
+<div class="saas-layout">
+    <div class="saas-centered-wrapper">
+        <div class="saas-container">
             
-            <!-- Custom Header -->
-            <div class="saas-header">
-                <!-- Search bar -->
-                <div class="saas-search-container">
-                    <i data-lucide="search" class="saas-search-icon" style="width: 18px; height: 18px;"></i>
-                    <input type="text" placeholder="Qidirish..." class="saas-search-input" id="saas-global-search">
+            <!-- Left Sidebar -->
+            <div class="saas-sidebar">
+                <div>
+                    <a href="{% url 'admin:index' %}" class="sidebar-brand" title="Bosh sahifa">
+                        <span>🌸</span>
+                    </a>
+                    
+                    <div class="sidebar-menu">
+                        <a href="{% url 'admin:index' %}" class="sidebar-item" id="nav-home" title="Boshqaruv markazi">
+                            <i data-lucide="layout-dashboard" style="width: 20px; height: 20px;"></i>
+                            <span class="sidebar-text">Bosh sahifa</span>
+                        </a>
+                        <a href="/admin/feedback/application/" class="sidebar-item" id="nav-apps" title="Arizalar">
+                            <i data-lucide="message-square" style="width: 20px; height: 20px;"></i>
+                            <span class="sidebar-text">Arizalar</span>
+                        </a>
+                        <a href="/admin/feedback/profile/" class="sidebar-item" id="nav-profiles" title="Foydalanuvchi profillari">
+                            <i data-lucide="users" style="width: 20px; height: 20px;"></i>
+                            <span class="sidebar-text">Profillar</span>
+                        </a>
+                    </div>
                 </div>
                 
-                <!-- Clock, Notifications, Profile -->
-                <div class="saas-header-right">
-                    <div class="saas-clock">
-                        <i data-lucide="clock" style="width: 15px; height: 15px; color: #8b5cf6;"></i>
-                        <span>Tashkent: </span><span id="saas-global-time">--:--</span>
-                    </div>
-                    
-                    <!-- Notification bell removed -->
-                    
-                    {% if user.is_authenticated %}
-                    <div class="saas-profile-widget">
-                        <div class="saas-profile-info">
-                            <span class="saas-username">{{ user.username }}</span>
-                            <span class="saas-role">{% if user.is_superuser %}Super Administrator{% else %}Administrator{% endif %}</span>
-                        </div>
-                    </div>
-                    {% endif %}
+                <div class="sidebar-footer">
+                    <a href="/admin/password_change/" class="sidebar-item" id="nav-settings" title="Parolni o'zgartirish">
+                        <i data-lucide="settings" style="width: 20px; height: 20px;"></i>
+                        <span class="sidebar-text">Sozlamalar</span>
+                    </a>
+                    <form action="{% url 'admin:logout' %}" method="post" id="saas-logout-form" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+                    <button onclick="document.getElementById('saas-logout-form').submit();" class="sidebar-btn-logout" title="Chiqish">
+                        <i data-lucide="log-out" style="width: 20px; height: 20px;"></i>
+                        <span class="sidebar-text">Chiqish</span>
+                    </button>
                 </div>
             </div>
             
-            <!-- Content Wrapper (forms, tables, lists will render inside this container) -->
-            <div class="saas-panel-body">
+            <!-- Main Content Area -->
+            <div class="saas-content">
                 
-                <!-- Styled Breadcrumbs -->
-                {% block breadcrumbs %}
-                {% endblock %}
+                <!-- Custom Header -->
+                <div class="saas-header">
+                    <!-- Search bar -->
+                    <div class="saas-search-container">
+                        <i data-lucide="search" class="saas-search-icon" style="width: 18px; height: 18px;"></i>
+                        <input type="text" placeholder="Qidirish..." class="saas-search-input" id="saas-global-search">
+                    </div>
+                    
+                    <!-- Clock, Notifications, Profile -->
+                    <div class="saas-header-right">
+                        <div class="saas-clock">
+                            <i data-lucide="clock" style="width: 15px; height: 15px; color: #8b5cf6;"></i>
+                            <span>Tashkent: </span><span id="saas-global-time">--:--</span>
+                        </div>
+                        
+                        {% if user.is_authenticated %}
+                        <div class="saas-profile-widget">
+                            <div class="saas-profile-info">
+                                <span class="saas-username">{{ user.username }}</span>
+                                <span class="saas-role">{% if user.is_superuser %}Super Administrator{% else %}Administrator{% endif %}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
                 
-                <!-- Django standard messaging list -->
-                {% if messages %}
-                <ul class="messagelist">
-                    {% for message in messages %}
-                      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                
-                <!-- Content title / Heading -->
-                {% block content_title %}
+                <!-- Target Container for Gunicorn-rendered blocks -->
+                <div class="saas-panel-body">
                     {% if title %}
                         <h1 class="saas-page-title">{{ title }}</h1>
                     {% endif %}
-                {% endblock %}
+                    <!-- Content will be moved here dynamically by JS on desktop -->
+                </div>
                 
-                <!-- The actual content page -->
-                {% block content %}
-                    {{ content }}
-                {% endblock %}
-                
-                {% block sidebar %}{% endblock %}
             </div>
-            
         </div>
     </div>
 </div>
@@ -145,7 +230,7 @@
 </div>
 {% endif %}
 
-<!-- Floating glowing orbs -->
+<!-- Floating glowing orbs for desktop -->
 <div class="glowing-orb orb-1"></div>
 <div class="glowing-orb orb-2"></div>
 
@@ -186,10 +271,8 @@
         } else if (currentPath.includes('/admin/password_change/') || currentPath.includes('/admin/settings/')) {
             if (navSettings) navSettings.classList.add('active');
         } else {
-            // Default to home for other pages
             if (navHome) navHome.classList.add('active');
         }
-
 
         // Connect global search box to lists if available
         const searchInput = document.getElementById('saas-global-search');
@@ -205,6 +288,44 @@
             });
         }
     });
+
+    // Dynamic layout switcher: move elements to SaaS wrapper on desktop, or keep default Django on mobile
+    (function() {
+        function checkLayout() {
+            const isDesktop = window.innerWidth > 768;
+            if (isDesktop && document.querySelector('.saas-layout')) {
+                // Move Gunicorn-rendered DOM elements into SaaS container
+                const saasPanelBody = document.querySelector('.saas-panel-body');
+                const defaultContent = document.getElementById('content');
+                const defaultBreadcrumbs = document.querySelector('nav[aria-label="Breadcrumbs"]');
+                const defaultMessages = document.querySelector('.messagelist');
+
+                if (saasPanelBody) {
+                    if (defaultBreadcrumbs) saasPanelBody.appendChild(defaultBreadcrumbs);
+                    if (defaultMessages) saasPanelBody.appendChild(defaultMessages);
+                    if (defaultContent) saasPanelBody.appendChild(defaultContent);
+                }
+
+                // Toggle visibility
+                document.querySelector('.saas-layout').style.display = 'block';
+                const container = document.getElementById('container');
+                if (container) container.style.display = 'none';
+            } else {
+                // Restore/keep default layout
+                const container = document.getElementById('container');
+                if (container) container.style.display = 'block';
+                const saasLayout = document.querySelector('.saas-layout');
+                if (saasLayout) saasLayout.style.display = 'none';
+            }
+        }
+        
+        // Run immediately to prevent layout shifts
+        checkLayout();
+        
+        // Run on load and resize
+        window.addEventListener('load', checkLayout);
+        window.addEventListener('resize', checkLayout);
+    })();
 </script>
 </body>
 </html>
