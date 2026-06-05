@@ -52,9 +52,6 @@
                     <a href="/admin/feedback/profile/" class="sidebar-item" id="nav-profiles" title="Foydalanuvchi profillari">
                         <i data-lucide="users" style="width: 20px; height: 20px;"></i>
                     </a>
-                    <a href="{% url 'admin:index' %}#system-tables" class="sidebar-item" id="nav-db" title="Tizim jadvallari">
-                        <i data-lucide="database" style="width: 20px; height: 20px;"></i>
-                    </a>
                 </div>
             </div>
             
@@ -170,7 +167,6 @@
         const navApps = document.getElementById('nav-apps');
         const navProfiles = document.getElementById('nav-profiles');
         const navSettings = document.getElementById('nav-settings');
-        const navDb = document.getElementById('nav-db');
 
         // Remove active class from all first
         const items = document.querySelectorAll('.sidebar-item');
@@ -185,9 +181,10 @@
         } else if (currentPath.includes('/admin/password_change/') || currentPath.includes('/admin/settings/')) {
             if (navSettings) navSettings.classList.add('active');
         } else {
-            // Default to DB icon if we are in other tables (like auth/user or auth/group)
-            if (navDb) navDb.classList.add('active');
+            // Default to home for other pages
+            if (navHome) navHome.classList.add('active');
         }
+
 
         // Connect global search box to lists if available
         const searchInput = document.getElementById('saas-global-search');

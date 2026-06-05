@@ -2648,57 +2648,282 @@ textarea[name="admin_reply_field"]:focus {
         padding: 4px 10px !important;
     }
 
-    /* ===== CHANGELIST PAGES ===== */
+    /* ===== CHANGELIST PAGES — Full Mobile Adaptation ===== */
     #changelist {
-        display: flex !important;
-        flex-direction: column !important;
+        display: block !important;
+        border-radius: 14px !important;
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        overflow: visible !important;
     }
 
-    #changelist-filter {
-        width: 100% !important;
-        border-left: none !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-        margin-bottom: 14px !important;
-        padding: 14px !important;
-        box-sizing: border-box !important;
-    }
-
-    #changelist .results {
-        overflow-x: auto !important;
-        width: 100% !important;
-        -webkit-overflow-scrolling: touch !important;
-    }
-
+    /* --- Search bar --- */
     #changelist-search {
-        padding: 12px 16px !important;
+        padding: 14px 16px !important;
+        background: transparent !important;
+        border: none !important;
+    }
+
+    #changelist-search label {
+        display: none !important;
     }
 
     #changelist-search #searchbar {
         width: 100% !important;
         box-sizing: border-box !important;
+        min-width: 0 !important;
+        border-radius: 14px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
 
-    /* Paginator */
-    .paginator {
+    #changelist-search input[type="submit"] {
+        width: 100% !important;
+        margin: 10px 0 0 0 !important;
+        padding: 12px !important;
+        border-radius: 14px !important;
+        font-size: 14px !important;
+    }
+
+    /* --- Filter panel → collapsible top strip --- */
+    #changelist-filter {
+        width: 100% !important;
+        order: -1 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        border-top: none !important;
+        padding: 0 !important;
+        margin-bottom: 10px !important;
+        box-sizing: border-box !important;
+        background: rgba(18, 18, 22, 0.6) !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+    }
+
+    #changelist-filter h2 {
+        padding: 14px 16px !important;
+        font-size: 13px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+        margin: 0 !important;
+    }
+
+    #changelist-filter h3 {
+        margin: 12px 16px 6px 16px !important;
+        font-size: 12px !important;
+    }
+
+    #changelist-filter ul {
+        padding: 0 16px !important;
+        margin: 0 0 10px 0 !important;
+        display: flex !important;
         flex-wrap: wrap !important;
         gap: 6px !important;
-        padding: 12px 16px !important;
     }
 
-    /* ===== ACTIONS TOOLBAR ===== */
-    .actions {
+    #changelist-filter li {
+        margin: 0 !important;
+    }
+
+    #changelist-filter li a {
+        padding: 6px 12px !important;
+        border-radius: 20px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    }
+
+    #changelist-filter li a:hover {
+        background: rgba(255, 255, 255, 0.06) !important;
+    }
+
+    #changelist-filter li.selected a {
+        background: #8b5cf6 !important;
+        border-color: #8b5cf6 !important;
+        color: #fff !important;
+        box-shadow: 0 2px 10px rgba(139, 92, 246, 0.35) !important;
+    }
+
+    /* --- Table → Card List --- */
+    #changelist .results {
+        overflow-x: visible !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    #changelist table {
+        display: block !important;
+        width: 100% !important;
+        border: none !important;
+    }
+
+    #changelist table thead {
+        display: none !important;
+    }
+
+    #changelist table tbody {
         display: flex !important;
         flex-direction: column !important;
         gap: 8px !important;
-        padding: 12px 16px !important;
+        width: 100% !important;
+        padding: 0 16px !important;
+        box-sizing: border-box !important;
     }
 
-    .actions label,
-    .actions select,
+    #changelist table tbody tr {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 8px 12px !important;
+        background: rgba(255, 255, 255, 0.025) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-radius: 14px !important;
+        padding: 14px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        transition: background 0.15s ease !important;
+    }
+
+    #changelist table tbody tr:hover {
+        background: rgba(139, 92, 246, 0.06) !important;
+    }
+
+    #changelist table tbody tr.selected {
+        background: rgba(139, 92, 246, 0.1) !important;
+        border-color: rgba(139, 92, 246, 0.2) !important;
+    }
+
+    #changelist table tbody td,
+    #changelist table tbody th {
+        display: inline-block !important;
+        padding: 0 !important;
+        border: none !important;
+        font-size: 13px !important;
+        line-height: 1.5 !important;
+        background: transparent !important;
+    }
+
+    /* Checkbox */
+    #changelist table tbody td.action-checkbox {
+        flex: 0 0 auto !important;
+        order: -1 !important;
+    }
+
+    /* First column (usually the object name link) */
+    #changelist table tbody th {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
+
+    #changelist table tbody th a {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: block !important;
+    }
+
+    /* Other data columns */
+    #changelist table tbody td {
+        flex: 0 1 auto !important;
+        font-size: 12px !important;
+        color: #7e7e8f !important;
+    }
+
+    #changelist table tbody td:empty {
+        display: none !important;
+    }
+
+    /* Boolean icons in cells */
+    #changelist table tbody td img {
+        width: 14px !important;
+        height: 14px !important;
+    }
+
+    /* --- Actions toolbar --- */
+    .actions {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        padding: 14px 16px !important;
+        background: rgba(18, 18, 22, 0.5) !important;
+        border-radius: 14px !important;
+        margin: 0 16px 10px 16px !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .actions label {
+        font-size: 12px !important;
+        color: #7e7e8f !important;
+    }
+
+    .actions select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 10px 14px !important;
+        border-radius: 12px !important;
+        font-size: 13px !important;
+    }
+
     .actions button.button {
         width: 100% !important;
         box-sizing: border-box !important;
+        padding: 12px !important;
+        border-radius: 12px !important;
+        font-size: 14px !important;
     }
+
+    /* --- Paginator --- */
+    .paginator {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        padding: 14px 16px !important;
+        font-size: 12px !important;
+        border-radius: 14px !important;
+        margin: 10px 16px !important;
+        background: rgba(18, 18, 22, 0.4) !important;
+        border: 1px solid rgba(255, 255, 255, 0.04) !important;
+    }
+
+    .paginator a {
+        padding: 6px 12px !important;
+        border-radius: 8px !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+    }
+
+    /* --- Object tools (Add button etc) --- */
+    .object-tools {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        padding: 0 16px !important;
+        margin: 10px 0 !important;
+    }
+
+    .object-tools li {
+        margin: 0 !important;
+    }
+
+    .object-tools a {
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+        padding: 12px !important;
+        border-radius: 14px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+
 
     /* ===== FORMS ===== */
     .form-row {
