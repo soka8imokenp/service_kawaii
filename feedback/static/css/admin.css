@@ -479,6 +479,10 @@ body.login .submit-row input[type="submit"]:hover {
     box-sizing: border-box;
 }
 
+.sidebar-text {
+    display: none;
+}
+
 .sidebar-item:hover {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.03);
@@ -2168,6 +2172,7 @@ textarea[name="admin_reply_field"]:focus {
     to { opacity: 1; transform: translateY(0); }
 }
 
+
 /* ==========================================
    9. Mobile Responsive Adaptations
    ========================================== */
@@ -2184,7 +2189,11 @@ textarea[name="admin_reply_field"]:focus {
         width: 100% !important;
     }
 
-    /* ===== LAYOUT WRAPPERS — kill desktop box layout ===== */
+    body {
+        padding-bottom: 95px !important; /* spacing under bottom nav */
+    }
+
+    /* ===== LAYOUT WRAPPERS — native feeling scrollable pages ===== */
     .saas-centered-wrapper {
         display: block !important;
         width: 100% !important;
@@ -2227,34 +2236,36 @@ textarea[name="admin_reply_field"]:focus {
         padding: 0 !important;
     }
 
-    /* ===== FLOATING BOTTOM NAVIGATION ===== */
+    /* ===== PREMIUM BOTTOM NAVIGATION ===== */
     .saas-sidebar {
         position: fixed !important;
-        bottom: 12px !important;
-        left: 12px !important;
-        right: 12px !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
         top: auto !important;
-        width: auto !important;
-        height: 60px !important;
+        width: 100% !important;
+        height: 76px !important;
         display: flex !important;
         flex-direction: row !important;
-        justify-content: center !important;
+        justify-content: space-around !important;
         align-items: center !important;
-        gap: 2px !important;
-        background: rgba(14, 14, 18, 0.92) !important;
-        backdrop-filter: blur(20px) saturate(180%) !important;
-        -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 20px !important;
-        padding: 0 6px !important;
+        background: rgba(10, 10, 12, 0.85) !important;
+        backdrop-filter: blur(25px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+        border-top: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 24px 24px 0 0 !important;
+        padding: 8px 12px 12px 12px !important;
         margin: 0 !important;
         z-index: 9999 !important;
-        box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5) !important;
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4) !important;
     }
 
-    /* Flatten sidebar children so items lay out in a row */
     .saas-sidebar > div {
-        display: contents !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        width: 100% !important;
     }
 
     .sidebar-brand {
@@ -2262,45 +2273,106 @@ textarea[name="admin_reply_field"]:focus {
     }
 
     .sidebar-menu {
-        display: contents !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        flex: 3 !important;
+        width: auto !important;
+        gap: 0 !important;
     }
 
     .sidebar-footer {
-        display: contents !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        flex: 2 !important;
+        width: auto !important;
+        margin-top: 0 !important;
+        gap: 0 !important;
     }
 
-    .sidebar-item {
+    .sidebar-item,
+    .sidebar-btn-logout {
         display: flex !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        width: 44px !important;
-        height: 44px !important;
-        border-radius: 14px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        flex-shrink: 0 !important;
-        color: #7e7e8f !important;
+        width: 60px !important;
+        height: 58px !important;
         background: transparent !important;
+        border: none !important;
+        border-radius: 14px !important;
+        color: #7e7e8f !important;
+        text-decoration: none !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .sidebar-item i,
+    .sidebar-btn-logout i {
+        width: 22px !important;
+        height: 22px !important;
+        margin-bottom: 3px !important;
+        color: #7e7e8f !important;
         transition: all 0.2s ease !important;
     }
 
-    .sidebar-item.active {
-        color: #fff !important;
-        background: linear-gradient(135deg, #7c3aed, #db2777) !important;
-        box-shadow: 0 4px 16px rgba(124, 58, 237, 0.45) !important;
+    .sidebar-text {
+        display: block !important;
+        font-size: 10px !important;
+        font-weight: 500 !important;
+        color: #7e7e8f !important;
+        transition: all 0.2s ease !important;
+        text-align: center !important;
+        white-space: nowrap !important;
     }
 
-    .sidebar-item.active::before {
-        display: none !important;
+    .sidebar-item:hover,
+    .sidebar-btn-logout:hover {
+        background: transparent !important;
+        border: none !important;
+    }
+
+    .sidebar-item.active {
+        color: #c084fc !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .sidebar-item.active i {
+        color: #c084fc !important;
+        transform: translateY(-2px) scale(1.05) !important;
+    }
+
+    .sidebar-item.active .sidebar-text {
+        color: #c084fc !important;
+        font-weight: 700 !important;
+    }
+
+    .sidebar-item.active::after {
+        content: "" !important;
+        display: block !important;
+        width: 4px !important;
+        height: 4px !important;
+        background: linear-gradient(135deg, #7c3aed, #db2777) !important;
+        border-radius: 50% !important;
+        margin-top: 1px !important;
+        box-shadow: 0 0 8px rgba(124, 58, 237, 0.8) !important;
     }
 
     .sidebar-btn-logout {
-        width: 44px !important;
-        height: 44px !important;
-        border-radius: 14px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        flex-shrink: 0 !important;
+        color: #f43f5e !important;
+    }
+    .sidebar-btn-logout i {
+        color: #f43f5e !important;
+    }
+    .sidebar-btn-logout .sidebar-text {
+        color: #f43f5e !important;
     }
 
     /* ===== HEADER ===== */
@@ -2334,45 +2406,56 @@ textarea[name="admin_reply_field"]:focus {
     }
 
     .saas-username {
-        font-size: 15px !important;
+        font-size: 16px !important;
         font-weight: 700 !important;
+        color: #f1f5f9 !important;
     }
 
     .saas-role {
         font-size: 11px !important;
+        color: #7e7e8f !important;
     }
 
     .saas-search-container {
         width: 100% !important;
-        border-radius: 14px !important;
+        height: 50px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 16px !important;
+        box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.2) !important;
+        box-sizing: border-box !important;
+    }
+
+    .saas-search-icon {
+        top: 16px !important;
+        left: 16px !important;
     }
 
     .saas-search-input {
         font-size: 14px !important;
-        padding: 12px 12px 12px 42px !important;
-        border-radius: 14px !important;
+        padding: 12px 12px 12px 46px !important;
+        border-radius: 16px !important;
+        height: 100% !important;
+        background-image: none !important;
     }
 
     /* ===== TITLE ===== */
-    .saas-title-row {
-        padding: 14px 16px 6px 16px !important;
-    }
-
-    .saas-title-row h1 {
+    .saas-title-row,
+    .saas-page-title,
+    #content > h1,
+    #content-main > h1 {
         font-size: 20px !important;
+        font-weight: 700 !important;
+        padding: 14px 16px 6px 16px !important;
         margin: 0 !important;
+        color: #f1f5f9 !important;
     }
 
-    .saas-page-title {
-        font-size: 20px !important;
-        padding: 14px 16px 6px 16px !important;
-    }
-
-    /* ===== DASHBOARD GRID — stack everything vertically ===== */
+    /* ===== DASHBOARD GRID — stack vertically ===== */
     .saas-grid {
         display: flex !important;
         flex-direction: column !important;
-        gap: 14px !important;
+        gap: 16px !important;
         padding: 0 16px !important;
     }
 
@@ -2380,28 +2463,33 @@ textarea[name="admin_reply_field"]:focus {
     .saas-right-col {
         display: flex !important;
         flex-direction: column !important;
-        gap: 14px !important;
+        gap: 16px !important;
         width: 100% !important;
     }
 
     /* ===== WIDGET CARDS ===== */
     .saas-widget {
-        border-radius: 18px !important;
+        border-radius: 20px !important;
+        background: rgba(18, 18, 22, 0.6) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
         overflow: hidden !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
 
     .saas-widget-header {
-        padding: 14px 16px !important;
+        padding: 16px 20px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
     }
 
     .saas-widget-header h3 {
-        font-size: 14px !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
     }
 
     .saas-widget-body {
-        padding: 10px 14px 14px 14px !important;
+        padding: 16px !important;
     }
 
     /* ===== CHART ===== */
@@ -2418,28 +2506,37 @@ textarea[name="admin_reply_field"]:focus {
     .saas-metrics-row {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important;
+        gap: 12px !important;
         padding: 0 16px !important;
     }
 
     .saas-metric-card {
-        padding: 14px !important;
-        border-radius: 16px !important;
+        padding: 16px !important;
+        border-radius: 20px !important;
+        background: rgba(255, 255, 255, 0.02) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
 
     .saas-metric-title {
-        font-size: 10px !important;
+        font-size: 11px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        color: #7e7e8f !important;
     }
 
     .saas-metric-value {
-        font-size: 22px !important;
-        margin: 4px 0 !important;
+        font-size: 24px !important;
+        font-weight: 800 !important;
+        margin: 6px 0 !important;
+        color: #f1f5f9 !important;
     }
 
     .saas-metric-subtext {
-        font-size: 10px !important;
+        font-size: 11px !important;
+        color: #10b981 !important;
     }
 
     /* ===== TICKETS TABLE → MOBILE CARD LIST ===== */
@@ -2455,24 +2552,22 @@ textarea[name="admin_reply_field"]:focus {
     .saas-table tbody {
         display: flex !important;
         flex-direction: column !important;
-        gap: 8px !important;
+        gap: 10px !important;
         width: 100% !important;
     }
 
     .saas-table tbody tr {
         display: flex !important;
-        align-items: center !important;
-        gap: 10px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
         background: rgba(255, 255, 255, 0.025) !important;
         border: 1px solid rgba(255, 255, 255, 0.05) !important;
-        border-radius: 14px !important;
-        padding: 12px 14px !important;
+        border-radius: 16px !important;
+        padding: 14px 16px !important;
         width: 100% !important;
         box-sizing: border-box !important;
-    }
-
-    .saas-table tbody tr:last-child td {
-        border: none !important;
+        gap: 10px !important;
+        position: relative !important;
     }
 
     .saas-table td {
@@ -2482,150 +2577,133 @@ textarea[name="admin_reply_field"]:focus {
         background: transparent !important;
     }
 
-    /* Cell 1: avatar + username */
+    /* Cell 1: user cell */
     .saas-table tbody tr td:nth-child(1) {
-        flex: 0 0 auto !important;
-        overflow: hidden !important;
+        width: 100% !important;
     }
 
     .saas-user-cell {
-        gap: 8px !important;
-        min-width: 0 !important;
+        gap: 10px !important;
     }
 
     .saas-user-badge {
-        width: 32px !important;
-        height: 32px !important;
-        flex-shrink: 0 !important;
-    }
-
-    .saas-user-cell > div:last-child {
-        min-width: 0 !important;
+        width: 36px !important;
+        height: 36px !important;
     }
 
     .saas-user-cell > div:last-child > div:first-child {
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        max-width: 70px !important;
-        font-size: 12px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        max-width: 100% !important;
     }
 
-    .saas-user-cell > div:last-child > div:last-child {
-        font-size: 10px !important;
-    }
-
-    /* Cell 2: subject */
+    /* Cell 2: message subject */
     .saas-table tbody tr td:nth-child(2) {
-        flex: 1 1 0% !important;
-        min-width: 0 !important;
+        width: 100% !important;
+        padding: 2px 0 !important;
     }
 
     .saas-subject {
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        max-width: 100% !important;
+        white-space: normal !important;
         font-size: 13px !important;
+        color: #94a3b8 !important;
+        line-height: 1.4 !important;
     }
 
-    /* Cell 3: status - hide on mobile */
+    /* Cell 3: status - hide */
     .saas-table tbody tr td:nth-child(3) {
         display: none !important;
     }
 
-    /* Cell 4: reply action */
+    /* Cell 4: reply button */
     .saas-table tbody tr td:nth-child(4),
     .saas-table tbody tr td:last-child {
-        flex: 0 0 auto !important;
-        margin-left: auto !important;
+        width: 100% !important;
+        margin-top: 4px !important;
     }
 
     .saas-action-link {
-        font-size: 12px !important;
-        padding: 6px 10px !important;
-        border-radius: 10px !important;
+        font-size: 13px !important;
+        padding: 10px 16px !important;
+        border-radius: 12px !important;
+        width: 100% !important;
+        text-align: center !important;
+        display: block !important;
+        box-sizing: border-box !important;
+        background: rgba(139, 92, 246, 0.15) !important;
+        border: 1px solid rgba(139, 92, 246, 0.3) !important;
+        color: #c084fc !important;
     }
 
     /* ===== GAUGE / EFFICIENCY WIDGET ===== */
     .gauge-container {
-        height: 110px !important;
+        height: 120px !important;
     }
 
     #saasGaugeChart {
-        max-height: 110px !important;
+        max-height: 120px !important;
     }
 
     .gauge-percentage {
-        font-size: 26px !important;
-    }
-
-    .gauge-label {
-        font-size: 10px !important;
+        font-size: 28px !important;
     }
 
     /* ===== ACTIVITY FEED ===== */
     .activity-item {
-        padding: 10px 0 !important;
+        padding: 12px 0 !important;
+        gap: 12px !important;
     }
 
     .activity-avatar {
-        width: 34px !important;
-        height: 34px !important;
-        font-size: 11px !important;
-        border-radius: 10px !important;
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 12px !important;
     }
 
     .activity-username {
-        font-size: 13px !important;
-    }
-
-    .activity-meta {
-        font-size: 10px !important;
-    }
-
-    .activity-edit-btn {
-        width: 32px !important;
-        height: 32px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
     }
 
     /* ===== DATABASE ACCORDION SECTION ===== */
     .saas-db-section {
         padding: 0 16px !important;
-        margin-top: 14px !important;
+        margin-top: 16px !important;
     }
 
     .saas-db-summary {
-        padding: 14px 16px !important;
-        border-radius: 14px !important;
-        font-size: 13px !important;
+        padding: 16px 20px !important;
+        border-radius: 16px !important;
+        font-size: 14px !important;
     }
 
     .saas-db-body {
-        padding: 10px !important;
+        padding: 12px !important;
     }
 
     .saas-db-grid {
         display: flex !important;
         flex-direction: column !important;
-        gap: 12px !important;
+        gap: 14px !important;
     }
 
     .saas-db-card {
-        border-radius: 14px !important;
-        padding: 14px !important;
-    }
-
-    .saas-db-card h4 {
-        font-size: 13px !important;
+        border-radius: 16px !important;
+        padding: 16px !important;
+        background: rgba(255, 255, 255, 0.02) !important;
     }
 
     .saas-db-card-table tr {
         display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        gap: 8px !important;
-        padding: 10px 0 !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        padding: 12px 0 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    }
+
+    .saas-db-card-table tr:last-child {
+        border-bottom: none !important;
     }
 
     .saas-db-card-table td {
@@ -2634,217 +2712,193 @@ textarea[name="admin_reply_field"]:focus {
     }
 
     .saas-db-card-table td a {
-        font-size: 13px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
     }
 
     .saas-db-card-table td.actions-cell {
         display: flex !important;
-        gap: 8px !important;
-        flex-shrink: 0 !important;
+        gap: 10px !important;
+        width: 100% !important;
     }
 
     .saas-db-card-table td.actions-cell a {
-        font-size: 11px !important;
-        padding: 4px 10px !important;
+        flex: 1 !important;
+        text-align: center !important;
+        font-size: 12px !important;
+        padding: 8px 12px !important;
+        border-radius: 10px !important;
+        height: auto !important;
     }
 
     /* ============================================================
        CHANGELIST PAGES — Premium Mobile Redesign
        ============================================================ */
 
-    /* --- Page title --- */
-    .saas-page-title,
-    #content > h1,
-    #content-main > h1 {
-        font-size: 18px !important;
-        font-weight: 700 !important;
-        padding: 12px 16px 4px 16px !important;
-        margin: 0 !important;
-        color: #f1f5f9 !important;
-    }
-
-    /* --- Object tools: compact pill on the right --- */
+    /* --- Add Button (FAB-like Object Tools) --- */
     .object-tools {
         display: flex !important;
-        flex-direction: row !important;
-        justify-content: flex-end !important;
-        gap: 8px !important;
-        padding: 6px 16px !important;
+        padding: 10px 16px !important;
         margin: 0 0 8px 0 !important;
         list-style: none !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .object-tools li {
-        margin: 0 !important;
-        float: none !important;
+        width: 100% !important;
     }
 
     .object-tools a {
-        display: inline-flex !important;
+        display: flex !important;
         align-items: center !important;
-        gap: 4px !important;
-        width: auto !important;
-        padding: 8px 16px !important;
-        border-radius: 20px !important;
-        font-size: 12px !important;
-        font-weight: 600 !important;
-        text-transform: none !important;
-        letter-spacing: 0 !important;
-        background: rgba(139, 92, 246, 0.12) !important;
-        border: 1px solid rgba(139, 92, 246, 0.25) !important;
-        color: #c084fc !important;
-        text-decoration: none !important;
-    }
-
-    .object-tools a:hover {
-        background: #8b5cf6 !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        width: 100% !important;
+        height: 50px !important;
+        border-radius: 16px !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        background: linear-gradient(135deg, #7c3aed, #db2777) !important;
         color: #fff !important;
-    }
-
-    /* --- Changelist container --- */
-    #changelist {
-        display: block !important;
-        border-radius: 0 !important;
-        margin: 0 !important;
         border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-        backdrop-filter: none !important;
-        overflow: visible !important;
+        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3) !important;
+        text-decoration: none !important;
+        text-transform: none !important;
     }
 
-    /* --- Search bar: clean single-line --- */
+    /* --- Changelist Search Bar --- */
     #changelist-search {
         display: flex !important;
-        flex-wrap: wrap !important;
-        gap: 8px !important;
-        padding: 8px 16px 12px 16px !important;
-        background: transparent !important;
-        border: none !important;
-        align-items: center !important;
-    }
-
-    #changelist-search label {
-        display: none !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        padding: 10px 16px !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     #changelist-search #searchbar {
-        flex: 1 1 0% !important;
         width: 100% !important;
-        min-width: 0 !important;
-        box-sizing: border-box !important;
-        border-radius: 12px !important;
-        padding: 10px 14px !important;
+        height: 50px !important;
+        border-radius: 16px !important;
+        padding: 12px 16px !important;
         font-size: 14px !important;
-        background: rgba(255, 255, 255, 0.04) !important;
+        background: rgba(255, 255, 255, 0.03) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         color: #fff !important;
-        background-image: none !important;
-    }
-
-    #changelist-search #searchbar:focus {
-        border-color: #8b5cf6 !important;
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
-        outline: none !important;
+        box-sizing: border-box !important;
     }
 
     #changelist-search input[type="submit"] {
-        flex: 0 0 auto !important;
-        width: auto !important;
-        padding: 10px 20px !important;
-        border-radius: 12px !important;
-        font-size: 13px !important;
-        margin: 0 !important;
+        width: 100% !important;
+        height: 50px !important;
+        border-radius: 16px !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
         background: #8b5cf6 !important;
         border: none !important;
         color: #fff !important;
-        font-weight: 600 !important;
-        cursor: pointer !important;
     }
 
-    /* --- Filter panel: horizontal chip strip --- */
+    /* --- Filter panel: Horizontal swipeable chips --- */
     #changelist-filter {
         width: 100% !important;
-        order: -1 !important;
-        border: none !important;
-        padding: 0 16px 8px 16px !important;
-        margin: 0 0 4px 0 !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding: 10px 16px !important;
+        background: rgba(255, 255, 255, 0.015) !important;
+        border-bottom: 1.5px solid rgba(255, 255, 255, 0.04) !important;
         box-sizing: border-box !important;
-        background: transparent !important;
-        border-radius: 0 !important;
-        overflow: visible !important;
+        display: block !important;
+        order: -1 !important;
+        scrollbar-width: none;
     }
 
-    #changelist-filter h2 {
-        display: none !important;
+    #changelist-filter::-webkit-scrollbar {
+        display: none;
     }
 
     #changelist-filter h3 {
-        display: inline !important;
-        margin: 0 8px 0 0 !important;
-        font-size: 11px !important;
+        display: inline-block !important;
+        margin: 0 10px 0 0 !important;
+        font-size: 12px !important;
         color: #7e7e8f !important;
-        font-weight: 600 !important;
-        vertical-align: middle !important;
+        font-weight: 600;
+        vertical-align: middle;
     }
 
     #changelist-filter ul {
         display: inline-flex !important;
-        flex-wrap: wrap !important;
-        gap: 6px !important;
+        flex-direction: row !important;
+        gap: 8px !important;
         padding: 0 !important;
-        margin: 0 0 6px 0 !important;
-        vertical-align: middle !important;
+        margin: 0 !important;
+        vertical-align: middle;
     }
 
     #changelist-filter li {
+        display: inline-block !important;
         margin: 0 !important;
-        list-style: none !important;
     }
 
     #changelist-filter li a {
         display: inline-block !important;
-        padding: 5px 12px !important;
+        padding: 8px 16px !important;
         border-radius: 20px !important;
-        font-size: 11px !important;
+        font-size: 12px !important;
         font-weight: 600 !important;
-        white-space: nowrap !important;
-        background: rgba(255, 255, 255, 0.04) !important;
-        border: 1px solid rgba(255, 255, 255, 0.07) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background: rgba(255, 255, 255, 0.03) !important;
         color: #94a3b8 !important;
         text-decoration: none !important;
-        transition: all 0.15s ease !important;
-    }
-
-    #changelist-filter li a:hover {
-        background: rgba(255, 255, 255, 0.08) !important;
-        color: #fff !important;
+        transition: all 0.2s ease !important;
     }
 
     #changelist-filter li.selected a {
         background: linear-gradient(135deg, #7c3aed, #8b5cf6) !important;
         border-color: transparent !important;
         color: #fff !important;
-        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35) !important;
+        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3) !important;
     }
 
-    /* --- Actions toolbar: compact minimal bar --- */
+    /* --- Actions Toolbar: stacked select and action button --- */
     .actions {
         display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: wrap !important;
-        align-items: center !important;
-        gap: 8px !important;
-        padding: 10px 16px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        padding: 14px 16px !important;
         margin: 0 !important;
-        background: rgba(255, 255, 255, 0.015) !important;
-        border: none !important;
+        background: rgba(255, 255, 255, 0.01) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-        border-radius: 0 !important;
+        box-sizing: border-box !important;
     }
 
-    .actions > label {
-        display: none !important;
+    .actions select {
+        width: 100% !important;
+        height: 48px !important;
+        border-radius: 12px !important;
+        font-size: 13px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #fff !important;
+        padding: 0 12px !important;
+        box-sizing: border-box !important;
+    }
+
+    .actions button.button {
+        width: 100% !important;
+        height: 48px !important;
+        border-radius: 12px !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        background: #8b5cf6 !important;
+        border: none !important;
+        color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     .actions > span.all,
@@ -2853,33 +2907,11 @@ textarea[name="admin_reply_field"]:focus {
     .actions > span.question {
         font-size: 11px !important;
         color: #7e7e8f !important;
-        flex-basis: 100% !important;
-        order: 10 !important;
+        text-align: center !important;
     }
 
-    .actions select {
-        flex: 1 1 0% !important;
-        min-width: 0 !important;
-        box-sizing: border-box !important;
-        padding: 8px 12px !important;
-        border-radius: 10px !important;
-        font-size: 12px !important;
-        background: rgba(255, 255, 255, 0.03) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    }
-
-    .actions button.button {
-        flex: 0 0 auto !important;
-        width: auto !important;
-        padding: 8px 18px !important;
-        border-radius: 10px !important;
-        font-size: 12px !important;
-        font-weight: 700 !important;
-    }
-
-    /* --- Table → Card List --- */
+    /* --- Table → Card List (Arizalar / Profillar) --- */
     #changelist .results {
-        overflow-x: visible !important;
         width: 100% !important;
         padding: 0 !important;
     }
@@ -2887,7 +2919,6 @@ textarea[name="admin_reply_field"]:focus {
     #changelist table {
         display: block !important;
         width: 100% !important;
-        border: none !important;
     }
 
     #changelist table thead {
@@ -2897,92 +2928,97 @@ textarea[name="admin_reply_field"]:focus {
     #changelist table tbody {
         display: flex !important;
         flex-direction: column !important;
-        gap: 6px !important;
+        gap: 12px !important;
         width: 100% !important;
-        padding: 6px 16px !important;
+        padding: 12px 16px !important;
         box-sizing: border-box !important;
     }
 
     #changelist table tbody tr {
         display: flex !important;
-        flex-wrap: wrap !important;
-        align-items: center !important;
-        gap: 6px 10px !important;
-        background: rgba(255, 255, 255, 0.02) !important;
-        border: 1px solid rgba(255, 255, 255, 0.05) !important;
-        border-radius: 14px !important;
-        padding: 12px 14px !important;
-        width: 100% !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        background: rgba(20, 20, 25, 0.6) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+        border-radius: 20px !important;
+        padding: 18px 20px !important;
+        margin: 0 !important;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2) !important;
         box-sizing: border-box !important;
-        transition: all 0.15s ease !important;
-    }
-
-    #changelist table tbody tr:hover {
-        background: rgba(139, 92, 246, 0.04) !important;
-        border-color: rgba(139, 92, 246, 0.12) !important;
+        gap: 10px !important;
+        position: relative !important;
     }
 
     #changelist table tbody tr.selected {
         background: rgba(139, 92, 246, 0.08) !important;
-        border-color: rgba(139, 92, 246, 0.2) !important;
+        border-color: rgba(139, 92, 246, 0.25) !important;
     }
 
     #changelist table tbody td,
     #changelist table tbody th {
-        display: inline-block !important;
-        padding: 0 !important;
+        display: block !important;
+        width: 100% !important;
+        padding: 4px 0 !important;
         border: none !important;
-        font-size: 13px !important;
-        line-height: 1.4 !important;
         background: transparent !important;
+        text-align: left !important;
+        box-sizing: border-box !important;
     }
 
-    /* Checkbox */
+    /* Checkbox positioning in cards */
     #changelist table tbody td.action-checkbox {
-        flex: 0 0 20px !important;
-        order: -1 !important;
+        position: absolute !important;
+        top: 18px !important;
+        right: 18px !important;
+        width: 24px !important;
+        height: 24px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 10 !important;
+        margin: 0 !important;
     }
 
-    /* Primary column (name / object link) */
+    #changelist table tbody td.action-checkbox input {
+        width: 20px !important;
+        height: 20px !important;
+        cursor: pointer !important;
+    }
+
+    /* Primary title column (Application / Profile name) */
     #changelist table tbody th {
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
+        width: calc(100% - 30px) !important; /* reserve space for checkbox */
     }
 
     #changelist table tbody th a {
-        font-size: 14px !important;
+        font-size: 17px !important;
         font-weight: 700 !important;
-        color: #e2e8f0 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        display: block !important;
+        color: #f1f5f9 !important;
         text-decoration: none !important;
+        white-space: normal !important;
+        line-height: 1.4 !important;
+        display: inline-block !important;
     }
 
-    /* Secondary data columns */
+    /* Fields list styling */
     #changelist table tbody td {
-        flex: 0 1 auto !important;
-        font-size: 12px !important;
-        color: #64748b !important;
+        font-size: 13px !important;
+        color: #94a3b8 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+        padding: 8px 0 !important;
     }
 
-    #changelist table tbody td:empty {
-        display: none !important;
+    #changelist table tbody td:last-child {
+        border-bottom: none !important;
     }
 
-    #changelist table tbody td a {
-        color: #8b5cf6 !important;
-        font-weight: 600 !important;
-        font-size: 12px !important;
-        text-decoration: none !important;
-    }
-
-    /* Boolean icons */
+    /* Booleans */
     #changelist table tbody td img {
-        width: 14px !important;
-        height: 14px !important;
-        vertical-align: middle !important;
+        width: 16px !important;
+        height: 16px !important;
     }
 
     /* --- Paginator --- */
@@ -2991,38 +3027,47 @@ textarea[name="admin_reply_field"]:focus {
         flex-wrap: wrap !important;
         justify-content: center !important;
         align-items: center !important;
-        gap: 4px !important;
-        padding: 12px 16px !important;
-        font-size: 12px !important;
-        border-radius: 0 !important;
-        margin: 0 !important;
+        gap: 6px !important;
+        padding: 16px !important;
+        font-size: 13px !important;
         background: transparent !important;
         border: none !important;
         border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
+        box-sizing: border-box !important;
     }
 
     .paginator a {
-        padding: 6px 10px !important;
-        border-radius: 8px !important;
-        background: rgba(255, 255, 255, 0.04) !important;
-        font-size: 12px !important;
+        padding: 8px 14px !important;
+        border-radius: 12px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        color: #94a3b8 !important;
+        text-decoration: none !important;
     }
 
     .paginator .this-page {
-        padding: 6px 10px !important;
-        border-radius: 8px !important;
+        padding: 8px 14px !important;
+        border-radius: 12px !important;
+        background: #8b5cf6 !important;
+        color: #fff !important;
+        font-weight: 700 !important;
     }
 
-    /* ===== FORMS ===== */
+    /* ===== EDIT FORMS ===== */
     .form-row {
         display: flex !important;
         flex-direction: column !important;
-        gap: 6px !important;
-        padding: 12px 16px !important;
+        gap: 8px !important;
+        padding: 16px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+        box-sizing: border-box !important;
     }
 
     .form-row label {
         width: 100% !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        color: #94a3b8 !important;
     }
 
     .form-row input[type="text"],
@@ -3036,11 +3081,21 @@ textarea[name="admin_reply_field"]:focus {
     .vLargeTextField,
     .vUUIDField {
         width: 100% !important;
+        height: 50px !important;
         box-sizing: border-box !important;
         font-size: 14px !important;
+        padding: 12px 16px !important;
+        border-radius: 14px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #fff !important;
+        box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.2) !important;
     }
 
-    /* Inline groups */
+    .form-row textarea {
+        height: 120px !important;
+    }
+
     .inline-group .tabular .module table {
         display: block !important;
         overflow-x: auto !important;
@@ -3051,41 +3106,110 @@ textarea[name="admin_reply_field"]:focus {
         position: relative !important;
         bottom: auto !important;
         margin: 16px !important;
+        display: flex !important;
         flex-direction: column !important;
         align-items: stretch !important;
-        padding: 14px !important;
-        border-radius: 14px !important;
+        padding: 16px !important;
+        border-radius: 20px !important;
         gap: 10px !important;
-        box-shadow: none !important;
+        background: rgba(18, 18, 22, 0.6) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
     }
 
     .submit-row input,
     .submit-row a,
     .submit-row p.deletelink-box a {
         width: 100% !important;
-        text-align: center !important;
+        height: 50px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 16px !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
         box-sizing: border-box !important;
+    }
+
+    .submit-row input[name="_save"] {
+        background: linear-gradient(135deg, #7c3aed, #db2777) !important;
+        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3) !important;
+        color: #fff !important;
+        border: none !important;
+    }
+
+    .submit-row input[name="_addanother"],
+    .submit-row input[name="_continue"] {
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #e2e8f0 !important;
+    }
+
+    .submit-row p.deletelink-box {
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    .submit-row a.deletelink {
+        background: rgba(244, 63, 94, 0.15) !important;
+        border: 1px solid rgba(244, 63, 94, 0.3) !important;
+        color: #fda4af !important;
     }
 
     /* ===== LOGIN PAGE ===== */
     body.login {
         padding: 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+        box-sizing: border-box !important;
     }
 
     body.login #container {
         max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        background: transparent !important;
+        border: none !important;
     }
 
     body.login #content {
-        padding: 24px 20px !important;
+        padding: 30px 24px !important;
         margin: 0 !important;
-        border-radius: 18px !important;
+        border-radius: 24px !important;
+        background: rgba(18, 18, 22, 0.8) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     body.login #content input[type="text"],
     body.login #content input[type="password"] {
         width: 100% !important;
+        height: 50px !important;
+        border-radius: 14px !important;
+        padding: 12px 16px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #fff !important;
         box-sizing: border-box !important;
+    }
+
+    body.login .submit-row {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 20px 0 0 0 !important;
+    }
+
+    body.login .submit-row input[type="submit"] {
+        background: linear-gradient(135deg, #7c3aed, #db2777) !important;
+        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3) !important;
+        color: #fff !important;
     }
 
     /* ===== GLOWING ORBS — hide ===== */
@@ -3095,12 +3219,12 @@ textarea[name="admin_reply_field"]:focus {
 
     /* ===== MESSAGES ===== */
     .messagelist {
-        margin: 0 16px 14px 16px !important;
-        border-radius: 14px !important;
+        margin: 14px 16px !important;
+        border-radius: 16px !important;
     }
 
     .messagelist li {
-        padding: 12px 16px !important;
+        padding: 14px 18px !important;
         font-size: 13px !important;
     }
 }
@@ -3119,15 +3243,17 @@ textarea[name="admin_reply_field"]:focus {
         font-size: 26px !important;
     }
 
-    .sidebar-item, .sidebar-btn-logout {
-        width: 38px !important;
-        height: 38px !important;
-        border-radius: 12px !important;
+    .sidebar-item,
+    .sidebar-btn-logout {
+        width: 52px !important;
+        height: 52px !important;
+    }
+    
+    .sidebar-text {
+        font-size: 9px !important;
     }
 
     .saas-sidebar {
-        height: 54px !important;
-        border-radius: 16px !important;
+        height: 72px !important;
     }
 }
-

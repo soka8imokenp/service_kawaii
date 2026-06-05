@@ -45,12 +45,15 @@
                 <div class="sidebar-menu">
                     <a href="{% url 'admin:index' %}" class="sidebar-item" id="nav-home" title="Boshqaruv markazi">
                         <i data-lucide="layout-dashboard" style="width: 20px; height: 20px;"></i>
+                        <span class="sidebar-text">Bosh sahifa</span>
                     </a>
                     <a href="/admin/feedback/application/" class="sidebar-item" id="nav-apps" title="Arizalar">
                         <i data-lucide="message-square" style="width: 20px; height: 20px;"></i>
+                        <span class="sidebar-text">Arizalar</span>
                     </a>
                     <a href="/admin/feedback/profile/" class="sidebar-item" id="nav-profiles" title="Foydalanuvchi profillari">
                         <i data-lucide="users" style="width: 20px; height: 20px;"></i>
+                        <span class="sidebar-text">Profillar</span>
                     </a>
                 </div>
             </div>
@@ -58,12 +61,14 @@
             <div class="sidebar-footer">
                 <a href="/admin/password_change/" class="sidebar-item" id="nav-settings" title="Parolni o'zgartirish">
                     <i data-lucide="settings" style="width: 20px; height: 20px;"></i>
+                    <span class="sidebar-text">Sozlamalar</span>
                 </a>
                 <form action="{% url 'admin:logout' %}" method="post" id="saas-logout-form" style="display: none;">
                     {% csrf_token %}
                 </form>
                 <button onclick="document.getElementById('saas-logout-form').submit();" class="sidebar-btn-logout" title="Chiqish">
                     <i data-lucide="log-out" style="width: 20px; height: 20px;"></i>
+                    <span class="sidebar-text">Chiqish</span>
                 </button>
             </div>
         </div>
