@@ -2621,8 +2621,8 @@ textarea[name="admin_reply_field"]:focus {
         display: block !important;
     }
 
-    /* Hide default duplicate changelist search bar to prevent overlapping search fields */
-    #changelist-search {
+    /* Hide default duplicate changelist search bar and empty toolbar container to prevent empty spacing/backgrounds */
+    #changelist-search, #toolbar {
         display: none !important;
     }
 
@@ -2632,10 +2632,12 @@ textarea[name="admin_reply_field"]:focus {
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 16px !important;
-        margin: 0 20px 20px 20px !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        margin: 0 0 20px 0 !important;
         padding: 16px !important;
-        width: calc(100% - 40px) !important;
+        width: 100% !important;
         display: block !important;
         box-sizing: border-box !important;
         overflow-x: visible !important;
@@ -2703,13 +2705,15 @@ textarea[name="admin_reply_field"]:focus {
         display: flex !important;
         flex-direction: column !important;
         gap: 12px !important;
-        padding: 16px !important;
-        margin: 0 20px 20px 20px !important;
+        padding: 16px 20px !important;
+        margin: 0 0 20px 0 !important;
         background-color: rgba(18, 18, 24, 0.6) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 16px !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-radius: 0 !important;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
         box-sizing: border-box !important;
     }
@@ -2740,6 +2744,19 @@ textarea[name="admin_reply_field"]:focus {
         background-size: 16px !important;
         appearance: none !important;
         -webkit-appearance: none !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    }
+
+    .actions select:focus,
+    .actions select:focus-visible {
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .actions select option {
+        background-color: #121214 !important;
+        color: #f8fafc !important;
     }
 
     .actions button.button {
@@ -2757,7 +2774,7 @@ textarea[name="admin_reply_field"]:focus {
 
     /* 11. Changelist Main Table (Cards layout) */
     #changelist .results {
-        padding: 0 20px !important;
+        padding: 0 !important;
     }
 
     #changelist table {
@@ -2781,8 +2798,10 @@ textarea[name="admin_reply_field"]:focus {
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 16px !important;
-        padding: 16px !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-radius: 0 !important;
+        padding: 16px 20px !important;
         position: relative !important;
     }
 
@@ -2885,9 +2904,11 @@ textarea[name="admin_reply_field"]:focus {
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 16px !important;
-        padding: 12px !important;
-        margin: 0 20px 20px 20px !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-radius: 0 !important;
+        padding: 12px 20px !important;
+        margin: 0 0 20px 0 !important;
         box-shadow: none !important;
         box-sizing: border-box !important;
     }
@@ -2979,12 +3000,14 @@ textarea[name="admin_reply_field"]:focus {
         flex-direction: column !important;
         gap: 12px !important;
         padding: 20px !important;
-        margin: 20px !important;
+        margin: 20px 0 !important;
         background-color: rgba(18, 18, 24, 0.6) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 16px !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-radius: 0 !important;
         position: static !important;
     }
 
