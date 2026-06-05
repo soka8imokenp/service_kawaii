@@ -266,6 +266,7 @@ def ban_user_db(telegram_id, reason=""):
         if profile.is_banned:
             return "already_banned"
         profile.is_banned = True
+        profile.is_offended = False
         profile.ban_reason = reason
         profile.save()
         return "success"
@@ -283,11 +284,40 @@ def unban_user_db(telegram_id):
         if not profile.is_banned:
             return "already_unbanned"
         profile.is_banned = False
+        profile.is_offended = False
         profile.ban_reason = ""
         profile.save()
+
+        # Clear strikes from django cache
+        from django.core.cache import cache
+        strike_key = f"abuse_strikes_{telegram_id}"
+        cache.delete(strike_key)
+
         return "success"
     except Exception as e:
         print(f"Unban user error: {e}", flush=True)
+        return "error"
+
+
+@sync_to_async
+def unoffend_user_db(telegram_id):
+    try:
+        profile = Profile.objects.filter(telegram_id=telegram_id).first()
+        if not profile:
+            return "not_found"
+        profile.is_banned = False
+        profile.is_offended = False
+        profile.ban_reason = ""
+        profile.save()
+
+        # Clear strikes from django cache
+        from django.core.cache import cache
+        strike_key = f"abuse_strikes_{telegram_id}"
+        cache.delete(strike_key)
+
+        return "success"
+    except Exception as e:
+        print(f"Unoffend user error: {e}", flush=True)
         return "error"
 
 
@@ -382,6 +412,47 @@ async def handle_unban_user_callback(callback: types.CallbackQuery):
             )
         except Exception as pm_err:
             print(f"Failed to send unban notification to user {telegram_id}: {pm_err}", flush=True)
+
+    except Exception as e:
+        await callback.answer(f"❌ Xatolik: {str(e)}", show_alert=True)
+
+
+@dp.callback_query(F.data.startswith("unoffend_user:"))
+async def handle_unoffend_user_callback(callback: types.CallbackQuery):
+    telegram_id = int(callback.data.split(":")[1])
+    try:
+        status = await unoffend_user_db(telegram_id)
+        if status == "not_found":
+            await callback.answer("❌ Foydalanuvchi profili topilmadi.", show_alert=True)
+            return
+
+        await callback.answer("✅ Foydalanuvchi kechirildi (ban qilinmadi)!", show_alert=False)
+
+        # Edit the group message to show forgiveness confirmed
+        orig_text = callback.message.text or ""
+        new_text = orig_text + "\n\n✅ <b>Ban qilinmadi (Kechirildi)</b>"
+        try:
+            await callback.message.edit_text(text=new_text, parse_mode="HTML", reply_markup=None)
+        except Exception:
+            try:
+                await callback.message.edit_reply_markup(reply_markup=None)
+            except Exception:
+                pass
+
+        # Notify the user via PM
+        try:
+            await main_bot.send_message(
+                chat_id=telegram_id,
+                text=(
+                    "🌸 <b>Sumire sizni kechirdi!</b>\n"
+                    "━━━━━━━━━━━━━━\n"
+                    "Endi Web App orqali Sumire bilan yana gaplashishingiz mumkin.\n\n"
+                    "Iltimos, hurmatli munosabatda bo'ling."
+                ),
+                parse_mode="HTML"
+            )
+        except Exception as pm_err:
+            print(f"Failed to send unoffend notification to user {telegram_id}: {pm_err}", flush=True)
 
     except Exception as e:
         await callback.answer(f"❌ Xatolik: {str(e)}", show_alert=True)

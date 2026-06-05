@@ -300,7 +300,7 @@ def _notify_admins(application):
 
 
 def _notify_admins_sumire_report(profile, user_id, username, user_text, offensive_words=None, report_type="abuse"):
-    """Send a SUMIRE moderation report to the admin group with BAN/UNBAN button."""
+    """Send a SUMIRE moderation report to the admin group with BAN/UNBAN/UNOFFEND buttons."""
     admin_bot_token = os.getenv("ADMIN_BOT_TOKEN")
     admin_chat_id = os.getenv("ADMIN_CHAT_ID")
     
@@ -323,8 +323,12 @@ def _notify_admins_sumire_report(profile, user_id, username, user_text, offensiv
             f"<b>Oxirgi xabar:</b> <i>{user_text[:500]}</i>\n\n"
             f"⚠️ <i>Ushbu foydalanuvchi 3 marta ogohlantirildidan keyin ham qo'pol muomala qildi.</i>"
         )
-        button_text = "🚫 BAN"
-        callback_data = f"ban_user:{telegram_id}"
+        inline_keyboard = [
+            [
+                {"text": "🚫 BAN", "callback_data": f"ban_user:{telegram_id}"},
+                {"text": "✅ Kechirish (Ban qilmaslik)", "callback_data": f"unoffend_user:{telegram_id}"}
+            ]
+        ]
     else:  # apology
         message_text = (
             f"🕊️ <b>SUMIRE XABAR #{telegram_id}</b>\n"
@@ -337,8 +341,11 @@ def _notify_admins_sumire_report(profile, user_id, username, user_text, offensiv
             f"<b>Uzr xabari:</b> <i>{user_text[:500]}</i>\n\n"
             f"🤔 <i>Foydalanuvchini kechirish va banni olib tashlashni xohlaysizmi?</i>"
         )
-        button_text = "✅ UNBAN"
-        callback_data = f"unban_user:{telegram_id}"
+        inline_keyboard = [
+            [
+                {"text": "✅ UNBAN", "callback_data": f"unban_user:{telegram_id}"}
+            ]
+        ]
 
     url = f"https://api.telegram.org/bot{admin_bot_token}/sendMessage"
     try:
@@ -349,17 +356,60 @@ def _notify_admins_sumire_report(profile, user_id, username, user_text, offensiv
                 "text": message_text,
                 "parse_mode": "HTML",
                 "reply_markup": {
-                    "inline_keyboard": [
-                        [
-                            {"text": button_text, "callback_data": callback_data}
-                        ]
-                    ]
+                    "inline_keyboard": inline_keyboard
                 }
             },
             timeout=5,
         )
     except Exception as e:
         print(f"Sumire report notification error: {e}")
+
+
+def _is_apology_via_ai(user_text, chat_history_text=""):
+    """Check if the user is apologizing using LLM (DeepSeek)."""
+    if not client:
+        # Fallback to keyword matching if API is not available
+        apology_words = [
+            "kechirasiz", "uzr", "sorry", "kechirim", "keching",
+            "iltimos kechiring", "men xato qildim", "xato qildim",
+            "uzr so'rayman", "kechir", "kechiring", "afsuski", "kechiras"
+        ]
+        text_lower = user_text.lower()
+        return any(w in text_lower for w in apology_words)
+
+    prompt = (
+        "Foydalanuvchi quyidagi xabarni yubordi. U o'zining qo'pol muomalasi, "
+        "so'kinishi yoki xatti-harakati uchun chin dildan uzr so'rayaptimi yoki kechirim so'rayaptimi?\n"
+        "E'tibor bering, shunchaki 'alooo' deyish yoki gapni aylantirish uzr so'rash hisoblanmaydi. "
+        "Uzr so'rashda u 'kechiring', 'uzr', 'xato qildim', 'kechirasiz' kabi so'zlardan foydalanadi va xatosini tan oladi.\n\n"
+        f"Muloqot tarixi:\n{chat_history_text}\n\n"
+        f"Foydalanuvchining yangi xabari: {user_text}\n\n"
+        "Faqat JSON formatda javob bering, kalit so'z 'is_apology' bo'lsin va qiymati true yoki false bo'lsin. Format:\n"
+        "{\n  \"is_apology\": true\n}"
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[
+                {"role": "system", "content": "Siz foydalanuvchining uzr so'rayotganini aniqlovchi modulatorsiz. Faqat JSON qaytarasiz."},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.1,
+            max_tokens=50
+        )
+        res_data = json.loads(response.choices[0].message.content)
+        return bool(res_data.get("is_apology", False))
+    except Exception as e:
+        print(f"Apology check AI Error: {e}", flush=True)
+        apology_words = [
+            "kechirasiz", "uzr", "sorry", "kechirim", "keching",
+            "iltimos kechiring", "men xato qildim", "xato qildim",
+            "uzr so'rayman", "kechir", "kechiring", "afsuski", "kechiras"
+        ]
+        text_lower = user_text.lower()
+        return any(w in text_lower for w in apology_words)
 
 
 def _create_ticket(user_text, user_id=None, username=None, subject=None):
@@ -690,6 +740,8 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         if strikes >= 3:
             # Strike 3: Sumire is hurt, report to admins
             if profile and uid:
+                profile.is_offended = True
+                profile.save()
                 _notify_admins_sumire_report(profile, uid, username, user_text, offensive_words, report_type="abuse")
             return _sumire_response("Men sendan hafa bo'ldim. *ko'zlariga yosh keladi*", "fuu")
         elif strikes == 2:
@@ -1132,15 +1184,18 @@ def api_send_message(request):
             except Exception as e:
                 print(f"Profile error: {e}")
 
+        # --- MODERATION: Offended check ---
+        if profile and profile.is_offended:
+            return _sumire_response(
+                "Men sizdan xafaman, siz bilan gaplashmayman. Adminlar qarorini kutyapman. *uzoqqa qaraydi*",
+                "face palm"
+            )
+
         # --- MODERATION: Ban check ---
         if profile and profile.is_banned:
-            apology_words = [
-                "kechirasiz", "uzr", "sorry", "kechirim", "keching",
-                "iltimos kechiring", "men xato qildim", "xato qildim",
-                "uzr so'rayman", "kechir", "kechiring", "afsuski"
-            ]
-            text_lower = user_text.lower()
-            is_apology = any(w in text_lower for w in apology_words)
+            chat_history = cache.get(history_key, [])
+            history_text = "\n".join([f"{msg['role']}: {msg['text']}" for msg in chat_history])
+            is_apology = _is_apology_via_ai(user_text, chat_history_text=history_text)
 
             if is_apology:
                 _notify_admins_sumire_report(
@@ -1152,7 +1207,7 @@ def api_send_message(request):
                 )
             else:
                 return _sumire_response(
-                    "Sen meni xafa qilding. Men senga javob bermoqchi emasman. *uzoqqa qaraydi*", "fuu"
+                    "Sen meni xafa qilding. Men senga javob bermoqchi emasman. *uzoqqa qaraydi*", "face palm"
                 )
         chat_history = cache.get(history_key, [])
         history_text = "\n".join([f"{msg['role']}: {msg['text']}" for msg in chat_history])

@@ -17,6 +17,7 @@ class Profile(models.Model):
     
     # --- MODERATION ---
     is_banned = models.BooleanField(default=False, verbose_name="Banned")
+    is_offended = models.BooleanField(default=False, verbose_name="Xafa bo'lgan")
     ban_reason = models.TextField(blank=True, null=True, verbose_name="Ban sababi")
     
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Oxirgi faollik", null=True, blank=True)
