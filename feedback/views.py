@@ -1253,9 +1253,11 @@ def api_send_message(request):
         text_lower = user_text.lower()
         
         rude_keywords = [
-            "daun", "gandon", "suka", "blyad", "tvar", "pidor", "ahmoq",
+            "daun", "gandon", "suka", "blyad", "blyat", "tvar", "pidor", "pider", "ahmoq",
             "jalab", "qotoq", "yiban", "lox", "lo'x", "dalbayob", "dalbaob",
-            "hezi", "haromi", "iflos"
+            "hezi", "haromi", "iflos", "yeban", "eban", "yobani", "yobaniy",
+            "skaman", "sikaman", "sikey", "sikay", "siki", "sikish", "sikiş", "sik", "ski",
+            "ami", "aminga", "am", "poxuy", "pohuy", "naxuy", "nahuy", "chmo"
         ]
         
         for word in rude_keywords:
