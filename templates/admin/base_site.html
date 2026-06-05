@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block branding %}
-<!-- Site logo/branding is already handled in base.html's sidebar -->
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Sumire Boshqaruv Markazi</a></h1>
 {% endblock %}
 
 {% block extrastyle %}
@@ -15,6 +15,11 @@
 <!-- Table dynamic Lucide icon injector for model table links -->
 <script>
   document.addEventListener("DOMContentLoaded", function() {
+      // Only run on desktop
+      if (window.innerWidth <= 768) {
+          return;
+      }
+      
       const iconMapping = {
           'ariza': 'message-square',
           'application': 'message-square',

@@ -3,11 +3,31 @@
 
 {% block extrastyle %}
 {{ block.super }}
-<!-- Dashboard-specific CSS tweaks if any -->
+<link rel="stylesheet" href="{% static "admin/css/dashboard.css" %}">
 <style>
-    /* Reset default header spacing for dashboard home */
-    .saas-page-title {
-        display: none !important; /* Hide redundant page title since dashboard title row handles it */
+    /* Reset default header spacing for dashboard home on desktop */
+    @media (min-width: 769px) {
+        .saas-page-title {
+            display: none !important;
+        }
+    }
+    
+    /* Responsive visibility toggles */
+    @media (max-width: 768px) {
+        .saas-dashboard-layout {
+            display: none !important;
+        }
+        .django-default-dashboard {
+            display: block !important;
+        }
+    }
+    @media (min-width: 769px) {
+        .saas-dashboard-layout {
+            display: block !important;
+        }
+        .django-default-dashboard {
+            display: none !important;
+        }
     }
 </style>
 {% endblock %}
@@ -19,149 +39,194 @@
 {% endblock %}
 
 {% block content %}
-<!-- Title section -->
-<div class="saas-title-row">
-    <h1>Boshqaruv Markazi</h1>
-</div>
+<!-- ==========================================
+     1. Custom Premium Layout (Desktop Only)
+     ========================================== -->
+<div class="saas-dashboard-layout">
+    <!-- Title section -->
+    <div class="saas-title-row">
+        <h1>Boshqaruv Markazi</h1>
+    </div>
 
-<!-- Dashboard Widgets Grid -->
-<div class="saas-grid">
-    
-    <!-- Left column: Line Chart, Tickets Table, KPI cards -->
-    <div class="saas-left-col">
+    <!-- Dashboard Widgets Grid -->
+    <div class="saas-grid">
         
-        <!-- Chart Widget -->
-        <div class="saas-widget">
-            <div class="saas-widget-header">
-                <h3><i data-lucide="trending-up" style="width: 16px; height: 16px;"></i> Arizalar dinamikasi</h3>
-                <span style="font-size: 11.5px; color: #7e7e8f; font-weight: 700;">Oxirgi 15 kunlik faollik</span>
-            </div>
-            <div class="saas-widget-body">
-                <div style="position: relative; height: 260px; width: 100%;">
-                    <canvas id="saasActivityChart" style="min-height: 260px !important; max-height: 260px !important;"></canvas>
+        <!-- Left column: Line Chart, Tickets Table, KPI cards -->
+        <div class="saas-left-col">
+            
+            <!-- Chart Widget -->
+            <div class="saas-widget">
+                <div class="saas-widget-header">
+                    <h3><i data-lucide="trending-up" style="width: 16px; height: 16px;"></i> Arizalar dinamikasi</h3>
+                    <span style="font-size: 11.5px; color: #7e7e8f; font-weight: 700;">Oxirgi 15 kunlik faollik</span>
+                </div>
+                <div class="saas-widget-body">
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="saasActivityChart" style="min-height: 260px !important; max-height: 260px !important;"></canvas>
+                    </div>
                 </div>
             </div>
+            
+            <!-- Recent Pending Tickets Table Widget -->
+            <div class="saas-widget">
+                <div class="saas-widget-header">
+                    <h3><i data-lucide="mail" style="width: 16px; height: 16px; color: #fbbf24;"></i> Yangi kelib tushgan arizalar</h3>
+                    <a href="/admin/feedback/application/?is_answered__exact=0" style="font-size: 12px; font-weight: 700; color: #8b5cf6; text-decoration: none;">Barchasi</a>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="saas-table">
+                        <thead>
+                            <tr>
+                                <th>Mijoz</th>
+                                <th>Mavzu</th>
+                                <th>Holat</th>
+                                <th style="text-align: right;">Harakat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="saas-tickets-body">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #7e7e8f; padding: 40px 0;">Yuklanmoqda...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Metrics row (Total stats cards side-by-side) -->
+            <div class="saas-metrics-row">
+                <!-- Metric Card 1 -->
+                <div class="saas-metric-card">
+                    <div class="saas-metric-header">
+                        <span class="saas-metric-title">Jami Arizalar</span>
+                        <div class="saas-metric-icon">
+                            <i data-lucide="inbox" style="width: 16px; height: 16px;"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="saas-metric-value" id="saas-total-apps">--</div>
+                        <div class="saas-metric-subtext">
+                            <span class="saas-trend-badge">+12%</span> Telegram orqali
+                        </div>
+                    </div>
+                </div>
+                <!-- Metric Card 2 -->
+                <div class="saas-metric-card pink-glow">
+                    <div class="saas-metric-header">
+                        <span class="saas-metric-title">Jami Profillar</span>
+                        <div class="saas-metric-icon">
+                            <i data-lucide="users" style="width: 16px; height: 16px;"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="saas-metric-value" id="saas-total-profiles">--</div>
+                        <div class="saas-metric-subtext">
+                            <span class="saas-trend-badge">+8%</span> Ro'yxatdan o'tganlar
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
         
-        <!-- Recent Pending Tickets Table Widget -->
-        <div class="saas-widget">
-            <div class="saas-widget-header">
-                <h3><i data-lucide="mail" style="width: 16px; height: 16px; color: #fbbf24;"></i> Yangi kelib tushgan arizalar</h3>
-                <a href="/admin/feedback/application/?is_answered__exact=0" style="font-size: 12px; font-weight: 700; color: #8b5cf6; text-decoration: none;">Barchasi</a>
-            </div>
-            <div style="overflow-x: auto;">
-                <table class="saas-table">
-                    <thead>
-                        <tr>
-                            <th>Mijoz</th>
-                            <th>Mavzu</th>
-                            <th>Holat</th>
-                            <th style="text-align: right;">Harakat</th>
-                        </tr>
-                    </thead>
-                    <tbody id="saas-tickets-body">
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: #7e7e8f; padding: 40px 0;">Yuklanmoqda...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- Metrics row (Total stats cards side-by-side) -->
-        <div class="saas-metrics-row">
-            <!-- Metric Card 1 -->
-            <div class="saas-metric-card">
-                <div class="saas-metric-header">
-                    <span class="saas-metric-title">Jami Arizalar</span>
-                    <div class="saas-metric-icon">
-                        <i data-lucide="inbox" style="width: 16px; height: 16px;"></i>
-                    </div>
+        <!-- Right column: Efficiency circular chart, Recent users -->
+        <div class="saas-right-col">
+            
+            <!-- Circular Gauge Widget (Answer Rate) -->
+            <div class="saas-widget">
+                <div class="saas-widget-header">
+                    <h3><i data-lucide="pie-chart" style="width: 16px; height: 16px;"></i> Samaradorlik</h3>
                 </div>
-                <div>
-                    <div class="saas-metric-value" id="saas-total-apps">--</div>
-                    <div class="saas-metric-subtext">
-                        <span class="saas-trend-badge">+12%</span> Telegram orqali
+                <div class="saas-widget-body">
+                    <div class="gauge-container" style="position: relative; height: 130px; width: 100%; margin: 10px 0;">
+                        <canvas id="saasGaugeChart" style="max-height: 130px !important; width: 100%;"></canvas>
+                        
+                        <div class="gauge-overlay" style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none;">
+                            <div class="gauge-percentage" id="saas-gauge-percentage" style="font-size: 32px; font-weight: 800; color: #ffffff; line-height: 1;">--%</div>
+                            <div class="gauge-label" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #7e7e8f; letter-spacing: 0.5px; margin-top: 4px;">Javob berilgan</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 11px; color: #7e7e8f; font-weight: 700; text-transform: uppercase;">Faol</div>
+                            <div style="font-size: 15px; font-weight: 800; color: #fbbf24; margin-top: 4px;" id="saas-unanswered-apps">--</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 11px; color: #7e7e8f; font-weight: 700; text-transform: uppercase;">Yopilgan</div>
+                            <div style="font-size: 15px; font-weight: 800; color: #34d399; margin-top: 4px;" id="saas-answered-apps">--</div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Metric Card 2 -->
-            <div class="saas-metric-card pink-glow">
-                <div class="saas-metric-header">
-                    <span class="saas-metric-title">Jami Profillar</span>
-                    <div class="saas-metric-icon">
-                        <i data-lucide="users" style="width: 16px; height: 16px;"></i>
-                    </div>
+            
+            <!-- Recent Activity Feed Widget (New Registered Profiles) -->
+            <div class="saas-widget">
+                <div class="saas-widget-header">
+                    <h3><i data-lucide="user-check" style="width: 16px; height: 16px;"></i> Oxirgi foydalanuvchilar</h3>
+                    <a href="/admin/feedback/profile/" style="font-size: 12px; font-weight: 700; color: #8b5cf6; text-decoration: none;">Barchasi</a>
                 </div>
-                <div>
-                    <div class="saas-metric-value" id="saas-total-profiles">--</div>
-                    <div class="saas-metric-subtext">
-                        <span class="saas-trend-badge">+8%</span> Ro'yxatdan o'tganlar
+                <div class="saas-widget-body" style="padding: 20px;">
+                    <div class="activity-feed" id="saas-profiles-feed">
+                        <div style="text-align: center; color: #7e7e8f; padding: 20px 0;">Yuklanmoqda...</div>
                     </div>
                 </div>
             </div>
+            
         </div>
         
     </div>
-    
-    <!-- Right column: Efficiency circular chart, Recent users -->
-    <div class="saas-right-col">
-        
-        <!-- Circular Gauge Widget (Answer Rate) -->
-        <div class="saas-widget">
-            <div class="saas-widget-header">
-                <h3><i data-lucide="pie-chart" style="width: 16px; height: 16px;"></i> Samaradorlik</h3>
-            </div>
-            <div class="saas-widget-body">
-                <div class="gauge-container" style="position: relative; height: 130px; width: 100%; margin: 10px 0;">
-                    <canvas id="saasGaugeChart" style="max-height: 130px !important; width: 100%;"></canvas>
-                    
-                    <div class="gauge-overlay" style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none;">
-                        <div class="gauge-percentage" id="saas-gauge-percentage" style="font-size: 32px; font-weight: 800; color: #ffffff; line-height: 1;">--%</div>
-                        <div class="gauge-label" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #7e7e8f; letter-spacing: 0.5px; margin-top: 4px;">Javob berilgan</div>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 15px;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 11px; color: #7e7e8f; font-weight: 700; text-transform: uppercase;">Faol</div>
-                        <div style="font-size: 15px; font-weight: 800; color: #fbbf24; margin-top: 4px;" id="saas-unanswered-apps">--</div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 11px; color: #7e7e8f; font-weight: 700; text-transform: uppercase;">Yopilgan</div>
-                        <div style="font-size: 15px; font-weight: 800; color: #34d399; margin-top: 4px;" id="saas-answered-apps">--</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Recent Activity Feed Widget (New Registered Profiles) -->
-        <div class="saas-widget">
-            <div class="saas-widget-header">
-                <h3><i data-lucide="user-check" style="width: 16px; height: 16px;"></i> Oxirgi foydalanuvchilar</h3>
-                <a href="/admin/feedback/profile/" style="font-size: 12px; font-weight: 700; color: #8b5cf6; text-decoration: none;">Barchasi</a>
-            </div>
-            <div class="saas-widget-body" style="padding: 20px;">
-                <div class="activity-feed" id="saas-profiles-feed">
-                    <div style="text-align: center; color: #7e7e8f; padding: 20px 0;">Yuklanmoqda...</div>
-                </div>
-            </div>
-        </div>
-        
-    </div>
-    
 </div>
 
+<!-- ==========================================
+     2. Default Django Layout (Mobile Only)
+     ========================================== -->
+<div id="content-main" class="django-default-dashboard">
+  {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+</div>
+{% endblock %}
 
+{% block sidebar %}
+<div id="content-related" class="django-default-dashboard">
+    <div class="module" id="recent-actions-module">
+        <h2>{% translate 'Recent actions' %}</h2>
+        <h3>{% translate 'My actions' %}</h3>
+            {% load log %}
+            {% get_admin_log 10 as admin_log for_user user %}
+            {% if not admin_log %}
+            <p>{% translate 'None available' %}</p>
+            {% else %}
+            <ul class="actionlist">
+            {% for entry in admin_log %}
+            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+                {% if entry.is_deletion or not entry.get_admin_url %}
+                    {{ entry.object_repr }}
+                {% else %}
+                    <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                {% endif %}
+                <br>
+                {% if entry.content_type %}
+                    <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+                {% else %}
+                    <span class="mini quiet">{% translate 'Unknown content' %}</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+    </div>
+</div>
+{% endblock %}
 
-<!-- JavaScript to fetch AJAX Stats and Render Charts -->
+{% block extrahead_deferred %}
+<!-- JavaScript to fetch AJAX Stats and Render Charts (Desktop Only) -->
 <script>
     // Global variable for the Gauge Doughnut chart
     let saasGaugeChart = null;
 
     document.addEventListener("DOMContentLoaded", function() {
-
-
-        // Live Clock is handled globally in base.html
+        // Skip script evaluation on mobile views
+        if (window.innerWidth <= 768) {
+            return;
+        }
 
         // Dashboard Search filtering on tickets / profiles
         const searchInput = document.getElementById('saas-global-search');
