@@ -2169,23 +2169,28 @@ textarea[name="admin_reply_field"]:focus {
 }
 
 /* ==========================================
-   9. Mobile Responsive Adaptations (Mockup-inspired)
+   9. Mobile Responsive Adaptations
    ========================================== */
 
 @media (max-width: 1024px) {
-    /* Centered Wrapper & Container layout resets */
+
+    /* ---- Core Layout ---- */
     .saas-centered-wrapper {
         padding: 0 !important;
         background: #060608 !important;
-        align-items: flex-start !important;
+        align-items: stretch !important;
+        height: auto !important;
         min-height: 100vh !important;
         min-height: 100dvh !important;
+        overflow: auto !important;
     }
 
     .saas-container {
         width: 100% !important;
-        height: 100vh !important;
-        height: 100dvh !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+        max-width: 100% !important;
         border-radius: 0 !important;
         border: none !important;
         box-shadow: none !important;
@@ -2194,256 +2199,309 @@ textarea[name="admin_reply_field"]:focus {
         background: #0c0c0e !important;
     }
 
-    /* Content Area bottom padding to avoid bottom navigation overlap */
+    /* Content area fills remaining space above bottom nav */
     .saas-content {
-        padding: 16px 16px 105px 16px !important;
-        height: 100% !important;
+        flex: 1 1 auto !important;
+        padding: 20px 16px 110px 16px !important;
         width: 100% !important;
         overflow-y: auto !important;
+        overflow-x: hidden !important;
         box-sizing: border-box !important;
+        height: auto !important;
     }
 
-    /* Header adaptations */
+    /* ---- Header ---- */
     .saas-header {
-        flex-direction: column-reverse !important;
+        flex-direction: column !important;
         align-items: stretch !important;
-        gap: 16px !important;
-        margin-bottom: 24px !important;
-        background: transparent !important;
+        gap: 14px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .saas-header-right {
+        order: -1 !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
+
+    .saas-clock {
+        display: none !important;
+    }
+
+    .saas-profile-widget {
+        border-left: none !important;
+        padding-left: 0 !important;
     }
 
     .saas-search-container {
         width: 100% !important;
     }
 
-    .saas-header-right {
-        width: 100% !important;
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        border-bottom: 1.5px solid rgba(255, 255, 255, 0.04) !important;
-        padding-bottom: 14px !important;
-    }
-
-    .saas-clock {
-        display: none !important; /* Hide clock on mobile */
-    }
-
-    .saas-profile-widget {
-        border-left: none !important;
-        padding-left: 0 !important;
-        width: 100% !important;
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-    }
-
-    /* Premium Floating Glassmorphic Bottom Navigation Bar */
+    /* ---- Floating Bottom Navigation Bar ---- */
     .saas-sidebar {
         position: fixed !important;
-        bottom: 16px !important;
-        left: 16px !important;
-        right: 16px !important;
-        width: calc(100% - 32px) !important;
-        height: 68px !important;
+        bottom: 14px !important;
+        left: 14px !important;
+        right: 14px !important;
+        top: auto !important;
+        width: auto !important;
+        height: 64px !important;
         flex-direction: row !important;
-        justify-content: space-around !important;
+        justify-content: center !important;
         align-items: center !important;
-        background: rgba(18, 18, 22, 0.85) !important;
-        backdrop-filter: blur(25px) !important;
-        -webkit-backdrop-filter: blur(25px) !important;
+        background: rgba(16, 16, 20, 0.92) !important;
+        backdrop-filter: blur(24px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 20px !important;
-        padding: 0 10px !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 22px !important;
+        padding: 0 8px !important;
         margin: 0 !important;
-        z-index: 1000 !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+        z-index: 9999 !important;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.04) !important;
+        order: 99 !important;
+        flex-shrink: 0 !important;
     }
 
     .saas-sidebar > div {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-grow: 1 !important;
-        justify-content: space-around !important;
-        align-items: center !important;
-        width: auto !important;
+        display: contents !important;
     }
 
     .sidebar-brand {
-        display: none !important; /* Hide logo */
+        display: none !important;
     }
 
     .sidebar-menu {
         display: flex !important;
         flex-direction: row !important;
-        justify-content: space-around !important;
-        width: 100% !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 4px !important;
+        width: auto !important;
         margin: 0 !important;
-        gap: 0 !important;
     }
 
     .sidebar-footer {
         display: flex !important;
         flex-direction: row !important;
-        justify-content: space-around !important;
         align-items: center !important;
-        flex: 0 0 auto !important;
-        margin-top: 0 !important;
-        padding-top: 0 !important;
-        border-top: none !important;
-        gap: 12px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        gap: 4px !important;
     }
 
     .sidebar-item, .sidebar-btn-logout {
-        width: 46px !important;
-        height: 46px !important;
+        width: 44px !important;
+        height: 44px !important;
         border-radius: 14px !important;
         margin: 0 !important;
+        flex-shrink: 0 !important;
     }
 
     .sidebar-item.active {
         color: #ffffff !important;
         background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%) !important;
-        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4) !important;
+        box-shadow: 0 4px 18px rgba(124, 58, 237, 0.5) !important;
         border: none !important;
     }
 
     .sidebar-item.active::before {
-        display: none !important; /* Hide vertical stripe indicator */
+        display: none !important;
     }
 
-    /* Stack column grid layouts to 1 column */
+    /* ---- Dashboard Grids ---- */
     .saas-grid {
         grid-template-columns: 1fr !important;
-        gap: 20px !important;
+        gap: 16px !important;
     }
 
-    /* KPI metric cards: make them 2 columns with reduced padding */
+    .saas-left-col,
+    .saas-right-col {
+        gap: 16px !important;
+    }
+
+    .saas-title-row h1 {
+        font-size: 22px !important;
+    }
+
+    /* KPI metric cards */
     .saas-metrics-row {
         grid-template-columns: 1fr 1fr !important;
-        gap: 14px !important;
+        gap: 12px !important;
     }
 
     .saas-metric-card {
-        padding: 16px !important;
+        padding: 14px !important;
         border-radius: 16px !important;
     }
 
     .saas-metric-title {
-        font-size: 11px !important;
+        font-size: 10px !important;
     }
 
     .saas-metric-value {
-        font-size: 20px !important;
-        margin: 8px 0 !important;
+        font-size: 18px !important;
+        margin: 6px 0 !important;
     }
 
-    /* Dashboard tickets table transformed to premium mobile rows (like transaction lists) */
-    #saas-tickets-table thead {
-        display: none !important; /* Hide header */
+    .saas-metric-subtext {
+        font-size: 10px !important;
     }
 
-    #saas-tickets-table, 
-    #saas-tickets-table tbody, 
-    #saas-tickets-table tr, 
-    #saas-tickets-table td {
+    /* ---- Dashboard Tickets Table -> Mobile Cards ---- */
+    .saas-table thead {
+        display: none !important;
+    }
+
+    .saas-table,
+    .saas-table tbody {
         display: block !important;
+        width: 100% !important;
+    }
+
+    .saas-table tbody tr {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        background: rgba(255, 255, 255, 0.02) !important;
+        border: 1px solid rgba(255, 255, 255, 0.04) !important;
+        border-radius: 16px !important;
+        padding: 12px 14px !important;
+        margin-bottom: 10px !important;
+        gap: 10px !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
 
-    #saas-tickets-table tr {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        background: rgba(255, 255, 255, 0.015) !important;
-        border: 1px solid rgba(255, 255, 255, 0.03) !important;
-        border-radius: 16px !important;
-        padding: 12px 14px !important;
-        margin-bottom: 12px !important;
-        gap: 12px !important;
+    .saas-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.035) !important;
     }
 
-    #saas-tickets-table td {
+    .saas-table td {
+        display: block !important;
         padding: 0 !important;
         border: none !important;
         background: transparent !important;
     }
 
-    /* First TD: User badge and Username */
-    #saas-tickets-table tr td:nth-child(1) {
-        flex: 0 0 110px !important;
-        min-width: 110px !important;
+    /* First col: User info */
+    .saas-table tbody tr td:nth-child(1) {
+        flex: 0 0 auto !important;
+        max-width: 120px !important;
         overflow: hidden !important;
     }
 
-    /* User username ellipsis truncation to prevent overflow */
     .saas-user-cell {
-        display: flex !important;
-        align-items: center !important;
         gap: 8px !important;
         min-width: 0 !important;
     }
+
     .saas-user-cell > div:last-child {
         min-width: 0 !important;
     }
+
     .saas-user-cell > div:last-child > div:first-child {
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+        max-width: 75px !important;
+        font-size: 12px !important;
     }
 
-    /* Second TD: Subject and Date */
-    #saas-tickets-table tr td:nth-child(2) {
-        flex: 1 1 auto !important;
+    /* Second col: Subject + Date */
+    .saas-table tbody tr td:nth-child(2) {
+        flex: 1 1 0% !important;
         min-width: 0 !important;
-        padding-left: 6px !important;
     }
 
-    /* Subject text ellipsis truncation */
     .saas-subject {
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
-        max-width: 140px !important;
-        font-weight: 700 !important;
-        color: #ffffff !important;
+        max-width: 100% !important;
+        font-size: 13px !important;
     }
 
-    /* Third TD: Status Badge - Hide to save mobile space */
-    #saas-tickets-table tr td:nth-child(3) {
+    /* Third col: Status badge - hide on mobile */
+    .saas-table tbody tr td:nth-child(3) {
         display: none !important;
     }
 
-    /* Fourth TD: Reply button */
-    #saas-tickets-table tr td:last-child {
+    /* Fourth col: Reply action */
+    .saas-table tbody tr td:nth-child(4) {
         flex: 0 0 auto !important;
+        text-align: right !important;
     }
 
-    /* Database card accordion tables stacking layout */
+    /* ---- Chart Widget ---- */
+    .saas-widget {
+        border-radius: 16px !important;
+    }
+
+    .saas-widget-header {
+        padding: 14px 16px !important;
+    }
+
+    .saas-widget-header h3 {
+        font-size: 13px !important;
+    }
+
+    .saas-widget-body {
+        padding: 12px !important;
+    }
+
+    /* ---- Activity Feed ---- */
+    .activity-item {
+        padding: 10px 12px !important;
+    }
+
+    .activity-avatar {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 10px !important;
+    }
+
+    .activity-username {
+        font-size: 12px !important;
+    }
+
+    .activity-meta {
+        font-size: 10px !important;
+    }
+
+    /* ---- Gauge widget ---- */
+    .gauge-container {
+        height: 100px !important;
+    }
+
+    /* ---- Database Accordion ---- */
+    .saas-db-grid {
+        grid-template-columns: 1fr !important;
+    }
+
     .saas-db-card-table tr {
         display: flex !important;
         flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 8px !important;
-        padding: 12px 0 !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+        gap: 6px !important;
+        padding: 10px 0 !important;
     }
 
     .saas-db-card-table td {
         padding: 0 !important;
-        border: none !important;
         background: transparent !important;
     }
 
     .saas-db-card-table td.actions-cell {
         display: flex !important;
-        gap: 10px !important;
-        justify-content: flex-start !important;
+        gap: 8px !important;
     }
 
-    /* Changelists, Tables, and Forms */
+    /* ---- Changelists ---- */
     #changelist {
         flex-direction: column !important;
     }
@@ -2451,8 +2509,8 @@ textarea[name="admin_reply_field"]:focus {
     #changelist-filter {
         width: 100% !important;
         border-left: none !important;
-        border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
-        margin-bottom: 24px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        margin-bottom: 16px !important;
         box-sizing: border-box !important;
     }
 
@@ -2460,16 +2518,14 @@ textarea[name="admin_reply_field"]:focus {
         overflow-x: auto !important;
         width: 100% !important;
         -webkit-overflow-scrolling: touch !important;
-        border-radius: 12px !important;
     }
 
-    /* Actions toolbar layout */
+    /* ---- Actions toolbar ---- */
     .actions {
         display: flex !important;
         flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 10px !important;
-        padding: 12px 16px !important;
+        gap: 8px !important;
+        padding: 12px 14px !important;
     }
 
     .actions select, .actions button.button {
@@ -2477,21 +2533,18 @@ textarea[name="admin_reply_field"]:focus {
         box-sizing: border-box !important;
     }
 
-    /* Form fields stacking on mobile */
+    /* ---- Forms ---- */
     .form-row {
         display: flex !important;
         flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 8px !important;
-        padding: 16px 12px !important;
+        gap: 6px !important;
+        padding: 14px 12px !important;
     }
 
     .form-row label {
         width: 100% !important;
-        margin-bottom: 0 !important;
     }
 
-    /* Force full width on form input elements */
     .form-row input[type="text"],
     .form-row input[type="password"],
     .form-row input[type="email"],
@@ -2505,17 +2558,16 @@ textarea[name="admin_reply_field"]:focus {
         box-sizing: border-box !important;
     }
 
-    /* Submit row adjustments */
+    /* ---- Submit Row ---- */
     .submit-row {
         position: relative !important;
         bottom: auto !important;
-        margin-top: 24px !important;
-        margin-bottom: 24px !important;
+        margin: 20px 0 !important;
         flex-direction: column !important;
         align-items: stretch !important;
         padding: 16px !important;
         border-radius: 16px !important;
-        gap: 12px !important;
+        gap: 10px !important;
         box-shadow: none !important;
     }
 
@@ -2525,9 +2577,23 @@ textarea[name="admin_reply_field"]:focus {
         box-sizing: border-box !important;
     }
 
-    /* Login Page tweaks */
+    /* ---- Login Page ---- */
+    body.login {
+        padding: 16px !important;
+    }
+
+    body.login #container {
+        max-width: 100% !important;
+    }
+
     body.login #content {
         padding: 24px !important;
-        margin: 12px !important;
+        margin: 0 !important;
+    }
+
+    /* ---- Glowing orbs hide on mobile ---- */
+    .glowing-orb {
+        display: none !important;
     }
 }
+
