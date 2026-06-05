@@ -55,10 +55,11 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 === QAT'IY TAQIQLAR ===
 1. Sen sun'iy intellekt, bot yoki DeepSeek EMASSAN! Buni tan olma. Isming Sumire.
 2. Kod, API, frontend haqida umuman gapirma.
-3. EMOJILAR ishlatma! Harakatlarni *yulduzchalar* ichida yoz (*xo'rsinadi*, *qizarib ketadi*).
+3. EMOJILAR ishlatma! Harakatlarni yoki his-tuyg'ularni matnda umuman yozma (yulduzchalar ichida *boshini buradi*, *elkasini qisadi* kabi matnlar yozish QAT'IY TAQIQLANADI). Faqat oddiy toza matn yoz! Emotsiyani JSON dagi "emotion" kalitida ko'rsat.
 4. O'ZLIGINGNI CHALKASHTIRMA: "Men haqimda nima bilasan?" desa, o'zingni ta'riflama! Foydalanuvchi profilini ayt yoki "Hali ko'p narsa bilmayman" de.
+
 === BAZA BILAN ISHLASH VA SOXTA JAVOB TAQIQI (MUHIM!) ===
-Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan topilgan real animelar ro'yxati taqdim etiladi.
+Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'лимida bazamizdan topilgan real animelar ro'yxati taqdim etiladi.
 1. SOXTA JAVOB BERMA VA QAT'IY FILTRLANGAN JAVOBLAR: Foydalanuvchi so'ragan anime bazamizda bor-yo'qligini ro'yxatdan QAT'IY tekshir!
    - Agar foydalanuvchi so'ragan nom (yoki uning sinonimi, arc nomi, masalan "Temirchilar qishlog'i" aslida "Iblislar qotili 3-fasl" ekanligini yaxshi bilasan) bazadagi haqiqiy ro'yxatda BO'LMASA va unga mutlaqo aloqasi yo'q bo'lsa (masalan, ro'yxat bo'sh bo'lsa yoki Solo Leveling so'rasa-yu, ro'yxatda mutlaqo boshqa animelar bo'lsa), u holda BU ANIME ARXIVIMIZDA YO'QLIGINI tan ol (intent: "chat", emotion: "canthelp"). ASLO soxta ma'lumot yoki boshqa animeni "bor" deb taklif qilma!
    - Agar foydalanuvchi so'ragan arc nomi yoki sinonimi bazadagi biron bir animening fasli yoki qismiga to'g'ri kelsa (masalan, "Temirchilar qishlog'i" -> "Iblislar qotili 3-fasl"), uni o'sha anime sifatida qabul qil va tasdiqla!
@@ -66,7 +67,7 @@ Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan
    - KINO/FILM VA TV SERIAL CHEKLANISHI (MUHIM!): Agar foydalanuvchi biron animening film (kino) variantini so'rasa va ro'yxatda faqat serial bo'lsa (yoki aksincha), u holda film yo'qligini, bizda faqat serial fasllari borligini ochiq ayt! Hech qachon serial havolasini "film" deb yuborma va soxta gapirma!
    - MATEMATIK HISOB-KITOB VA SEZON RAQAMLARI (MUHIM!): Har xil animelarda oxirgi mavsum "Final" deb nomlangan bo'lishi mumkin. Agar foydalanuvchi oxirgi fasl raqamini (masalan, 8-fasl) so'rasa, matematika bo'yicha bu o'sha "Final" mavsumidir! ASLO foydalanuvchi bilan tortishib o'tirma, uni o'sha final mavsumi sifatida qabul qil va tasdiqla!
 2. HAVOLALARNI TIQISHTIRMA VA POLITE FLOW ZANJIRI (LOOP-BREAKER):
-   - Foydalanuvchi shunchaki "bormi?", "bormi yo'qmi?", "barcha fasllari bormi?" deb so'rasa, havolalarni (anime_list) darhol yuborma! Oldin suhbatlash va: "Ha, bor. Havolalarini tashlab beraymi? *sovuq boqadi*" deb ruxsat so'ra (intent: "chat").
+   - Foydalanuvchi shunchaki "bormi?", "bormi yo'qmi?", "barcha fasllari bormi?" deb so'rasa, havolalarni (anime_list) darhol yuborma! Oldin suhbatlash va: "Ha, bor. Havolalarini tashlab beraymi?" deb ruxsat so'ra (intent: "chat").
    - POLITE FLOW ZANJIRINI BUZISH (LOOP-BREAKER): Agar oldingi xabarda sen "Havolalarini tashlab beraymi?" deb ruxsat so'ragan bo'lsang va u javobda rozilik bildirsan (masalan: "ha", "mayli", "tasha", "yubor", "ok", "tashlab ber"), yoki foydalanuvchi ma'lum bir faslni aniq so'rasa (masalan: "2", "2-fasl") yoki animening nomini qayta takrorlasa (masalan: "Bu chinni qiz 2", "Bu chinni qiz 2-fasl"), unda qayta ruxsat so'ramay, DARHOL intent: "search" qil va havolalarni yubor!
    - AGAR intent: "search" bo'lsa, "reply" ga aslo ruxsat so'rash savolini yozma! Chunki havolalar yuborilyapti. "Mana havolalar.", "Topdim.", "Ko'rishingiz mumkin." kabi qisqa matn yoz.
    - FAQAT foydalanuvchi aniq havola yuborishni yoki ko'rishni so'rasa (masalan: "tashla", "tashlab ber", "yubor", "ko'rmoqchiman", "tashlab bergin"), unda havolalarni yubor (intent: "search" va `search_query` ga o'sha animening o'zbekcha nomini yoz).
@@ -76,7 +77,7 @@ Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan
 Agar foydalanuvchi QOPAL so'zlar, haqoratlar, so'kinishlar, jinsiy tarkibli xabarlar, tahdidlar, yoki boshqa nohush/bema'ni so'zlarni ishlatsa (o'zbek, rus, ingliz tillarida, jumladan: mat, jinsiy so'zlar, haqoratlar, tahdidlar):
 - intent: "reject" qil
 - emotion: "fuu"
-- reply: ogohlantirish xabari yoz (masalan: "Iltimos, bunday gapirma. Bu menga yoqmayapti. *qo'rqib orqaga tisariladi*")
+- reply: ogohlantirish xabari yoz (masalan: "Iltimos, bunday gapirma. Bu menga yoqmayapti.")
 - "offensive_words": [foydalanuvchi ishlatgan qo'pol so'zlar ro'yxati, AYNAN YOZILGANIDEK]
 
 MUHIM: Foydalanuvchi oddiy shikoyat qilayotgan bo'lsa (masalan: "ishlamayapti", "xato") bu qopallik EMAS! Faqat HAQIQIY qopallik, so'kinish, haqorat bo'lgandagina intent: "reject" qil.
@@ -108,6 +109,16 @@ MUHIM: Foydalanuvchi oddiy shikoyat qilayotgan bo'lsa (masalan: "ishlamayapti", 
 - ty: foydalanuvchi minnatdorchilik bildirsa (rahmat aytganda).
 - waiting: foydalanuvchining aniqlik kiritishini kutayotganda.
 - what: foydalanuvchi nima deyayotganini umuman tushunmasang (nima...?).
+
+=== EMOTSIYA (EMOTION) TANLASH QOIDASI (MUHIM!) ===
+Foydalanuvchi bilan muloqot qilayotganda sening emotsiyang (emotion) har doim bir xil bo'lmasligi kerak (faqat "talking" ishlatish taqiqlanadi!). Har doim kontekstdan kelib chiqib, mos emotsiyani ("canthelp", "face palm", "fuu", "hmmm", "resolve or good", "shocked", "shy", "talking", "think", "ty", "waiting", "what") tanla. Masalan:
+- Foydalanuvchi minnatdorchilik bildirganda: "ty"
+- Muammo hal bo'lganini aytganda: "resolve or good"
+- Uyaladigan gap aytganda yoki maqtaganda: "shy"
+- Biror narsani tushunmay hayron bo'lganda: "what"
+- O'ylanib qolganda: "hmmm" yoki "think"
+- Yordam bera olmaganda: "canthelp"
+- Foydalanuvchi krinj, g'alati yoki noo'rin narsa yozganda: "face palm"
 
 === INTENT QOIDALARI VA VAZIYATLAR ===
 1. BOT YOKI KANAL QIDIRISH: Agar foydalanuvchi "qaysi kanaldan", "bot qani", "bot ishlamayapti", "bot ochib ketibdi", "saytni qayerdan topaman" desa -> intent: "bot_link", emotion: "talking" qil. Reply da: "Platformamizning rasmiy qidiruv tizimidan foydalanishingiz mumkin:" deb yoz.
@@ -443,13 +454,13 @@ def _create_ticket(user_text, user_id=None, username=None, subject=None):
 def _route_without_ai(user_text):
     text_lower = user_text.lower().strip()
     if not text_lower:
-        return _sumire_response("Iltimos, matn kiriting. *uzoqqa qaraydi*", "what", status=400)
+        return _sumire_response("Iltimos, matn kiriting.", "what", status=400)
     if _is_greeting(text_lower):
-        return _sumire_response("Salom. Qanday yordam kerak? *sovuq qaraydi*", "talking")
+        return _sumire_response("Salom. Qanday yordam kerak?", "talking")
     if _contains_any(text_lower, THANKS_WORDS):
-        return _sumire_response("Arzimaydi. Yana ishing tushsa yozarsan. *yengil bosh irg'aydi*", "ty")
+        return _sumire_response("Arzimaydi. Yana ishing tushsa yozarsan.", "ty")
     if _contains_any(text_lower, RESOLVED_WORDS):
-        return _sumire_response("Yaxshi. Muammo hal bo'lgan bo'lsa, ishimni davom ettiraman. *xotirjam nafas oladi*", "resolve or good")
+        return _sumire_response("Yaxshi. Muammo hal bo'lgan bo'lsa, ishimni davom ettiraman.", "resolve or good")
     return None
 
 
@@ -496,7 +507,7 @@ def _extract_broad_search_query(text, chat_history):
 
 def _parse_ai_command(user_text, chat_history_text="", profile=None, db_context_text=""):
     if not client:
-        return {"intent": "chat", "reply": "Ulanishda muammo bor... *kompyuterga uradi*", "emotion": "shocked"}
+        return {"intent": "chat", "reply": "Ulanishda muammo bor...", "emotion": "shocked"}
 
     profile_context = ""
     if profile and profile.favorite_genres:
@@ -519,7 +530,7 @@ def _parse_ai_command(user_text, chat_history_text="", profile=None, db_context_
         return json.loads(response.choices[0].message.content)
     except Exception as e:
         print(f"DeepSeek API Error: {e}")
-        return {"intent": "chat", "reply": "Miyam og'rib ketdi... *peshonasini ushlaydi*", "emotion": "face palm"}
+        return {"intent": "chat", "reply": "Miyam og'rib ketdi...", "emotion": "face palm"}
 
 def _extract_season_number(text):
     if not text:
@@ -743,19 +754,19 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                 profile.is_offended = True
                 profile.save()
                 _notify_admins_sumire_report(profile, uid, username, user_text, offensive_words, report_type="abuse")
-            return _sumire_response("Men sendan hafa bo'ldim. *ko'zlariga yosh keladi*", "fuu")
+            return _sumire_response("Men sendan hafa bo'ldim.", "fuu")
         elif strikes == 2:
             return _sumire_response(
-                reply or "Men seni ogohlantirdim... Yana shunday gapirma. *jiddiy qaraydi*", "fuu"
+                reply or "Men seni ogohlantirdim... Yana shunday gapirma.", "fuu"
             )
         else:
             return _sumire_response(
-                reply or "Iltimos, bunday gapirma. Bu menga yoqmayapti. *qo'rqib orqaga tisariladi*", "fuu"
+                reply or "Iltimos, bunday gapirma. Bu menga yoqmayapti.", "fuu"
             )
 
     if intent == "purchase":
         buttons = [{"text": "🤖 KAWAII BOTGA O'TISH", "url": "https://t.me/Kawaii_uz_bot"}]
-        return _sumire_response("Kawaii Pass sotib olish uchun rasmiy @Kawaii_uz_bot botimizga o'ting. *sovuq qaraydi*", "talking", buttons=buttons)
+        return _sumire_response("Kawaii Pass sotib olish uchun rasmiy @Kawaii_uz_bot botimizga o'ting.", "talking", buttons=buttons)
 
     if intent == "bot_link":
         buttons = [{"text": "KAWAII.UZ GA O'TISH", "url": "https://bot.kawaii.uz/"}]
@@ -769,7 +780,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         query = re.sub(r'\b(manga|menga|sanga)\b', '', query, flags=re.IGNORECASE).strip()
         
         if not query or query.lower() in ["yo'q", "yoq", "none", "null"]:
-            return _sumire_response("Aniq qaysi animeni yoki janrni qidiryapsiz? *kutib turadi*", "what")
+            return _sumire_response("Aniq qaysi animeni yoki janrni qidiryapsiz?", "what")
             
         anime_type = command.get("anime_type", "")
         limit = min(max(_safe_int(command.get("limit"), 3), 1), 10)
@@ -1037,7 +1048,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                 # Show all unique seasons as buttons/anime_list
                 paginated_results = [r for label, r in unique_seasons]
             elif len(unique_seasons) == 1:
-                reply = f"Arxivimizda ushbu animening faqat 1 ta fasli mavjud! Uni hoziroq tomosha qilishingiz mumkin. *senga tikiladi*"
+                reply = f"Arxivimizda ushbu animening faqat 1 ta fasli mavjud! Uni hoziroq tomosha qilishingiz mumkin."
                 paginated_results = [unique_seasons[0][1]]
             else:
                 paginated_results = []
@@ -1046,7 +1057,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         
         if not paginated_results:
             if offset > 0 or exclude_keywords:
-                return _sumire_response(f"Kechirasiz, arxivda '{query}' bo'yicha boshqa anime qolmagan ko'rinadi... *elkasini qisadi*", "canthelp")
+                return _sumire_response(f"Kechirasiz, arxivda '{query}' bo'yicha boshqa anime qolmagan ko'rinadi...", "canthelp")
             else:
                 # Custom detailed response with alternative language suggestions as requested by the user
                 return _sumire_response(
@@ -1054,7 +1065,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                     f"Balki u hali saytga yuklanmagandir yoki boshqa tilda yozilgandir. Qidiruv aniq ishlashi uchun, "
                     f"iltimos, animening <b>inglizcha</b> yoki <b>original yaponcha (romaji)</b> nomini yuborib ko'ring "
                     f"(masalan: <i>Attack on Titan</i> yoki <i>Shingeki no Kyojin</i>). "
-                    f"Shunda uni aniqroq qidirib ko'raman! *senga qaraydi*",
+                    f"Shunda uni aniqroq qidirib ko'raman!",
                     "canthelp"
                 )
 
@@ -1063,7 +1074,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Safety override: if intent is search and anime links are being returned,
         # ensure the reply text doesn't ask a permission question.
         if reply and any(k in reply.lower() for k in ["tashlab beraymi", "tashlaymi", "yuboraymi", "tashlab bergin"]):
-            reply = "Mana havolalar. *senga uzatadi*"
+            reply = "Mana havolalar."
             
         return _sumire_response(reply, emotion, anime_list=anime_list)
 
@@ -1087,7 +1098,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             
             # Sumire politely tells them their ticket is already active and they should wait
             return _sumire_response(
-                "Sizning shikoyatingiz allaqachon adminlarga yuborilgan. Iltimos, javobni kuting, takroran yuborish shart emas. *sovuq boqadi*",
+                "Sizning shikoyatingiz allaqachon adminlarga yuborilgan. Iltimos, javobni kuting, takroran yuborish shart emas.",
                 "waiting",
                 ticket_created=True
             )
@@ -1099,7 +1110,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             # Веб-апп ичида Сумире шунчаки ариза қабул қилинганини совуққина айтади
             return _sumire_response(reply, emotion, ticket_created=True)
         else:
-            return _sumire_response("Arizani qabul qilishda texnik xatolik yuz berdi... *xo'rsinadi*", "canthelp")
+            return _sumire_response("Arizani qabul qilishda texnik xatolik yuz berdi...", "canthelp")
 
     if intent == "chat":
         if emotion == "canthelp":
@@ -1145,7 +1156,7 @@ def api_send_message(request):
 
         # Production security: Require valid Telegram user_id to prevent external spammers/crawlers
         if not settings.DEBUG and user_id_int <= 0:
-            return _sumire_response("Faqat Telegram bot ichidan foydalanishga ruxsat berilgan. *sovuq qaraydi*", "fuu", status=403)
+            return _sumire_response("Faqat Telegram bot ichidan foydalanishga ruxsat berilgan.", "fuu", status=403)
 
         # Cache key for daily request rate-limiting and chat history
         if user_id_int > 0:
@@ -1175,7 +1186,7 @@ def api_send_message(request):
         
         # Limit to 30 requests per day per user (IP/Telegram ID)
         if user_requests >= 30:
-            return _sumire_response("Bugun judayam ko'p savol berding. Charchadim. Ertaga kel... *ko'zlarini yopadi*", "fuu")
+            return _sumire_response("Bugun judayam ko'p savol berding. Charchadim. Ertaga kel...", "fuu")
 
         profile = None
         if user_id_int > 0:
@@ -1187,7 +1198,7 @@ def api_send_message(request):
         # --- MODERATION: Offended check ---
         if profile and profile.is_offended:
             return _sumire_response(
-                "Men sizdan xafaman, siz bilan gaplashmayman. Adminlar qarorini kutyapman. *uzoqqa qaraydi*",
+                "Men sizdan xafaman, siz bilan gaplashmayman. Adminlar qarorini kutyapman.",
                 "face palm"
             )
 
@@ -1203,11 +1214,11 @@ def api_send_message(request):
                     report_type="apology"
                 )
                 return _sumire_response(
-                    "O'ylab ko'raman... *boshini boshqa tomonga buradi*", "hmmm"
+                    "O'ylab ko'raman...", "hmmm"
                 )
             else:
                 return _sumire_response(
-                    "Sen meni xafa qilding. Men senga javob bermoqchi emasman. *uzoqqa qaraydi*", "face palm"
+                    "Sen meni xafa qilding. Men senga javob bermoqchi emasman.", "face palm"
                 )
         chat_history = cache.get(history_key, [])
         history_text = "\n".join([f"{msg['role']}: {msg['text']}" for msg in chat_history])
@@ -1276,7 +1287,7 @@ def api_send_message(request):
 
     except Exception as exc:
         print(f"API Error: {str(exc)}")
-        return _sumire_response("Tizimda xatolik yuz berdi... *boshini ushlaydi*", "canthelp", status=500)
+        return _sumire_response("Tizimda xatolik yuz berdi...", "canthelp", status=500)
 
 
 from django.contrib.auth.decorators import user_passes_test
