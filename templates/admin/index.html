@@ -113,25 +113,12 @@
                 <h3><i data-lucide="pie-chart" style="width: 16px; height: 16px;"></i> Samaradorlik</h3>
             </div>
             <div class="saas-widget-body">
-                <div class="gauge-container">
-                    <svg width="180" height="150" viewBox="0 0 200 160" class="gauge-svg">
-                        <!-- Background path: curves upwards (sweep-flag 0) -->
-                        <path d="M 30 130 A 70 70 0 0 0 170 130" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="12" stroke-linecap="round" />
-                        <!-- Foreground path: curves upwards (sweep-flag 0) -->
-                        <path id="saas-gauge-fill" d="M 30 130 A 70 70 0 0 0 170 130" fill="none" stroke="url(#saas-gauge-gradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220" style="transition: stroke-dashoffset 1s ease-in-out;" />
-                        <!-- Gradient definition -->
-                        <defs>
-                            <linearGradient id="saas-gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#db2777" />
-                                <stop offset="50%" stop-color="#b829d6" />
-                                <stop offset="100%" stop-color="#8b5cf6" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
+                <div class="gauge-container" style="position: relative; height: 130px; width: 100%; margin: 10px 0;">
+                    <canvas id="saasGaugeChart" style="max-height: 130px !important; width: 100%;"></canvas>
                     
-                    <div class="gauge-overlay" style="top: 55%;">
-                        <div class="gauge-percentage" id="saas-gauge-percentage">--%</div>
-                        <div class="gauge-label">Javob berilgan</div>
+                    <div class="gauge-overlay" style="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none;">
+                        <div class="gauge-percentage" id="saas-gauge-percentage" style="font-size: 32px; font-weight: 800; color: #ffffff; line-height: 1;">--%</div>
+                        <div class="gauge-label" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #7e7e8f; letter-spacing: 0.5px; margin-top: 4px;">Javob berilgan</div>
                     </div>
                 </div>
                 <div style="display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 15px;">
@@ -216,6 +203,9 @@
 
 <!-- JavaScript to fetch AJAX Stats and Render Charts -->
 <script>
+    // Global variable for the Gauge Doughnut chart
+    let saasGaugeChart = null;
+
     document.addEventListener("DOMContentLoaded", function() {
         // Toggle database accordion on sidebar click or hash trigger
         const dbAccordion = document.getElementById('saas-db-accordion');
@@ -281,20 +271,48 @@
                 document.getElementById('saas-answered-apps').textContent = data.answered_apps;
                 document.getElementById('saas-total-profiles').textContent = data.total_profiles;
 
-                // Calculate and animate Efficiency Gauge Percentage
+                // Calculate and animate Efficiency Gauge Percentage using Chart.js Doughnut
                 const total = data.total_apps;
                 const answered = data.answered_apps;
+                const unanswered = data.unanswered_apps;
                 const percentage = total > 0 ? Math.round((answered / total) * 100) : 0;
                 
                 document.getElementById('saas-gauge-percentage').textContent = percentage + '%';
                 
-                // SVG Path length is 220px (Math.PI * 70)
-                const strokeLength = 220;
-                const offset = strokeLength - (strokeLength * (percentage / 100));
-                const fillPath = document.getElementById('saas-gauge-fill');
-                if (fillPath) {
-                    fillPath.style.strokeDasharray = strokeLength;
-                    fillPath.style.strokeDashoffset = offset;
+                try {
+                    const ctx = document.getElementById('saasGaugeChart').getContext('2d');
+                    if (saasGaugeChart) {
+                        saasGaugeChart.data.datasets[0].data = [answered, unanswered];
+                        saasGaugeChart.update();
+                    } else {
+                        saasGaugeChart = new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                                datasets: [{
+                                    data: [answered, unanswered],
+                                    backgroundColor: [
+                                        '#8b5cf6', // beautiful purple
+                                        'rgba(255, 255, 255, 0.03)' // translucent grey
+                                    ],
+                                    borderWidth: 0,
+                                    borderRadius: 10,
+                                    circumference: 180,
+                                    rotation: -90
+                                }]
+                            },
+                            options: {
+                                cutout: '85%',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: { enabled: false }
+                                }
+                            }
+                        });
+                    }
+                } catch (chartErr) {
+                    console.error("Gauge Doughnut Chart failed to initialize:", chartErr);
                 }
 
                 // Render Pending Tickets Table
