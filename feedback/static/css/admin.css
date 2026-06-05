@@ -2648,10 +2648,63 @@ textarea[name="admin_reply_field"]:focus {
         padding: 4px 10px !important;
     }
 
-    /* ===== CHANGELIST PAGES — Full Mobile Adaptation ===== */
+    /* ============================================================
+       CHANGELIST PAGES — Premium Mobile Redesign
+       ============================================================ */
+
+    /* --- Page title --- */
+    .saas-page-title,
+    #content > h1,
+    #content-main > h1 {
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        padding: 12px 16px 4px 16px !important;
+        margin: 0 !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* --- Object tools: compact pill on the right --- */
+    .object-tools {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: flex-end !important;
+        gap: 8px !important;
+        padding: 6px 16px !important;
+        margin: 0 0 8px 0 !important;
+        list-style: none !important;
+    }
+
+    .object-tools li {
+        margin: 0 !important;
+        float: none !important;
+    }
+
+    .object-tools a {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        width: auto !important;
+        padding: 8px 16px !important;
+        border-radius: 20px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+        background: rgba(139, 92, 246, 0.12) !important;
+        border: 1px solid rgba(139, 92, 246, 0.25) !important;
+        color: #c084fc !important;
+        text-decoration: none !important;
+    }
+
+    .object-tools a:hover {
+        background: #8b5cf6 !important;
+        color: #fff !important;
+    }
+
+    /* --- Changelist container --- */
     #changelist {
         display: block !important;
-        border-radius: 14px !important;
+        border-radius: 0 !important;
         margin: 0 !important;
         border: none !important;
         box-shadow: none !important;
@@ -2660,11 +2713,15 @@ textarea[name="admin_reply_field"]:focus {
         overflow: visible !important;
     }
 
-    /* --- Search bar --- */
+    /* --- Search bar: clean single-line --- */
     #changelist-search {
-        padding: 14px 16px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        padding: 8px 16px 12px 16px !important;
         background: transparent !important;
         border: none !important;
+        align-items: center !important;
     }
 
     #changelist-search label {
@@ -2672,82 +2729,152 @@ textarea[name="admin_reply_field"]:focus {
     }
 
     #changelist-search #searchbar {
+        flex: 1 1 0% !important;
         width: 100% !important;
-        box-sizing: border-box !important;
         min-width: 0 !important;
-        border-radius: 14px !important;
-        padding: 12px 16px !important;
+        box-sizing: border-box !important;
+        border-radius: 12px !important;
+        padding: 10px 14px !important;
         font-size: 14px !important;
-        background: rgba(255, 255, 255, 0.03) !important;
+        background: rgba(255, 255, 255, 0.04) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: #fff !important;
+        background-image: none !important;
+    }
+
+    #changelist-search #searchbar:focus {
+        border-color: #8b5cf6 !important;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+        outline: none !important;
     }
 
     #changelist-search input[type="submit"] {
-        width: 100% !important;
-        margin: 10px 0 0 0 !important;
-        padding: 12px !important;
-        border-radius: 14px !important;
-        font-size: 14px !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        padding: 10px 20px !important;
+        border-radius: 12px !important;
+        font-size: 13px !important;
+        margin: 0 !important;
+        background: #8b5cf6 !important;
+        border: none !important;
+        color: #fff !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
     }
 
-    /* --- Filter panel → collapsible top strip --- */
+    /* --- Filter panel: horizontal chip strip --- */
     #changelist-filter {
         width: 100% !important;
         order: -1 !important;
-        border-left: none !important;
-        border-right: none !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-        border-top: none !important;
-        padding: 0 !important;
-        margin-bottom: 10px !important;
+        border: none !important;
+        padding: 0 16px 8px 16px !important;
+        margin: 0 0 4px 0 !important;
         box-sizing: border-box !important;
-        background: rgba(18, 18, 22, 0.6) !important;
-        border-radius: 14px !important;
-        overflow: hidden !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        overflow: visible !important;
     }
 
     #changelist-filter h2 {
-        padding: 14px 16px !important;
-        font-size: 13px !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-        margin: 0 !important;
+        display: none !important;
     }
 
     #changelist-filter h3 {
-        margin: 12px 16px 6px 16px !important;
-        font-size: 12px !important;
+        display: inline !important;
+        margin: 0 8px 0 0 !important;
+        font-size: 11px !important;
+        color: #7e7e8f !important;
+        font-weight: 600 !important;
+        vertical-align: middle !important;
     }
 
     #changelist-filter ul {
-        padding: 0 16px !important;
-        margin: 0 0 10px 0 !important;
-        display: flex !important;
+        display: inline-flex !important;
         flex-wrap: wrap !important;
         gap: 6px !important;
+        padding: 0 !important;
+        margin: 0 0 6px 0 !important;
+        vertical-align: middle !important;
     }
 
     #changelist-filter li {
         margin: 0 !important;
+        list-style: none !important;
     }
 
     #changelist-filter li a {
-        padding: 6px 12px !important;
+        display: inline-block !important;
+        padding: 5px 12px !important;
         border-radius: 20px !important;
-        font-size: 12px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
         white-space: nowrap !important;
-        background: rgba(255, 255, 255, 0.03) !important;
-        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.07) !important;
+        color: #94a3b8 !important;
+        text-decoration: none !important;
+        transition: all 0.15s ease !important;
     }
 
     #changelist-filter li a:hover {
-        background: rgba(255, 255, 255, 0.06) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: #fff !important;
     }
 
     #changelist-filter li.selected a {
-        background: #8b5cf6 !important;
-        border-color: #8b5cf6 !important;
+        background: linear-gradient(135deg, #7c3aed, #8b5cf6) !important;
+        border-color: transparent !important;
         color: #fff !important;
-        box-shadow: 0 2px 10px rgba(139, 92, 246, 0.35) !important;
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35) !important;
+    }
+
+    /* --- Actions toolbar: compact minimal bar --- */
+    .actions {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 10px 16px !important;
+        margin: 0 !important;
+        background: rgba(255, 255, 255, 0.015) !important;
+        border: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+        border-radius: 0 !important;
+    }
+
+    .actions > label {
+        display: none !important;
+    }
+
+    .actions > span.all,
+    .actions > span.action-counter,
+    .actions > span.clear,
+    .actions > span.question {
+        font-size: 11px !important;
+        color: #7e7e8f !important;
+        flex-basis: 100% !important;
+        order: 10 !important;
+    }
+
+    .actions select {
+        flex: 1 1 0% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        padding: 8px 12px !important;
+        border-radius: 10px !important;
+        font-size: 12px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .actions button.button {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        padding: 8px 18px !important;
+        border-radius: 10px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
     }
 
     /* --- Table → Card List --- */
@@ -2770,9 +2897,9 @@ textarea[name="admin_reply_field"]:focus {
     #changelist table tbody {
         display: flex !important;
         flex-direction: column !important;
-        gap: 8px !important;
+        gap: 6px !important;
         width: 100% !important;
-        padding: 0 16px !important;
+        padding: 6px 16px !important;
         box-sizing: border-box !important;
     }
 
@@ -2780,22 +2907,23 @@ textarea[name="admin_reply_field"]:focus {
         display: flex !important;
         flex-wrap: wrap !important;
         align-items: center !important;
-        gap: 8px 12px !important;
-        background: rgba(255, 255, 255, 0.025) !important;
+        gap: 6px 10px !important;
+        background: rgba(255, 255, 255, 0.02) !important;
         border: 1px solid rgba(255, 255, 255, 0.05) !important;
         border-radius: 14px !important;
-        padding: 14px !important;
+        padding: 12px 14px !important;
         width: 100% !important;
         box-sizing: border-box !important;
-        transition: background 0.15s ease !important;
+        transition: all 0.15s ease !important;
     }
 
     #changelist table tbody tr:hover {
-        background: rgba(139, 92, 246, 0.06) !important;
+        background: rgba(139, 92, 246, 0.04) !important;
+        border-color: rgba(139, 92, 246, 0.12) !important;
     }
 
     #changelist table tbody tr.selected {
-        background: rgba(139, 92, 246, 0.1) !important;
+        background: rgba(139, 92, 246, 0.08) !important;
         border-color: rgba(139, 92, 246, 0.2) !important;
     }
 
@@ -2805,17 +2933,17 @@ textarea[name="admin_reply_field"]:focus {
         padding: 0 !important;
         border: none !important;
         font-size: 13px !important;
-        line-height: 1.5 !important;
+        line-height: 1.4 !important;
         background: transparent !important;
     }
 
     /* Checkbox */
     #changelist table tbody td.action-checkbox {
-        flex: 0 0 auto !important;
+        flex: 0 0 20px !important;
         order: -1 !important;
     }
 
-    /* First column (usually the object name link) */
+    /* Primary column (name / object link) */
     #changelist table tbody th {
         flex: 1 1 auto !important;
         min-width: 0 !important;
@@ -2823,61 +2951,38 @@ textarea[name="admin_reply_field"]:focus {
 
     #changelist table tbody th a {
         font-size: 14px !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
+        color: #e2e8f0 !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         display: block !important;
+        text-decoration: none !important;
     }
 
-    /* Other data columns */
+    /* Secondary data columns */
     #changelist table tbody td {
         flex: 0 1 auto !important;
         font-size: 12px !important;
-        color: #7e7e8f !important;
+        color: #64748b !important;
     }
 
     #changelist table tbody td:empty {
         display: none !important;
     }
 
-    /* Boolean icons in cells */
+    #changelist table tbody td a {
+        color: #8b5cf6 !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        text-decoration: none !important;
+    }
+
+    /* Boolean icons */
     #changelist table tbody td img {
         width: 14px !important;
         height: 14px !important;
-    }
-
-    /* --- Actions toolbar --- */
-    .actions {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 10px !important;
-        padding: 14px 16px !important;
-        background: rgba(18, 18, 22, 0.5) !important;
-        border-radius: 14px !important;
-        margin: 0 16px 10px 16px !important;
-        border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    }
-
-    .actions label {
-        font-size: 12px !important;
-        color: #7e7e8f !important;
-    }
-
-    .actions select {
-        width: 100% !important;
-        box-sizing: border-box !important;
-        padding: 10px 14px !important;
-        border-radius: 12px !important;
-        font-size: 13px !important;
-    }
-
-    .actions button.button {
-        width: 100% !important;
-        box-sizing: border-box !important;
-        padding: 12px !important;
-        border-radius: 12px !important;
-        font-size: 14px !important;
+        vertical-align: middle !important;
     }
 
     /* --- Paginator --- */
@@ -2885,45 +2990,28 @@ textarea[name="admin_reply_field"]:focus {
         display: flex !important;
         flex-wrap: wrap !important;
         justify-content: center !important;
-        gap: 6px !important;
-        padding: 14px 16px !important;
+        align-items: center !important;
+        gap: 4px !important;
+        padding: 12px 16px !important;
         font-size: 12px !important;
-        border-radius: 14px !important;
-        margin: 10px 16px !important;
-        background: rgba(18, 18, 22, 0.4) !important;
-        border: 1px solid rgba(255, 255, 255, 0.04) !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
     }
 
     .paginator a {
-        padding: 6px 12px !important;
+        padding: 6px 10px !important;
         border-radius: 8px !important;
         background: rgba(255, 255, 255, 0.04) !important;
+        font-size: 12px !important;
     }
 
-    /* --- Object tools (Add button etc) --- */
-    .object-tools {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 8px !important;
-        padding: 0 16px !important;
-        margin: 10px 0 !important;
+    .paginator .this-page {
+        padding: 6px 10px !important;
+        border-radius: 8px !important;
     }
-
-    .object-tools li {
-        margin: 0 !important;
-    }
-
-    .object-tools a {
-        display: block !important;
-        width: 100% !important;
-        text-align: center !important;
-        box-sizing: border-box !important;
-        padding: 12px !important;
-        border-radius: 14px !important;
-        font-size: 14px !important;
-        font-weight: 600 !important;
-    }
-
 
     /* ===== FORMS ===== */
     .form-row {
