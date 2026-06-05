@@ -2167,3 +2167,241 @@ textarea[name="admin_reply_field"]:focus {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==========================================
+   9. Mobile Responsive Adaptations (Mockup-inspired)
+   ========================================== */
+
+@media (max-width: 768px) {
+    /* Centered Wrapper & Container layout resets */
+    .saas-centered-wrapper {
+        padding: 0 !important;
+        background: #060608 !important;
+        align-items: flex-start !important;
+        min-height: 100vh !important;
+        min-height: 100dvh !important;
+    }
+
+    .saas-container {
+        width: 100% !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        border-radius: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        background: #0c0c0e !important;
+    }
+
+    /* Content Area bottom padding to avoid bottom navigation overlap */
+    .saas-content {
+        padding: 16px 16px 85px 16px !important;
+        height: 100% !important;
+        width: 100% !important;
+        overflow-y: auto !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Header adaptations */
+    .saas-header {
+        flex-direction: column-reverse !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+        margin-bottom: 24px !important;
+        background: transparent !important;
+    }
+
+    .saas-search-container {
+        width: 100% !important;
+    }
+
+    .saas-header-right {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-bottom: 1.5px solid rgba(255, 255, 255, 0.04) !important;
+        padding-bottom: 14px !important;
+    }
+
+    .saas-clock {
+        display: none !important; /* Hide clock on mobile */
+    }
+
+    .saas-profile-widget {
+        border-left: none !important;
+        padding-left: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    /* Bottom Navigation Bar adaptation from Left Sidebar */
+    .saas-sidebar {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 65px !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        background: rgba(12, 12, 14, 0.9) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-top: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+        border-right: none !important;
+        border-radius: 0 !important;
+        padding: 0 16px !important;
+        margin: 0 !important;
+        z-index: 1000 !important;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .saas-sidebar > div {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-grow: 1 !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        width: auto !important;
+    }
+
+    .sidebar-brand {
+        display: none !important; /* Hide logo */
+    }
+
+    .sidebar-menu {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        width: 100% !important;
+        margin: 0 !important;
+        gap: 0 !important;
+    }
+
+    .sidebar-footer {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+        border-top: none !important;
+        gap: 12px !important;
+    }
+
+    .sidebar-item, .sidebar-btn-logout {
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 12px !important;
+        margin: 0 !important;
+    }
+
+    .sidebar-item.active::before {
+        display: none !important; /* Hide vertical stripe indicator */
+    }
+
+    /* Stack column grid layouts to 1 column */
+    .saas-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    /* KPI metric cards: make them 2 columns with reduced padding */
+    .saas-metrics-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 14px !important;
+    }
+
+    .saas-metric-card {
+        padding: 16px !important;
+        border-radius: 16px !important;
+    }
+
+    .saas-metric-title {
+        font-size: 11px !important;
+    }
+
+    .saas-metric-value {
+        font-size: 20px !important;
+        margin: 8px 0 !important;
+    }
+
+    /* Tables, Forms, and Changelists */
+    #changelist {
+        flex-direction: column !important;
+    }
+
+    #changelist-filter {
+        width: 100% !important;
+        border-left: none !important;
+        border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+        margin-bottom: 24px !important;
+        box-sizing: border-box !important;
+    }
+
+    #changelist .results {
+        overflow-x: auto !important;
+        width: 100% !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-radius: 12px !important;
+    }
+
+    /* Form fields stacking on mobile */
+    .form-row {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+        padding: 16px 12px !important;
+    }
+
+    .form-row label {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Force full width on form input elements */
+    .form-row input[type="text"],
+    .form-row input[type="password"],
+    .form-row input[type="email"],
+    .form-row input[type="number"],
+    .form-row textarea,
+    .form-row select,
+    .vTextField,
+    .vLargeTextField,
+    .vUUIDField {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Submit row adjustments */
+    .submit-row {
+        position: relative !important;
+        bottom: auto !important;
+        margin-top: 24px !important;
+        margin-bottom: 24px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 16px !important;
+        border-radius: 16px !important;
+        gap: 12px !important;
+        box-shadow: none !important;
+    }
+
+    .submit-row input, .submit-row a {
+        width: 100% !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Login Page tweaks */
+    body.login #content {
+        padding: 24px !important;
+        margin: 12px !important;
+    }
+}
