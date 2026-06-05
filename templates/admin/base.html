@@ -1,0 +1,214 @@
+{% load i18n static %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_direction as LANGUAGE_DIRECTIONS %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_DIRECTIONS }}">
+<head>
+<title>{% block title %}{% endblock %}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Load premium modern typography -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
+{% block extrastyle %}{% endblock %}
+{% if LANGUAGE_DIRECTIONS == 'rtl' %}
+<link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">
+{% endif %}
+
+<!-- Link our premium theme CSS last to override defaults -->
+<link rel="stylesheet" href="{% static "css/admin.css" %}">
+
+{% block extrahead %}{% endblock %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+
+<!-- Load Lucide Icons CDN -->
+<script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+  data-admin-utc-offset="{% now "Z" %}">
+
+{% if not is_popup %}
+<!-- Center-Aligned Layout Wrapper -->
+<div class="saas-centered-wrapper">
+    <div class="saas-container">
+        
+        <!-- Left Sidebar -->
+        <div class="saas-sidebar">
+            <div>
+                <a href="{% url 'admin:index' %}" class="sidebar-brand" title="Bosh sahifa">
+                    <span>🌸</span>
+                </a>
+                
+                <div class="sidebar-menu">
+                    <a href="{% url 'admin:index' %}" class="sidebar-item" id="nav-home" title="Boshqaruv markazi">
+                        <i data-lucide="layout-dashboard" style="width: 20px; height: 20px;"></i>
+                    </a>
+                    <a href="/admin/feedback/application/" class="sidebar-item" id="nav-apps" title="Arizalar">
+                        <i data-lucide="message-square" style="width: 20px; height: 20px;"></i>
+                    </a>
+                    <a href="/admin/feedback/profile/" class="sidebar-item" id="nav-profiles" title="Foydalanuvchi profillari">
+                        <i data-lucide="users" style="width: 20px; height: 20px;"></i>
+                    </a>
+                    <a href="{% url 'admin:index' %}#system-tables" class="sidebar-item" id="nav-db" title="Tizim jadvallari">
+                        <i data-lucide="database" style="width: 20px; height: 20px;"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <a href="/admin/password_change/" class="sidebar-item" id="nav-settings" title="Parolni o'zgartirish">
+                    <i data-lucide="settings" style="width: 20px; height: 20px;"></i>
+                </a>
+                <form action="{% url 'admin:logout' %}" method="post" id="saas-logout-form" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <button onclick="document.getElementById('saas-logout-form').submit();" class="sidebar-btn-logout" title="Chiqish">
+                    <i data-lucide="log-out" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="saas-content">
+            
+            <!-- Custom Header -->
+            <div class="saas-header">
+                <!-- Search bar -->
+                <div class="saas-search-container">
+                    <i data-lucide="search" class="saas-search-icon" style="width: 18px; height: 18px;"></i>
+                    <input type="text" placeholder="Qidirish..." class="saas-search-input" id="saas-global-search">
+                </div>
+                
+                <!-- Clock, Notifications, Profile -->
+                <div class="saas-header-right">
+                    <div class="saas-clock">
+                        <i data-lucide="clock" style="width: 15px; height: 15px; color: #8b5cf6;"></i>
+                        <span>Tashkent: </span><span id="saas-global-time">--:--</span>
+                    </div>
+                    
+                    <div class="saas-notification-bell" title="Bildirishnomalar">
+                        <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+                        <div class="saas-notification-dot"></div>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                    <div class="saas-profile-widget">
+                        <div class="saas-avatar">
+                            {{ user.username|slice:":1|upper" }}
+                        </div>
+                        <div class="saas-profile-info">
+                            <span class="saas-username">{{ user.username }}</span>
+                            <span class="saas-role">{% if user.is_superuser %}Super Administrator{% else %}Administrator{% endif %}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Content Wrapper (forms, tables, lists will render inside this container) -->
+            <div class="saas-panel-body">
+                
+                <!-- Styled Breadcrumbs -->
+                {% block breadcrumbs %}
+                {% endblock %}
+                
+                <!-- Django standard messaging list -->
+                {% if messages %}
+                <ul class="messagelist">
+                    {% for message in messages %}
+                      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                
+                <!-- Content title / Heading -->
+                {% block content_title %}
+                    {% if title %}
+                        <h1 class="saas-page-title">{{ title }}</h1>
+                    {% endif %}
+                {% endblock %}
+                
+                <!-- The actual content page -->
+                {% block content %}
+                    {{ content }}
+                {% endblock %}
+                
+                {% block sidebar %}{% endblock %}
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- Render popup window styling without the full layout -->
+<div id="content" style="padding: 24px;">
+    {% block content_popup %}{% block content_body %}{{ content }}{% endblock %}{% endblock %}
+</div>
+{% endif %}
+
+<!-- Floating glowing orbs -->
+<div class="glowing-orb orb-1"></div>
+<div class="glowing-orb orb-2"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Init Lucide SVGs
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+
+        // Live Tashkent Clock
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+            const clockEl = document.getElementById('saas-global-time');
+            if (clockEl) clockEl.textContent = timeStr;
+        }
+        updateClock();
+        setInterval(updateClock, 10000);
+
+        // Highlight the active sidebar item dynamically based on the current window path
+        const currentPath = window.location.pathname;
+        const navHome = document.getElementById('nav-home');
+        const navApps = document.getElementById('nav-apps');
+        const navProfiles = document.getElementById('nav-profiles');
+        const navSettings = document.getElementById('nav-settings');
+        const navDb = document.getElementById('nav-db');
+
+        // Remove active class from all first
+        const items = document.querySelectorAll('.sidebar-item');
+        items.forEach(i => i.classList.remove('active'));
+
+        if (currentPath === '/admin/') {
+            if (navHome) navHome.classList.add('active');
+        } else if (currentPath.includes('/admin/feedback/application/')) {
+            if (navApps) navApps.classList.add('active');
+        } else if (currentPath.includes('/admin/feedback/profile/')) {
+            if (navProfiles) navProfiles.classList.add('active');
+        } else if (currentPath.includes('/admin/password_change/') || currentPath.includes('/admin/settings/')) {
+            if (navSettings) navSettings.classList.add('active');
+        } else {
+            // Default to DB icon if we are in other tables (like auth/user or auth/group)
+            if (navDb) navDb.classList.add('active');
+        }
+
+        // Connect global search box to lists if available
+        const searchInput = document.getElementById('saas-global-search');
+        const djangoSearch = document.getElementById('searchbar');
+        if (searchInput && djangoSearch) {
+            searchInput.placeholder = djangoSearch.placeholder || "Qidirish...";
+            searchInput.value = djangoSearch.value;
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    djangoSearch.value = searchInput.value;
+                    djangoSearch.form.submit();
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

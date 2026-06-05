@@ -3,883 +3,11 @@
 
 {% block extrastyle %}
 {{ block.super }}
+<!-- Dashboard-specific CSS tweaks if any -->
 <style>
-    /* Premium All-in-One Dashboard Panel Styling */
-    
-    /* Root container overrides */
-    body.dashboard {
-        margin: 0 !important;
-        padding: 0 !important;
-        background-color: #0b0b0e !important;
-    }
-    
-    /* Main layout grid */
-    .saas-container {
-        display: flex;
-        min-height: 100vh;
-        width: 100%;
-        background-color: #0b0b0e;
-        box-sizing: border-box;
-        position: relative;
-    }
-    
-    /* Left Sidebar */
-    .saas-sidebar {
-        width: 90px;
-        background: rgba(14, 14, 18, 0.85);
-        backdrop-filter: blur(20px);
-        border-right: 1.5px solid rgba(255, 255, 255, 0.05);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        padding: 30px 0;
-        box-sizing: border-box;
-        position: sticky;
-        top: 0;
-        height: 100vh;
-        z-index: 100;
-        flex-shrink: 0;
-    }
-    
-    .sidebar-brand {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
-        margin-bottom: 40px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    
-    .sidebar-brand:hover {
-        transform: scale(1.05) rotate(5deg);
-        box-shadow: 0 10px 24px rgba(124, 58, 237, 0.45);
-    }
-    
-    .sidebar-brand span {
-        font-size: 22px;
-    }
-    
-    .sidebar-menu {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        align-items: center;
-        flex-grow: 1;
-        width: 100%;
-    }
-    
-    .sidebar-item {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #7e7e8f;
-        text-decoration: none;
-        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        position: relative;
-        box-sizing: border-box;
-    }
-    
-    .sidebar-item:hover {
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .sidebar-item.active {
-        color: #ffffff;
-        background: rgba(139, 92, 246, 0.15);
-        border: 1px solid rgba(139, 92, 246, 0.3);
-        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
-    }
-    
-    /* Indicator dot for active page */
-    .sidebar-item.active::before {
-        content: "";
-        position: absolute;
-        left: -12px;
-        width: 4px;
-        height: 18px;
-        background: #8b5cf6;
-        border-radius: 0 4px 4px 0;
-    }
-    
-    .sidebar-footer {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        align-items: center;
-        width: 100%;
-    }
-    
-    .sidebar-btn-logout {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #f43f5e;
-        background: rgba(244, 63, 94, 0.05);
-        border: 1px solid rgba(244, 63, 94, 0.1);
-        cursor: pointer;
-        transition: all 0.25s ease;
-    }
-    
-    .sidebar-btn-logout:hover {
-        color: #ffffff;
-        background: #e11d48;
-        border-color: #e11d48;
-        box-shadow: 0 0 15px rgba(225, 29, 72, 0.4);
-    }
-    
-    /* Main Content Area */
-    .saas-content {
-        flex-grow: 1;
-        min-width: 0; /* Prevents flex items from overflowing */
-        padding: 30px 40px;
-        box-sizing: border-box;
-        overflow-y: auto;
-        height: 100vh;
-        background: radial-gradient(circle at 30% 10%, rgba(139, 92, 246, 0.03) 0%, transparent 60%);
-    }
-    
-    /* Top Header */
-    .saas-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 35px;
-        gap: 20px;
-    }
-    
-    .saas-search-container {
-        position: relative;
-        width: 320px;
-    }
-    
-    .saas-search-input {
-        width: 100%;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1.5px solid rgba(255, 255, 255, 0.06);
-        border-radius: 20px;
-        padding: 10px 18px 10px 45px;
-        color: #ffffff;
-        font-size: 13.5px;
-        box-sizing: border-box;
-        transition: all 0.3s ease;
-    }
-    
-    .saas-search-input:focus {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(139, 92, 246, 0.5);
-        box-shadow: 0 0 12px rgba(139, 92, 246, 0.15);
-        outline: none;
-    }
-    
-    .saas-search-icon {
-        position: absolute;
-        left: 18px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #7e7e8f;
-        pointer-events: none;
-    }
-    
-    .saas-header-right {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-    
-    .saas-clock {
-        font-size: 13px;
-        font-weight: 700;
-        color: #7e7e8f;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 8px 16px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .saas-notification-bell {
-        position: relative;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #cbd5e1;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .saas-notification-bell:hover {
-        background: rgba(255, 255, 255, 0.06);
-        color: #ffffff;
-    }
-    
-    .saas-notification-dot {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 7px;
-        height: 7px;
-        background: #f43f5e;
-        border-radius: 50%;
-        box-shadow: 0 0 6px #f43f5e;
-    }
-    
-    .saas-profile-widget {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding-left: 10px;
-        border-left: 1.5px solid rgba(255, 255, 255, 0.06);
-    }
-    
-    .saas-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        border: 1.5px solid rgba(139, 92, 246, 0.4);
-        background: #18181c;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #8b5cf6;
-        font-weight: 800;
-        font-size: 16px;
-    }
-    
-    .saas-profile-info {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .saas-username {
-        font-size: 13.5px;
-        font-weight: 700;
-        color: #ffffff;
-    }
-    
-    .saas-role {
-        font-size: 11px;
-        color: #7e7e8f;
-        font-weight: 600;
-        margin-top: 1px;
-    }
-    
-    /* Page Title section */
-    .saas-title-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 28px;
-    }
-    
-    .saas-title-row h1 {
-        margin: 0;
-        font-size: 24px;
-        font-weight: 800;
-        color: #ffffff;
-        letter-spacing: -0.5px;
-    }
-    
-    .saas-filter-btn {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        color: #cbd5e1;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 12.5px;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .saas-filter-btn:hover {
-        background: rgba(255, 255, 255, 0.06);
-        color: #ffffff;
-    }
-    
-    /* Responsive grid columns: Left/Center 2fr, Right 1.2fr */
-    .saas-grid {
-        display: grid;
-        grid-template-columns: 2fr 1.2fr;
-        gap: 24px;
-        align-items: stretch;
-    }
-    
-    @media (max-width: 1200px) {
-        .saas-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-    
-    .saas-left-col {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
-    
-    /* SaaS Glassmorphic Widgets */
-    .saas-widget {
-        background: rgba(14, 14, 18, 0.6);
-        backdrop-filter: blur(16px);
-        border: 1.5px solid rgba(255, 255, 255, 0.04);
-        border-radius: 20px;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-        box-sizing: border-box;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .saas-widget-header {
-        padding: 22px 24px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .saas-widget-header h3 {
-        margin: 0;
-        font-size: 13.5px;
-        font-weight: 800;
-        color: #ffffff;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .saas-widget-header h3 i {
-        color: #8b5cf6;
-    }
-    
-    .saas-widget-body {
-        padding: 24px;
-        flex-grow: 1;
-    }
-    
-    /* KPI mini metric cards inside left column */
-    .saas-metrics-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-    
-    .saas-metric-card {
-        background: rgba(14, 14, 18, 0.6);
-        backdrop-filter: blur(16px);
-        border: 1.5px solid rgba(255, 255, 255, 0.04);
-        border-radius: 20px;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        min-height: 140px;
-        box-sizing: border-box;
-    }
-    
-    .saas-metric-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(139, 92, 246, 0.35);
-        box-shadow: 0 12px 30px rgba(139, 92, 246, 0.1), 0 8px 24px rgba(0, 0, 0, 0.2);
-    }
-    
-    /* Background light glow on metric cards */
-    .saas-metric-card::after {
-        content: "";
-        position: absolute;
-        bottom: -20px;
-        right: -20px;
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 80%);
-        pointer-events: none;
-    }
-    
-    .saas-metric-card.pink-glow::after {
-        background: radial-gradient(circle, rgba(219, 39, 119, 0.12) 0%, transparent 80%);
-    }
-    
-    .saas-metric-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-    
-    .saas-metric-title {
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #7e7e8f;
-        letter-spacing: 0.8px;
-    }
-    
-    .saas-metric-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 9px;
-        background: rgba(139, 92, 246, 0.08);
-        border: 1px solid rgba(139, 92, 246, 0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #8b5cf6;
-    }
-    
-    .saas-metric-card.pink-glow .saas-metric-icon {
-        background: rgba(219, 39, 119, 0.08);
-        border-color: rgba(219, 39, 119, 0.15);
-        color: #db2777;
-    }
-    
-    .saas-metric-value {
-        font-size: 32px;
-        font-weight: 800;
-        color: #ffffff;
-        letter-spacing: -0.5px;
-    }
-    
-    .saas-metric-subtext {
-        font-size: 11.5px;
-        color: #7e7e8f;
-        margin-top: 8px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-    
-    .saas-trend-badge {
-        font-size: 11px;
-        font-weight: 700;
-        color: #34d399;
-        background: rgba(52, 211, 153, 0.08);
-        padding: 2px 6px;
-        border-radius: 6px;
-    }
-    
-    /* Table styling */
-    .saas-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-    }
-    
-    .saas-table th {
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #7e7e8f;
-        letter-spacing: 0.5px;
-        padding: 12px 18px;
-        border-bottom: 1.5px solid rgba(255, 255, 255, 0.04);
-    }
-    
-    .saas-table td {
-        padding: 16px 18px;
-        font-size: 13px;
-        color: #cbd5e1;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        vertical-align: middle;
-    }
-    
-    .saas-table tr:last-child td {
-        border-bottom: none;
-    }
-    
-    .saas-table tbody tr:hover {
-        background: rgba(255, 255, 255, 0.015);
-    }
-    
-    .saas-user-cell {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .saas-user-badge {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
-        background: rgba(139, 92, 246, 0.1);
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #a78bfa;
-        font-weight: 700;
-        font-size: 11px;
-    }
-    
-    .saas-subject {
-        font-weight: 600;
-        color: #ffffff;
-        max-width: 240px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    .saas-date-pill {
-        font-size: 11.5px;
-        color: #7e7e8f;
-        font-weight: 600;
-    }
-    
-    .saas-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 10.5px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-    }
-    
-    .saas-badge.pending {
-        background: rgba(251, 191, 36, 0.08);
-        color: #fbbf24;
-        border: 1px solid rgba(251, 191, 36, 0.15);
-    }
-    
-    .saas-badge-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background-color: currentColor;
-    }
-    
-    .saas-action-link {
-        background: #8b5cf6;
-        color: #ffffff !important;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 11.5px;
-        font-weight: 700;
-        text-decoration: none !important;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        border: none;
-        cursor: pointer;
-    }
-    
-    .saas-action-link:hover {
-        background: #7c3aed;
-        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-    }
-    
-    /* Right Column Widgets */
-    .saas-right-col {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
-    
-    /* Circular Gauge widget styling */
-    .gauge-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 10px 0;
-        position: relative;
-    }
-    
-    .gauge-svg {
-        transform: rotate(-180deg);
-        transform-origin: 50% 50%;
-    }
-    
-    .gauge-overlay {
-        position: absolute;
-        top: 48%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-    }
-    
-    .gauge-percentage {
-        font-size: 34px;
-        font-weight: 800;
-        color: #ffffff;
-        letter-spacing: -1px;
-    }
-    
-    .gauge-label {
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #7e7e8f;
-        letter-spacing: 0.5px;
-        margin-top: 2px;
-    }
-    
-    /* Activity Feed (Recent Profiles) */
-    .activity-feed {
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-    }
-    
-    .activity-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 14px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.015);
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        transition: all 0.2s ease;
-    }
-    
-    .activity-item:hover {
-        background: rgba(255, 255, 255, 0.03);
-        border-color: rgba(139, 92, 246, 0.2);
-    }
-    
-    .activity-item-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 0; /* Prevents overflow */
-    }
-    
-    .activity-avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(219, 39, 119, 0.1) 100%);
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #a78bfa;
-        font-weight: 700;
-        font-size: 12px;
-        flex-shrink: 0;
-    }
-    
-    .activity-details {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-    }
-    
-    .activity-username {
-        font-size: 13px;
-        font-weight: 700;
-        color: #ffffff;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    .activity-meta {
-        font-size: 11px;
-        color: #7e7e8f;
-        margin-top: 2px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    .activity-edit-btn {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        color: #cbd5e1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        flex-shrink: 0;
-    }
-    
-    .activity-edit-btn:hover {
-        background: rgba(139, 92, 246, 0.15);
-        color: #a78bfa;
-        border-color: rgba(139, 92, 246, 0.3);
-    }
-    
-    /* Collapsible emergency database navigation */
-    .saas-db-section {
-        margin-top: 35px;
-    }
-    
-    .saas-db-details {
-        background: rgba(14, 14, 18, 0.6);
-        backdrop-filter: blur(16px);
-        border: 1.5px solid rgba(255, 255, 255, 0.04);
-        border-radius: 20px;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-        overflow: hidden;
-    }
-    
-    .saas-db-summary {
-        padding: 22px 24px;
-        font-size: 13.5px;
-        font-weight: 800;
-        color: #ffffff;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        user-select: none;
-        list-style: none; /* Hide default arrow */
-    }
-    
-    /* Hide standard details marker in Safari */
-    .saas-db-summary::-webkit-details-marker {
-        display: none;
-    }
-    
-    .saas-db-summary-inner {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .saas-db-summary-inner i {
-        color: #7e7e8f;
-    }
-    
-    .saas-db-arrow {
-        color: #7e7e8f;
-        transition: transform 0.2s ease;
-    }
-    
-    .saas-db-details[open] .saas-db-arrow {
-        transform: rotate(180deg);
-    }
-    
-    .saas-db-body {
-        padding: 10px 24px 24px 24px;
-        border-top: 1px solid rgba(255, 255, 255, 0.04);
-    }
-    
-    /* Module tables inside the expandable DB panel */
-    .saas-db-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 20px;
-    }
-    
-    .saas-db-card {
-        background: rgba(255, 255, 255, 0.015);
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        border-radius: 14px;
-        overflow: hidden;
-        padding: 16px;
-    }
-    
-    .saas-db-card h4 {
-        margin: 0 0 12px 0;
-        font-size: 13px;
-        font-weight: 750;
-        color: #a78bfa;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-    }
-    
-    .saas-db-card-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .saas-db-card-table tr {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-    }
-    
-    .saas-db-card-table tr:last-child {
-        border-bottom: none;
-    }
-    
-    .saas-db-card-table td {
-        padding: 10px 0;
-        font-size: 12.5px;
-    }
-    
-    .saas-db-card-table td a {
-        color: #cbd5e1;
-        text-decoration: none;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-    }
-    
-    .saas-db-card-table td a:hover {
-        color: #8b5cf6;
-    }
-    
-    .saas-db-card-table td.actions-cell {
-        text-align: right;
-    }
-    
-    .saas-db-card-table td.actions-cell a {
-        display: inline-block;
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        padding: 4px 8px;
-        border-radius: 5px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        margin-left: 6px;
-    }
-    
-    .saas-db-card-table td.actions-cell a.add-link {
-        color: #34d399;
-        background: rgba(52, 211, 153, 0.05);
-        border-color: rgba(52, 211, 153, 0.1);
-    }
-    
-    .saas-db-card-table td.actions-cell a.add-link:hover {
-        background: #34d399;
-        color: #ffffff;
-        box-shadow: 0 0 8px rgba(52, 211, 153, 0.3);
-    }
-    
-    .saas-db-card-table td.actions-cell a.change-link:hover {
-        background: rgba(255,255,255,0.06);
-        color: #ffffff;
+    /* Reset default header spacing for dashboard home */
+    .saas-page-title {
+        display: none !important; /* Hide redundant page title since dashboard title row handles it */
     }
 </style>
 {% endblock %}
@@ -891,312 +19,239 @@
 {% endblock %}
 
 {% block content %}
-<div class="saas-container">
+<!-- Title section -->
+<div class="saas-title-row">
+    <h1>Boshqaruv Markazi</h1>
+    <button class="saas-filter-btn">
+        <i data-lucide="sliders-horizontal" style="width: 14px; height: 14px;"></i> Saralash
+    </button>
+</div>
+
+<!-- Dashboard Widgets Grid -->
+<div class="saas-grid">
     
-    <!-- Left Sidebar -->
-    <div class="saas-sidebar">
-        <div>
-            <a href="{% url 'admin:index' %}" class="sidebar-brand" title="Bosh sahifa">
-                <span>🌸</span>
-            </a>
-            
-            <div class="sidebar-menu">
-                <a href="{% url 'admin:index' %}" class="sidebar-item active" title="Boshqaruv markazi">
-                    <i data-lucide="layout-dashboard" style="width: 20px; height: 20px;"></i>
-                </a>
-                <a href="/admin/feedback/application/" class="sidebar-item" title="Arizalar">
-                    <i data-lucide="message-square" style="width: 20px; height: 20px;"></i>
-                </a>
-                <a href="/admin/feedback/profile/" class="sidebar-item" title="Foydalanuvchi profillari">
-                    <i data-lucide="users" style="width: 20px; height: 20px;"></i>
-                </a>
-                <a href="#system-tables" class="sidebar-item" id="sidebar-db-trigger" title="Tizim jadvallari">
-                    <i data-lucide="database" style="width: 20px; height: 20px;"></i>
-                </a>
-            </div>
-        </div>
+    <!-- Left column: Line Chart, Tickets Table, KPI cards -->
+    <div class="saas-left-col">
         
-        <div class="sidebar-footer">
-            <a href="/admin/password_change/" class="sidebar-item" title="Parolni o'zgartirish">
-                <i data-lucide="settings" style="width: 20px; height: 20px;"></i>
-            </a>
-            <form action="{% url 'admin:logout' %}" method="post" id="logout-form" style="display: none;">
-                {% csrf_token %}
-            </form>
-            <button onclick="document.getElementById('logout-form').submit();" class="sidebar-btn-logout" title="Chiqish">
-                <i data-lucide="log-out" style="width: 20px; height: 20px;"></i>
-            </button>
-        </div>
-    </div>
-    
-    <!-- Main Content -->
-    <div class="saas-content">
-        
-        <!-- Header -->
-        <div class="saas-header">
-            <!-- Search bar -->
-            <div class="saas-search-container">
-                <i data-lucide="search" class="saas-search-icon" style="width: 18px; height: 18px;"></i>
-                <input type="text" placeholder="Qidirish..." class="saas-search-input" id="dashboard-search">
+        <!-- Chart Widget -->
+        <div class="saas-widget">
+            <div class="saas-widget-header">
+                <h3><i data-lucide="trending-up" style="width: 16px; height: 16px;"></i> Arizalar dinamikasi</h3>
+                <span style="font-size: 11.5px; color: #7e7e8f; font-weight: 700;">Oxirgi 15 kunlik faollik</span>
             </div>
-            
-            <!-- Clock, Notifications, Profile -->
-            <div class="saas-header-right">
-                <div class="saas-clock">
-                    <i data-lucide="clock" style="width: 15px; height: 15px; color: #8b5cf6;"></i>
-                    <span>Tashkent: </span><span id="saas-time">--:--</span>
-                </div>
-                
-                <div class="saas-notification-bell" title="Bildirishnomalar">
-                    <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
-                    <div class="saas-notification-dot"></div>
-                </div>
-                
-                <div class="saas-profile-widget">
-                    <div class="saas-avatar">
-                        {{ user.username|slice:":1|upper" }}
-                    </div>
-                    <div class="saas-profile-info">
-                        <span class="saas-username">{{ user.username }}</span>
-                        <span class="saas-role">{% if user.is_superuser %}Super Administrator{% else %}Administrator{% endif %}</span>
-                    </div>
+            <div class="saas-widget-body">
+                <div style="position: relative; height: 260px; width: 100%;">
+                    <canvas id="saasActivityChart" style="min-height: 260px !important; max-height: 260px !important;"></canvas>
                 </div>
             </div>
         </div>
         
-        <!-- Title section -->
-        <div class="saas-title-row">
-            <h1>Boshqaruv Markazi</h1>
-            <button class="saas-filter-btn">
-                <i data-lucide="sliders-horizontal" style="width: 14px; height: 14px;"></i> Saralash
-            </button>
+        <!-- Recent Pending Tickets Table Widget -->
+        <div class="saas-widget">
+            <div class="saas-widget-header">
+                <h3><i data-lucide="mail" style="width: 16px; height: 16px; color: #fbbf24;"></i> Yangi kelib tushgan arizalar</h3>
+                <a href="/admin/feedback/application/?is_answered__exact=0" style="font-size: 12px; font-weight: 700; color: #8b5cf6; text-decoration: none;">Barchasi</a>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="saas-table">
+                    <thead>
+                        <tr>
+                            <th>Mijoz</th>
+                            <th>Mavzu</th>
+                            <th>Holat</th>
+                            <th style="text-align: right;">Harakat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="saas-tickets-body">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #7e7e8f; padding: 40px 0;">Yuklanmoqda...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         
-        <!-- Grid layout -->
-        <div class="saas-grid">
-            
-            <!-- Left column -->
-            <div class="saas-left-col">
-                
-                <!-- Chart Widget -->
-                <div class="saas-widget">
-                    <div class="saas-widget-header">
-                        <h3><i data-lucide="trending-up" style="width: 16px; height: 16px;"></i> Arizalar dinamikasi</h3>
-                        <span style="font-size: 11.5px; color: #7e7e8f; font-weight: 700;">Oxirgi 15 kunlik faollik</span>
-                    </div>
-                    <div class="saas-widget-body">
-                        <div style="position: relative; height: 260px; width: 100%;">
-                            <canvas id="saasActivityChart" style="min-height: 260px !important; max-height: 260px !important;"></canvas>
-                        </div>
+        <!-- Metrics row (Total stats cards side-by-side) -->
+        <div class="saas-metrics-row">
+            <!-- Metric Card 1 -->
+            <div class="saas-metric-card">
+                <div class="saas-metric-header">
+                    <span class="saas-metric-title">Jami Arizalar</span>
+                    <div class="saas-metric-icon">
+                        <i data-lucide="inbox" style="width: 16px; height: 16px;"></i>
                     </div>
                 </div>
-                
-                <!-- Recent Pending Tickets Table Widget -->
-                <div class="saas-widget">
-                    <div class="saas-widget-header">
-                        <h3><i data-lucide="mail" style="width: 16px; height: 16px; color: #fbbf24;"></i> Yangi kelib tushgan arizalar</h3>
-                        <a href="/admin/feedback/application/?is_answered__exact=0" style="font-size: 12px; font-weight: 700; color: #8b5cf6; text-decoration: none;">Barchasi</a>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table class="saas-table">
-                            <thead>
-                                <tr>
-                                    <th>Mijoz</th>
-                                    <th>Mavzu</th>
-                                    <th>Holat</th>
-                                    <th style="text-align: right;">Harakat</th>
-                                </tr>
-                            </thead>
-                            <tbody id="saas-tickets-body">
-                                <tr>
-                                    <td colspan="4" style="text-align: center; color: #7e7e8f; padding: 40px 0;">Yuklanmoqda...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div>
+                    <div class="saas-metric-value" id="saas-total-apps">--</div>
+                    <div class="saas-metric-subtext">
+                        <span class="saas-trend-badge">+12%</span> Telegram orqali
                     </div>
                 </div>
-                
-                <!-- Metrics row (Total stats cards side-by-side) -->
-                <div class="saas-metrics-row">
-                    <!-- Metric Card 1 -->
-                    <div class="saas-metric-card">
-                        <div class="saas-metric-header">
-                            <span class="saas-metric-title">Jami Arizalar</span>
-                            <div class="saas-metric-icon">
-                                <i data-lucide="inbox" style="width: 16px; height: 16px;"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="saas-metric-value" id="saas-total-apps">--</div>
-                            <div class="saas-metric-subtext">
-                                <span class="saas-trend-badge">+12%</span> Telegram orqali
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Metric Card 2 -->
-                    <div class="saas-metric-card pink-glow">
-                        <div class="saas-metric-header">
-                            <span class="saas-metric-title">Jami Profillar</span>
-                            <div class="saas-metric-icon">
-                                <i data-lucide="users" style="width: 16px; height: 16px;"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="saas-metric-value" id="saas-total-profiles">--</div>
-                            <div class="saas-metric-subtext">
-                                <span class="saas-trend-badge">+8%</span> Ro'yxatdan o'tganlar
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
             </div>
-            
-            <!-- Right column -->
-            <div class="saas-right-col">
-                
-                <!-- Circular Gauge Widget (Answer Rate) -->
-                <div class="saas-widget">
-                    <div class="saas-widget-header">
-                        <h3><i data-lucide="pie-chart" style="width: 16px; height: 16px;"></i> Samaradorlik</h3>
-                    </div>
-                    <div class="saas-widget-body">
-                        <div class="gauge-container">
-                            <svg width="180" height="150" viewBox="0 0 200 160" class="gauge-svg">
-                                <!-- Background path -->
-                                <path d="M 30 140 A 80 80 0 0 1 170 140" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="12" stroke-linecap="round" />
-                                <!-- Foreground path -->
-                                <path id="saas-gauge-fill" d="M 30 140 A 80 80 0 0 1 170 140" fill="none" stroke="url(#saas-gauge-gradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="320" stroke-dashoffset="320" style="transition: stroke-dashoffset 1s ease-in-out;" />
-                                <!-- Gradient definition -->
-                                <defs>
-                                    <linearGradient id="saas-gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%" stop-color="#db2777" />
-                                        <stop offset="50%" stop-color="#b829d6" />
-                                        <stop offset="100%" stop-color="#8b5cf6" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
-                            
-                            <div class="gauge-overlay">
-                                <div class="gauge-percentage" id="saas-gauge-percentage">--%</div>
-                                <div class="gauge-label">Javob berilgan</div>
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 15px;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 11px; color: #7e7e8f; font-weight: 700; text-transform: uppercase;">Faol</div>
-                                <div style="font-size: 15px; font-weight: 800; color: #fbbf24; margin-top: 4px;" id="saas-unanswered-apps">--</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 11px; color: #7e7e8f; font-weight: 700; text-transform: uppercase;">Yopilgan</div>
-                                <div style="font-size: 15px; font-weight: 800; color: #34d399; margin-top: 4px;" id="saas-answered-apps">--</div>
-                            </div>
-                        </div>
+            <!-- Metric Card 2 -->
+            <div class="saas-metric-card pink-glow">
+                <div class="saas-metric-header">
+                    <span class="saas-metric-title">Jami Profillar</span>
+                    <div class="saas-metric-icon">
+                        <i data-lucide="users" style="width: 16px; height: 16px;"></i>
                     </div>
                 </div>
-                
-                <!-- Recent Activity Feed Widget (New Registered Profiles) -->
-                <div class="saas-widget">
-                    <div class="saas-widget-header">
-                        <h3><i data-lucide="user-check" style="width: 16px; height: 16px;"></i> Oxirgi foydalanuvchilar</h3>
-                        <a href="/admin/feedback/profile/" style="font-size: 12px; font-weight: 700; color: #8b5cf6; text-decoration: none;">Barchasi</a>
-                    </div>
-                    <div class="saas-widget-body" style="padding: 20px;">
-                        <div class="activity-feed" id="saas-profiles-feed">
-                            <div style="text-align: center; color: #7e7e8f; padding: 20px 0;">Yuklanmoqda...</div>
-                        </div>
+                <div>
+                    <div class="saas-metric-value" id="saas-total-profiles">--</div>
+                    <div class="saas-metric-subtext">
+                        <span class="saas-trend-badge">+8%</span> Ro'yxatdan o'tganlar
                     </div>
                 </div>
-                
             </div>
-            
-        </div>
-        
-        <!-- Emergency system tables details section at the bottom -->
-        <div class="saas-db-section" id="system-tables">
-            <details class="saas-db-details" id="saas-db-accordion">
-                <summary class="saas-db-summary">
-                    <div class="saas-db-summary-inner">
-                        <i data-lucide="database" style="width: 16px; height: 16px;"></i>
-                        Tizim Sozlamalari (Barcha Jadvallar)
-                    </div>
-                    <i data-lucide="chevron-down" class="saas-db-arrow" style="width: 18px; height: 18px;"></i>
-                </summary>
-                
-                <div class="saas-db-body">
-                    {% if app_list %}
-                        <div class="saas-db-grid">
-                            {% for app in app_list %}
-                                <div class="saas-db-card">
-                                    <h4>{{ app.name }}</h4>
-                                    <table class="saas-db-card-table">
-                                        <tbody>
-                                            {% for model in app.models %}
-                                                <tr>
-                                                    <td>
-                                                        {% if model.admin_url %}
-                                                            <a href="{{ model.admin_url }}">{{ model.name }}</a>
-                                                        {% else %}
-                                                            <span style="color: #7e7e8f;">{{ model.name }}</span>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td class="actions-cell">
-                                                        {% if model.add_url %}
-                                                            <a href="{{ model.add_url }}" class="add-link" title="Qo'shish"><i data-lucide="plus" style="width: 11px; height: 11px; display: inline; vertical-align: middle;"></i> Qo'shish</a>
-                                                        {% endif %}
-                                                        {% if model.changelist_url %}
-                                                            <a href="{{ model.changelist_url }}" class="change-link" title="O'zgartirish">O'zgartirish</a>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p style="color: #7e7e8f; text-align: center; margin: 20px 0;">Sizda ushbu ma'lumotlarni ko'rishga ruxsat yo'q.</p>
-                    {% endif %}
-                </div>
-            </details>
         </div>
         
     </div>
+    
+    <!-- Right column: Efficiency circular chart, Recent users -->
+    <div class="saas-right-col">
+        
+        <!-- Circular Gauge Widget (Answer Rate) -->
+        <div class="saas-widget">
+            <div class="saas-widget-header">
+                <h3><i data-lucide="pie-chart" style="width: 16px; height: 16px;"></i> Samaradorlik</h3>
+            </div>
+            <div class="saas-widget-body">
+                <div class="gauge-container">
+                    <svg width="180" height="150" viewBox="0 0 200 160" class="gauge-svg">
+                        <!-- Background path -->
+                        <path d="M 30 140 A 80 80 0 0 1 170 140" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="12" stroke-linecap="round" />
+                        <!-- Foreground path -->
+                        <path id="saas-gauge-fill" d="M 30 140 A 80 80 0 0 1 170 140" fill="none" stroke="url(#saas-gauge-gradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="320" stroke-dashoffset="320" style="transition: stroke-dashoffset 1s ease-in-out;" />
+                        <!-- Gradient definition -->
+                        <defs>
+                            <linearGradient id="saas-gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#db2777" />
+                                <stop offset="50%" stop-color="#b829d6" />
+                                <stop offset="100%" stop-color="#8b5cf6" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    
+                    <div class="gauge-overlay">
+                        <div class="gauge-percentage" id="saas-gauge-percentage">--%</div>
+                        <div class="gauge-label">Javob berilgan</div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 15px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 11px; color: #7e7e8f; font-weight: 700; text-transform: uppercase;">Faol</div>
+                        <div style="font-size: 15px; font-weight: 800; color: #fbbf24; margin-top: 4px;" id="saas-unanswered-apps">--</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 11px; color: #7e7e8f; font-weight: 700; text-transform: uppercase;">Yopilgan</div>
+                        <div style="font-size: 15px; font-weight: 800; color: #34d399; margin-top: 4px;" id="saas-answered-apps">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity Feed Widget (New Registered Profiles) -->
+        <div class="saas-widget">
+            <div class="saas-widget-header">
+                <h3><i data-lucide="user-check" style="width: 16px; height: 16px;"></i> Oxirgi foydalanuvchilar</h3>
+                <a href="/admin/feedback/profile/" style="font-size: 12px; font-weight: 700; color: #8b5cf6; text-decoration: none;">Barchasi</a>
+            </div>
+            <div class="saas-widget-body" style="padding: 20px;">
+                <div class="activity-feed" id="saas-profiles-feed">
+                    <div style="text-align: center; color: #7e7e8f; padding: 20px 0;">Yuklanmoqda...</div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+</div>
+
+<!-- Emergency system tables details section at the bottom -->
+<div class="saas-db-section" id="system-tables">
+    <details class="saas-db-details" id="saas-db-accordion">
+        <summary class="saas-db-summary">
+            <div class="saas-db-summary-inner">
+                <i data-lucide="database" style="width: 16px; height: 16px;"></i>
+                Tizim Sozlamalari (Barcha Jadvallar)
+            </div>
+            <i data-lucide="chevron-down" class="saas-db-arrow" style="width: 18px; height: 18px;"></i>
+        </summary>
+        
+        <div class="saas-db-body">
+            {% if app_list %}
+                <div class="saas-db-grid">
+                    {% for app in app_list %}
+                        <div class="saas-db-card">
+                            <h4>{{ app.name }}</h4>
+                            <table class="saas-db-card-table">
+                                <tbody>
+                                    {% for model in app.models %}
+                                        <tr>
+                                            <td>
+                                                {% if model.admin_url %}
+                                                    <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                                                {% else %}
+                                                    <span style="color: #7e7e8f;">{{ model.name }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="actions-cell">
+                                                {% if model.add_url %}
+                                                    <a href="{{ model.add_url }}" class="add-link" title="Qo'shish"><i data-lucide="plus" style="width: 11px; height: 11px; display: inline; vertical-align: middle;"></i> Qo'shish</a>
+                                                {% endif %}
+                                                {% if model.changelist_url %}
+                                                    <a href="{{ model.changelist_url }}" class="change-link" title="O'zgartirish">O'zgartirish</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color: #7e7e8f; text-align: center; margin: 20px 0;">Sizda ushbu ma'lumotlarni ko'rishga ruxsat yo'q.</p>
+            {% endif %}
+        </div>
+    </details>
 </div>
 
 <!-- JavaScript to fetch AJAX Stats and Render Charts -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Toggle database accordion on sidebar click
+        // Toggle database accordion on sidebar click or hash trigger
         const dbAccordion = document.getElementById('saas-db-accordion');
         const dbTrigger = document.getElementById('sidebar-db-trigger');
-        if (dbTrigger && dbAccordion) {
-            dbTrigger.addEventListener('click', function(e) {
-                e.preventDefault();
+        
+        function openAndScrollToDb() {
+            if (dbAccordion) {
                 dbAccordion.open = true;
                 dbAccordion.scrollIntoView({ behavior: 'smooth' });
-                // Briefly flash the header
                 const summary = dbAccordion.querySelector('.saas-db-summary');
                 summary.style.background = 'rgba(139, 92, 246, 0.15)';
                 setTimeout(() => {
                     summary.style.background = 'transparent';
                 }, 800);
+            }
+        }
+
+        if (dbTrigger) {
+            dbTrigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                openAndScrollToDb();
             });
         }
-
-        // Live Clock
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
-            const clockEl = document.getElementById('saas-time');
-            if (clockEl) clockEl.textContent = timeStr;
+        
+        // Also check if url hash is #system-tables on load
+        if (window.location.hash === '#system-tables') {
+            openAndScrollToDb();
         }
-        updateClock();
-        setInterval(updateClock, 10000);
 
-        // Simple Search Filter on Dashboard
-        const searchInput = document.getElementById('dashboard-search');
+        // Live Clock is handled globally in base.html
+
+        // Dashboard Search filtering on tickets / profiles
+        const searchInput = document.getElementById('saas-global-search');
         if (searchInput) {
             searchInput.addEventListener('input', function(e) {
                 const query = e.target.value.toLowerCase();
@@ -1204,7 +259,7 @@
                 // 1. Search in pending tickets table
                 const ticketRows = document.querySelectorAll('#saas-tickets-body tr');
                 ticketRows.forEach(row => {
-                    if (row.cells.length > 1) { // skip empty / loading rows
+                    if (row.cells.length > 1) { 
                         const text = row.textContent.toLowerCase();
                         row.style.display = text.includes(query) ? '' : 'none';
                     }
@@ -1236,7 +291,7 @@
                 
                 document.getElementById('saas-gauge-percentage').textContent = percentage + '%';
                 
-                // SVG Circle Path Length for M 30 140 A 80 80 0 0 1 170 140 is approximately 298px
+                // SVG Circle Path length is 298px
                 const strokeLength = 298;
                 const offset = strokeLength - (strokeLength * (percentage / 100));
                 const fillPath = document.getElementById('saas-gauge-fill');
@@ -1302,7 +357,6 @@
                         const item = document.createElement('div');
                         item.className = 'activity-item';
                         
-                        // First letter of genre or default avatar icon
                         const genreLabel = p.favorite_genres && p.favorite_genres.trim() !== "" ? p.favorite_genres : "Tanlanmagan";
                         const letter = p.telegram_id ? String(p.telegram_id).substring(0, 2) : "U";
                         

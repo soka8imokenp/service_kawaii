@@ -2,39 +2,19 @@
 {% load static %}
 
 {% block branding %}
-<div id="site-name">
-  <a href="{% url 'admin:index' %}">
-    <span class="brand-sakura">🌸</span> <span class="brand-text">Sumire Panel</span>
-  </a>
-</div>
+<!-- Site logo/branding is already handled in base.html's sidebar -->
 {% endblock %}
 
 {% block extrastyle %}
 {{ block.super }}
-<!-- Load premium typography and custom CSS -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<!-- Add any page-specific base site extra styling overrides here -->
 {% endblock %}
 
 {% block extrahead %}
 {{ block.super }}
-<!-- Load Lucide Icons CDN -->
-<script src="https://unpkg.com/lucide@latest"></script>
-
-<!-- Global UI enhancements: Glowing Orbs and Dynamic Sidebar Icon Injector -->
+<!-- Table dynamic Lucide icon injector for model table links -->
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-      // 1. Inject Floating Background Orbs
-      const orb1 = document.createElement('div');
-      orb1.className = 'glowing-orb orb-1';
-      const orb2 = document.createElement('div');
-      orb2.className = 'glowing-orb orb-2';
-      document.body.appendChild(orb1);
-      document.body.appendChild(orb2);
-
-      // 2. Dynamic Sidebar & Dashboard Table Icon Injector
       const iconMapping = {
           'ariza': 'message-square',
           'application': 'message-square',
@@ -48,10 +28,11 @@
           'message': 'mail'
       };
 
-      const links = document.querySelectorAll('#nav-sidebar tr.model-row th a, .dashboard .module th a, .system-db-panel .module th a');
+      // Scan table links in lists and dashboard tables and inject custom icons
+      const links = document.querySelectorAll('#changelist table tbody th a, .saas-db-card-table td a');
       links.forEach(link => {
           const text = link.textContent.toLowerCase();
-          let iconName = 'database'; // default icon
+          let iconName = 'database'; // default
           for (const [key, icon] of Object.entries(iconMapping)) {
               if (text.includes(key)) {
                   iconName = icon;
@@ -73,7 +54,6 @@
           }
       });
 
-      // 3. Initialize Lucide vector SVGs
       if (window.lucide) {
           window.lucide.createIcons();
       }
