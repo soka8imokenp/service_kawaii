@@ -2212,6 +2212,9 @@ textarea[name="admin_reply_field"]:focus {
         box-shadow: none !important;
         background: transparent !important;
         overflow: visible !important; /* Crucial for absolute/relative positioning */
+        backdrop-filter: none !important; /* Prevent positioning context hijack for fixed elements */
+        -webkit-backdrop-filter: none !important;
+        filter: none !important;
     }
 
     #content, #content-main {
@@ -2503,18 +2506,21 @@ textarea[name="admin_reply_field"]:focus {
     .saas-table {
         display: block !important;
         width: 100% !important;
+        background-color: transparent !important;
     }
     .saas-table thead { display: none !important; }
     .saas-table tbody {
         display: flex !important;
         flex-direction: column !important;
         width: 100% !important;
+        background-color: transparent !important;
     }
     .saas-table tbody tr {
         display: flex !important;
         flex-direction: column !important;
         padding: 16px 20px !important;
         border-bottom: 1px solid #334155 !important;
+        background-color: #1e293b !important; /* slate-800 matches the widget card background */
     }
     .saas-table tbody tr:last-child {
         border-bottom: none !important;
