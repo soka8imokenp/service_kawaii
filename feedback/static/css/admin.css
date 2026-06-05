@@ -1,79 +1,255 @@
-/* 🌸 Sumire Cyberpunk Dark Theme for Django Admin 🌸 */
+/* 🌸 Sumire Apexify-Style Premium Cyberpunk Dashboard Theme for Django Admin 🌸 */
 
 /* Import premium modern typography */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-/* Main Background and Globals */
+/* Theme CSS Variables - mapped to the exact colors in the screenshot */
+:root,
+[data-theme="light"],
+[data-theme="dark"],
+[data-theme="auto"] {
+    --primary: #8b5cf6 !important; /* vibrant purple */
+    --primary-fg: #ffffff !important;
+    --body-bg: #0b0b0e !important; /* deep rich black */
+    --body-fg: #f1f5f9 !important;
+    --body-quiet-color: #7e7e8f !important; /* muted slate text */
+    --body-loud-color: #ffffff !important;
+    
+    --header-bg: rgba(18, 18, 20, 0.75) !important; /* dark panel top header */
+    --header-color: #ffffff !important;
+    --header-link-color: #c084fc !important;
+    
+    --breadcrumbs-bg: transparent !important;
+    --breadcrumbs-fg: #7e7e8f !important;
+    --breadcrumbs-link-color: #8b5cf6 !important;
+    
+    --link-color: #c084fc !important;
+    --link-hover-color: #f472b6 !important;
+    --link-selected-color: #d946ef !important;
+    
+    --hairline-color: rgba(255, 255, 255, 0.05) !important;
+    --border-color: rgba(255, 255, 255, 0.05) !important;
+    --error-color: #f87171 !important;
+    
+    --button-bg: #8b5cf6 !important;
+    --button-hover-bg: #7c3aed !important;
+    --button-fg: #ffffff !important;
+    
+    --element-common-bg: rgba(255, 255, 255, 0.03) !important;
+    --element-active-bg: rgba(255, 255, 255, 0.06) !important;
+    
+    --message-success-bg: #06231c !important;
+    --message-success-color: #34d399 !important;
+    --message-warning-bg: #351508 !important;
+    --message-warning-color: #fbbf24 !important;
+    --message-error-bg: #350808 !important;
+    --message-error-color: #fca5a5 !important;
+    
+    --darkened-bg: #0f0f12 !important;
+    --selected-bg: rgba(139, 92, 246, 0.15) !important;
+    --selected-row: rgba(139, 92, 246, 0.08) !important;
+    --close-button-bg: #222227 !important;
+    --close-button-hover-bg: #2e2e38 !important;
+    --delete-button-bg: #7f1d1d !important;
+    --delete-button-hover-bg: #991b1b !important;
+}
+
+/* Global Reset & Typography */
 body {
-    background-color: #090d16 !important;
-    color: #e2e8f0 !important;
+    background-color: var(--body-bg) !important;
+    color: var(--body-fg) !important;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+    overflow-x: hidden;
+    letter-spacing: -0.1px;
+    position: relative;
+    min-height: 100vh;
 }
 
 input, select, textarea, button {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
 }
 
-/* 1. Header & Navigation */
+/* Background Glowing Orbs */
+.glowing-orb {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.8;
+}
+
+.orb-1 {
+    top: -150px;
+    left: -150px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, rgba(139, 92, 246, 0.03) 50%, transparent 100%);
+    animation: float-orb 25s infinite alternate ease-in-out;
+}
+
+.orb-2 {
+    bottom: -150px;
+    right: -150px;
+    background: radial-gradient(circle, rgba(219, 39, 119, 0.08) 0%, rgba(236, 72, 153, 0.03) 50%, transparent 100%);
+    animation: float-orb 20s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes float-orb {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(60px, 40px) scale(1.1); }
+}
+
+/* Custom modern scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #8b5cf6;
+}
+
+/* Base structural layout grids */
+#container {
+    position: relative;
+    z-index: 1;
+}
+
+/* 1. Header (Top Bar) Override */
 #header {
-    background: linear-gradient(135deg, #1e1b4b 0%, #311042 50%, #4c0519 100%) !important;
-    padding: 16px 24px !important;
-    border-bottom: 1px solid #2e1065 !important;
-    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.15) !important;
+    background: var(--header-bg) !important;
+    backdrop-filter: blur(16px) !important;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 12px 30px !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    height: 64px !important;
+    box-sizing: border-box;
+    position: sticky !important;
+    top: 0;
+    z-index: 1000 !important;
+}
+
+#branding {
+    float: none !important;
 }
 
 #branding h1 {
     font-weight: 800 !important;
-    font-size: 22px !important;
+    font-size: 19px !important;
     letter-spacing: -0.5px !important;
     color: #ffffff !important;
+    margin: 0 !important;
     display: flex !important;
     align-items: center !important;
 }
 
-#branding h1::before {
-    content: "🌸" !important;
-    margin-right: 10px !important;
-    font-size: 24px !important;
-    animation: pulse 2.5s infinite alternate !important;
+.brand-sakura {
+    display: inline-block;
+    font-size: 20px;
+    margin-right: 8px;
+    animation: pulse-bloom 3s infinite alternate ease-in-out;
 }
 
-@keyframes pulse {
+@keyframes pulse-bloom {
     0% { transform: scale(1); }
-    100% { transform: scale(1.1); }
+    100% { transform: scale(1.1) rotate(5deg); }
 }
 
+.brand-text {
+    font-weight: 700;
+    color: #ffffff !important;
+    background: none !important;
+    -webkit-text-fill-color: initial !important;
+}
+
+/* User tools layout without default slash '/' separators */
 #user-tools {
-    font-size: 13px !important;
-    font-weight: 500 !important;
-    color: rgba(255, 255, 255, 0.9) !important;
+    float: none !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 0 !important; /* Hides text slashes ('/') in DOM */
 }
 
-#user-tools a {
-    color: #e879f9 !important;
-    border-bottom: 1px dashed rgba(232, 121, 249, 0.6) !important;
+#user-tools strong {
+    font-size: 13.5px !important;
+    color: #ffffff !important;
+    margin-right: 8px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block !important;
+    vertical-align: middle;
+}
+
+#user-tools a, 
+#user-tools button,
+#user-tools form {
+    font-size: 12px !important;
     text-decoration: none !important;
     transition: all 0.2s !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    font-weight: 700 !important;
+    color: #cbd5e1 !important;
+    display: inline-block !important;
+    vertical-align: middle;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+#user-tools button {
+    background: rgba(244, 63, 94, 0.1) !important;
+    border-color: rgba(244, 63, 94, 0.2) !important;
+    color: #f43f5e !important;
 }
 
 #user-tools a:hover {
-    color: #f472b6 !important;
-    border-bottom-color: #f472b6 !important;
+    background: #8b5cf6 !important;
+    border-color: #8b5cf6 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+}
+
+#user-tools button:hover {
+    background: #e11d48 !important;
+    border-color: #e11d48 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(225, 29, 72, 0.4);
+}
+
+#user-tools form {
+    display: inline-block !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    margin: 0 !important;
 }
 
 /* Breadcrumbs bar styling */
 .breadcrumbs {
-    background: #111827 !important;
-    border-bottom: 1px solid #1f2937 !important;
-    padding: 12px 24px !important;
-    font-size: 13px !important;
+    background: transparent !important;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 14px 40px !important;
+    font-size: 12.5px !important;
     font-weight: 500 !important;
-    color: #9ca3af !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+    color: #7e7e8f !important;
 }
 
 .breadcrumbs a {
-    color: #a78bfa !important;
+    color: #8b5cf6 !important;
     font-weight: 600 !important;
     text-decoration: none !important;
 }
@@ -83,65 +259,433 @@ input, select, textarea, button {
     text-decoration: underline !important;
 }
 
-/* 2. Main Content Layout & Dashboard */
-#content {
-    padding: 30px 40px !important;
-    background: #090d16 !important;
-    min-height: calc(100vh - 130px) !important;
+/* 2. Login Page Styling */
+body.login {
+    background: #0c0c0e !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0 !important;
 }
 
-h1 {
-    font-weight: 800 !important;
+body.login #container {
+    width: 100% !important;
+    max-width: 420px !important;
+    background: transparent !important;
+    border: none !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+}
+
+body.login #header {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    text-align: center !important;
+    padding: 0 0 24px 0 !important;
+}
+
+body.login #header a {
     color: #ffffff !important;
     font-size: 26px !important;
-    letter-spacing: -0.5px !important;
-    margin-bottom: 24px !important;
+    font-weight: 800 !important;
+    letter-spacing: -1px !important;
 }
 
-.dashboard .module {
-    background: #111827 !important;
-    border: 1px solid #1f2937 !important;
+body.login #header a::before {
+    content: "🌸";
+    display: block;
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+body.login #content {
+    background: rgba(18, 18, 20, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+    padding: 36px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+    min-height: auto !important;
+}
+
+body.login .form-row {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin-bottom: 18px !important;
+    display: flex;
+    flex-direction: column;
+}
+
+body.login .form-row label {
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    color: #7e7e8f !important;
+    margin-bottom: 6px !important;
+}
+
+body.login .form-row input[type="text"],
+body.login .form-row input[type="password"] {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    transition: all 0.2s !important;
+}
+
+body.login .form-row input[type="text"]:focus,
+body.login .form-row input[type="password"]:focus {
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.25) !important;
+    outline: none !important;
+}
+
+body.login .submit-row {
+    background: transparent !important;
+    border: none !important;
+    padding: 8px 0 0 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+}
+
+body.login .submit-row input[type="submit"] {
+    width: 100% !important;
+    padding: 12px !important;
+    background: #8b5cf6 !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+}
+
+body.login .submit-row input[type="submit"]:hover {
+    background: #7c3aed !important;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3) !important;
+}
+
+/* Custom dashboard-specific overrides to make it full screen and hide standard header/breadcrumbs */
+body.dashboard #header,
+body.dashboard .breadcrumbs {
+    display: none !important;
+}
+
+body.dashboard #content {
+    padding: 0 !important;
+    min-height: 100vh !important;
+    background: #0b0b0e !important;
+}
+
+/* 3. Main Dashboard Layout (Cards & Grid) */
+#content {
+    padding: 30px 40px !important;
+    background: transparent !important;
+    min-height: calc(100vh - 128px) !important;
+}
+
+/* Transform dashboard layout into modern CSS Grid cards */
+.dashboard #content-main {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)) !important;
+    gap: 24px !important;
+    width: 100% !important;
+}
+
+/* Turn modules into glassmorphic cards */
+.dashboard .module, 
+.system-db-panel .module {
+    background: rgba(18, 18, 20, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
     overflow: hidden !important;
-    margin-bottom: 30px !important;
+    margin: 0 !important;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: flex;
+    flex-direction: column;
 }
 
-.dashboard .module caption {
-    background: #1f2937 !important;
-    padding: 14px 20px !important;
-    border-bottom: 1px solid #1f2937 !important;
+.dashboard .module:hover, 
+.system-db-panel .module:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(139, 92, 246, 0.1) !important;
+    border-color: rgba(139, 92, 246, 0.4) !important;
 }
 
-.dashboard .module caption a {
+/* Style the FIRST module card (Feedback/Sumire app) with the gorgeous purple-pink gradient (from the screenshot) */
+.dashboard .module.app-feedback {
+    background: linear-gradient(135deg, #7c3aed 0%, #b829d6 50%, #db2777 100%) !important;
+    border: none !important;
+    box-shadow: 0 12px 30px rgba(124, 58, 237, 0.25) !important;
+    position: relative;
+}
+
+.dashboard .module.app-feedback::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.06) 0%, transparent 80%);
+    pointer-events: none;
+}
+
+/* Dashboard Module Headers */
+.dashboard .module caption, 
+.system-db-panel .module caption {
+    padding: 20px 24px !important;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+    text-align: left !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.dashboard .module.app-feedback caption {
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+    background: transparent !important;
+}
+
+.dashboard .module caption a, 
+.system-db-panel .module caption a {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 14.5px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: none !important;
+    display: flex;
+    align-items: center;
+}
+
+/* Dashboard Module Tables (Prevents column wrapping in system database panels) */
+.dashboard .module table, 
+.system-db-panel .module table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    display: table !important;
+}
+
+.dashboard .module tr, 
+.system-db-panel .module tr {
+    transition: all 0.2s !important;
+    background: transparent !important;
+    display: table-row !important;
+}
+
+.dashboard .module tr:hover, 
+.system-db-panel .module tr:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.dashboard .module.app-feedback tr:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dashboard .module td, .dashboard .module th, 
+.system-db-panel .module td, .system-db-panel .module th {
+    padding: 16px 24px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    font-size: 13.5px !important;
+    display: table-cell !important;
+    vertical-align: middle !important;
+}
+
+.dashboard .module.app-feedback td,
+.dashboard .module.app-feedback th {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+
+.dashboard .module tr:last-child td, 
+.dashboard .module tr:last-child th,
+.system-db-panel .module tr:last-child td, 
+.system-db-panel .module tr:last-child th {
+    border-bottom: none !important;
+}
+
+.dashboard .module th a, 
+.system-db-panel .module th a {
+    color: #cbd5e1 !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard .module.app-feedback th a {
+    color: #ffffff !important;
+}
+
+.dashboard .module th a:hover, 
+.system-db-panel .module th a:hover {
+    color: #8b5cf6 !important;
+}
+
+.dashboard .module.app-feedback th a:hover {
+    text-shadow: 0 0 10px rgba(255,255,255,0.4);
+    color: #ffffff !important;
+}
+
+/* Explicit widths for action columns to prevent wrapping */
+.dashboard .module td,
+.system-db-panel .module td {
+    text-align: right !important;
+    width: 90px !important;
+    box-sizing: border-box;
+}
+
+/* Add / Change buttons on dashboard */
+.dashboard .module a.addlink, 
+.dashboard .module a.changelink,
+.system-db-panel .module a.addlink,
+.system-db-panel .module a.changelink {
+    color: #a78bfa !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    font-size: 11px !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    background: rgba(139, 92, 246, 0.12) !important;
+    display: inline-block !important;
+    transition: all 0.2s !important;
+    border: 1px solid rgba(139, 92, 246, 0.15) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    text-align: center;
+}
+
+.dashboard .module.app-feedback a.addlink, 
+.dashboard .module.app-feedback a.changelink {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.dashboard .module a.addlink:hover,
+.system-db-panel .module a.addlink:hover {
+    background: #8b5cf6 !important;
+    color: #ffffff !important;
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.3) !important;
+}
+
+.dashboard .module.app-feedback a.addlink:hover {
+    background: #ffffff !important;
+    color: #7c3aed !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3) !important;
+}
+
+.dashboard .module a.changelink:hover,
+.system-db-panel .module a.changelink:hover {
+    background: rgba(139, 92, 246, 0.25) !important;
+    color: #ffffff !important;
+}
+
+.dashboard .module.app-feedback a.changelink:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+}
+
+/* 4. Navigation Sidebar Overhaul (Django 4.2+) */
+#nav-sidebar {
+    background: rgba(18, 18, 20, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border-right: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.3) !important;
+    position: relative;
+    z-index: 100;
+}
+
+.toggle-nav-sidebar {
+    background: rgba(18, 18, 20, 0.8) !important;
+    border-right: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+    color: #8b5cf6 !important;
+}
+
+.toggle-nav-sidebar:hover {
+    background: #8b5cf6 !important;
+    color: #ffffff !important;
+}
+
+#nav-sidebar th {
+    background: rgba(255, 255, 255, 0.02) !important;
+    padding: 16px 20px !important;
+    font-weight: 800 !important;
+    font-size: 11.5px !important;
+    color: #7e7e8f !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+#nav-sidebar tr.model-row {
+    transition: all 0.2s !important;
+}
+
+#nav-sidebar tr.model-row:hover {
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+#nav-sidebar tr.model-row th {
+    background: transparent !important;
+    padding: 12px 20px !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+#nav-sidebar tr.model-row th a {
+    color: #cbd5e1 !important;
+    text-decoration: none !important;
+    font-size: 13px !important;
+    display: flex;
+    align-items: center;
+}
+
+#nav-sidebar tr.model-row:hover th a {
+    color: #ffffff !important;
+}
+
+/* Current active model inside Sidebar (makes it solid purple card block like in the mockup) */
+#nav-sidebar tr.model-row.current-model {
+    background: transparent !important;
+    border: none !important;
+}
+
+#nav-sidebar tr.model-row.current-model th a {
     color: #ffffff !important;
     font-weight: 700 !important;
-    font-size: 15px !important;
+    display: block !important;
+    background: #8b5cf6 !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3) !important;
+}
+
+#nav-sidebar tr.model-row td {
+    padding: 12px 20px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+#nav-sidebar tr.model-row td a {
     text-decoration: none !important;
-    letter-spacing: -0.3px !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
 }
 
-.dashboard .module tr th a {
-    color: #c084fc !important;
-    text-decoration: none !important;
-}
-
-.dashboard .module tr th a:hover {
-    color: #e9d5ff !important;
-    text-decoration: underline !important;
-}
-
-/* 3. List Views & Tables */
+/* 5. List Views (Changelist) - Transaction History Table style */
 #changelist {
-    background: #111827 !important;
-    border: 1px solid #1f2937 !important;
+    background: rgba(18, 18, 20, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
-    overflow: hidden !important;
-}
-
-.results-wrapper {
-    border-radius: 16px !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3) !important;
     overflow: hidden !important;
 }
 
@@ -151,220 +695,530 @@ h1 {
 }
 
 #changelist table thead th {
-    background: #1f2937 !important;
-    border-bottom: 2px solid #111827 !important;
-    padding: 14px 18px !important;
-    color: #e5e7eb !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 16px 20px !important;
+    color: #7e7e8f !important;
     font-weight: 700 !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
 }
 
+#changelist table thead th a {
+    color: #7e7e8f !important;
+    text-decoration: none !important;
+}
+
+#changelist table thead th a:hover {
+    color: #ffffff !important;
+}
+
 #changelist table tbody tr {
     transition: all 0.2s !important;
+    background: transparent !important;
 }
 
 #changelist table tbody tr:nth-child(even) {
-    background: #111827 !important;
-}
-
-#changelist table tbody tr:nth-child(odd) {
-    background: #151f32 !important;
+    background: rgba(255, 255, 255, 0.01) !important;
 }
 
 #changelist table tbody tr:hover {
-    background: rgba(124, 58, 237, 0.1) !important;
+    background: rgba(139, 92, 246, 0.08) !important;
 }
 
-#changelist table tbody td {
-    padding: 14px 18px !important;
-    border-bottom: 1px solid #1f2937 !important;
-    font-size: 14px !important;
+#changelist table tbody tr.selected {
+    background: rgba(139, 92, 246, 0.12) !important;
+}
+
+#changelist table tbody td, 
+#changelist table tbody th {
+    padding: 14px 20px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    font-size: 13px !important;
     color: #cbd5e1 !important;
 }
 
-#changelist table tbody th {
-    padding: 14px 18px !important;
-    border-bottom: 1px solid #1f2937 !important;
-    position: relative !important;
-    z-index: 1 !important;
-}
-
 #changelist table tbody th a {
-    color: #a78bfa !important;
+    color: #cbd5e1 !important;
     font-weight: 600 !important;
     text-decoration: none !important;
-    cursor: pointer !important;
-    display: inline-block !important;
-    position: relative !important;
-    z-index: 2 !important;
 }
 
 #changelist table tbody th a:hover {
-    color: #c084fc !important;
+    color: #8b5cf6 !important;
     text-decoration: underline !important;
 }
 
-/* Changelist action and search bars */
-.actions {
-    background: #1f2937 !important;
-    color: #e5e7eb !important;
-    border-bottom: 1px solid #111827 !important;
-    padding: 12px 18px !important;
+/* Checkbox alignment and styling */
+#changelist table input[type="checkbox"] {
+    accent-color: #8b5cf6 !important;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
 }
 
-#searchbar {
-    background: #1f2937 !important;
+/* Actions and Search bars */
+.actions {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: #7e7e8f !important;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 14px 20px !important;
+    font-size: 12.5px !important;
+}
+
+.actions select {
+    background: #121214 !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
     color: #ffffff !important;
-    border: 1.5px solid #374151 !important;
     border-radius: 8px !important;
     padding: 6px 12px !important;
-}
-
-#searchbar:focus {
-    border-color: #8b5cf6 !important;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2) !important;
+    font-size: 13px !important;
     outline: none !important;
 }
 
-/* 4. Form & Styling Details */
-.module h2 {
-    background: #1f2937 !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    font-size: 16px !important;
-    padding: 14px 20px !important;
-    border-bottom: 1px solid #111827 !important;
+.actions select:focus {
+    border-color: #8b5cf6 !important;
 }
 
-fieldset {
-    border: 1px solid #1f2937 !important;
-    border-radius: 12px !important;
-    padding: 20px !important;
+.actions button.button {
+    background: #8b5cf6 !important;
+    border: none !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 6px 16px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.2s;
+}
+
+.actions button.button:hover {
+    background: #7c3aed !important;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+/* Search Bar Pill style */
+#changelist-search {
+    background: transparent !important;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 16px 20px !important;
+}
+
+#changelist-search #searchbar {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: #ffffff !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 20px !important;
+    padding: 8px 16px !important;
+    font-size: 13.5px !important;
+    min-width: 300px !important;
+    transition: all 0.2s !important;
+}
+
+#changelist-search #searchbar:focus {
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.2) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    outline: none !important;
+}
+
+#changelist-search input[type="submit"] {
+    background: #8b5cf6 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 20px !important;
+    padding: 9px 20px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    margin-left: 8px !important;
+}
+
+#changelist-search input[type="submit"]:hover {
+    background: #7c3aed !important;
+    box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3) !important;
+}
+
+/* Changelist Filters panel */
+#changelist-filter {
+    background: rgba(18, 18, 20, 0.8) !important;
+    backdrop-filter: blur(16px) !important;
+    border-left: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+    width: 230px !important;
+}
+
+#changelist-filter h2 {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 16px 20px !important;
+    margin: 0 !important;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+#changelist-filter h3 {
+    color: #cbd5e1 !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    margin: 18px 20px 8px 20px !important;
+}
+
+#changelist-filter ul {
+    padding: 0 20px !important;
+    margin: 0 !important;
+}
+
+#changelist-filter li {
+    list-style: none !important;
+    margin-bottom: 4px !important;
+    font-size: 12.5px !important;
+}
+
+#changelist-filter li a {
+    color: #7e7e8f !important;
+    text-decoration: none !important;
+    display: block !important;
+    padding: 6px 10px !important;
+    border-radius: 6px !important;
+    transition: all 0.2s;
+}
+
+#changelist-filter li a:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+#changelist-filter li.selected a {
+    color: #ffffff !important;
+    background: #8b5cf6 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
+}
+
+/* Paginator styling */
+.paginator {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 16px 20px !important;
+    font-size: 12.5px !important;
+    color: #7e7e8f !important;
+}
+
+.paginator a, .paginator .this-page {
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    margin: 0 2px !important;
+    display: inline-block !important;
+}
+
+.paginator a {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: #cbd5e1 !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    transition: all 0.2s;
+}
+
+.paginator a:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #ffffff !important;
+}
+
+.paginator .this-page {
+    background: #8b5cf6 !important;
+    color: #ffffff !important;
+    border: 1px solid #8b5cf6 !important;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.3) !important;
+}
+
+/* 6. Form Edits & Detail Pages (Changeform) */
+.module h2 {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    padding: 16px 24px !important;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+    margin: 0 !important;
+}
+
+fieldset.module {
+    background: rgba(18, 18, 20, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 16px !important;
+    padding: 10px 0 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
     margin-bottom: 30px !important;
-    background: #111827 !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2) !important;
 }
 
 .form-row {
-    padding: 16px 20px !important;
-    border-bottom: 1px solid #1f2937 !important;
+    padding: 20px 24px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    background: transparent !important;
 }
 
 .form-row label {
     font-weight: 600 !important;
-    color: #e5e7eb !important;
-    font-size: 14px !important;
+    color: #cbd5e1 !important;
+    font-size: 13.5px !important;
 }
 
-input[type="text"], input[type="password"], textarea, select {
-    background: #1f2937 !important;
-    border: 1.5px solid #374151 !important;
+/* Input Widgets */
+input[type="text"], 
+input[type="password"], 
+input[type="email"], 
+input[type="number"], 
+textarea, 
+select {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
     border-radius: 8px !important;
     padding: 8px 12px !important;
-    font-size: 14px !important;
+    font-size: 13.5px !important;
     color: #ffffff !important;
     transition: all 0.2s !important;
 }
 
-input[type="text"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
-    border-color: #c084fc !important;
-    box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.25) !important;
+input[type="text"]:focus, 
+input[type="password"]:focus, 
+input[type="email"]:focus, 
+input[type="number"]:focus, 
+textarea:focus, 
+select:focus {
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.25) !important;
     outline: none !important;
+    background: rgba(255, 255, 255, 0.06) !important;
 }
 
-/* Read-only fields in dark theme */
+/* Readonly fields display */
 .readonly {
-    color: #cbd5e1 !important;
-    font-weight: 500 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    padding: 8px 14px !important;
+    border-radius: 8px !important;
+    display: inline-block !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
-/* Styled text area for admin response specifically */
+/* Help text styling */
+.help {
+    color: #7e7e8f !important;
+    font-size: 12px !important;
+}
+
+/* Styled text area for admin response */
 textarea[name="admin_reply_field"] {
-    border: 2px solid #8b5cf6 !important;
-    background: #151426 !important;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1) !important;
-    width: 100% !important;
+    border: 1.5px solid #8b5cf6 !important;
+    background: rgba(139, 92, 246, 0.05) !important;
     color: #ffffff !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    transition: all 0.2s !important;
 }
 
 textarea[name="admin_reply_field"]:focus {
-    border-color: #ec4899 !important;
-    box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.25) !important;
+    border-color: #db2777 !important;
+    box-shadow: 0 0 12px rgba(219, 39, 119, 0.25) !important;
+    background: rgba(139, 92, 246, 0.08) !important;
 }
 
-/* 5. Buttons & Action bars */
+/* Inline groups and Tabular layouts */
+.inline-group {
+    background: rgba(18, 18, 20, 0.65) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    margin-bottom: 30px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+}
+
+.inline-group h2 {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 13.5px !important;
+    padding: 14px 20px !important;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Submit row at bottom */
 .submit-row {
-    background: #111827 !important;
-    border: 1px solid #1f2937 !important;
-    border-radius: 12px !important;
+    background: rgba(18, 18, 20, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 16px !important;
     padding: 16px 24px !important;
-    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3) !important;
     display: flex !important;
-    gap: 10px !important;
+    gap: 12px !important;
     justify-content: flex-end !important;
+    margin-top: 30px !important;
+    position: sticky;
+    bottom: 20px;
+    z-index: 100;
 }
 
 .submit-row input, .submit-row a {
     padding: 10px 20px !important;
     font-weight: 700 !important;
-    font-size: 13.5px !important;
+    font-size: 13px !important;
     border-radius: 8px !important;
     cursor: pointer !important;
     transition: all 0.2s !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 .submit-row input[type="submit"].default {
-    background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%) !important;
+    background: #8b5cf6 !important;
     border: none !important;
     color: #ffffff !important;
-    text-shadow: 0 1px 1px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3) !important;
 }
 
 .submit-row input[type="submit"].default:hover {
-    box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4) !important;
+    background: #7c3aed !important;
+    box-shadow: 0 6px 15px rgba(124, 58, 237, 0.4) !important;
     transform: translateY(-1px) !important;
 }
 
 .submit-row input[type="submit"] {
-    background: #1f2937 !important;
-    color: #e5e7eb !important;
-    border: 1.5px solid #374151 !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #cbd5e1 !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
 }
 
 .submit-row input[type="submit"]:hover {
-    background: #374151 !important;
+    background: rgba(255, 255, 255, 0.08) !important;
     color: #ffffff !important;
+    transform: translateY(-1px) !important;
 }
 
 .submit-row .deletelink {
     background: #7f1d1d !important;
     color: #fca5a5 !important;
-    border: 1.5px solid #b91c1c !important;
-    font-weight: 700 !important;
-    padding: 10px 20px !important;
+    border: 1.5px solid #991b1b !important;
     display: inline-block !important;
-    border-radius: 8px !important;
     text-decoration: none !important;
+    text-align: center;
 }
 
 .submit-row .deletelink:hover {
     background: #991b1b !important;
-    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2) !important;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3) !important;
+    transform: translateY(-1px) !important;
 }
 
-/* Form block overrides */
-.form-row {
-    background: #111827 !important;
+/* History / Object Tools */
+.object-tools {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 20px 0 !important;
+    padding: 0 !important;
+    list-style: none;
 }
 
-.aligned label {
+.object-tools a {
+    background: rgba(139, 92, 246, 0.12) !important;
+    border: 1px solid rgba(139, 92, 246, 0.25) !important;
+    color: #c084fc !important;
+    font-weight: 700 !important;
+    font-size: 12.5px !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.object-tools a:hover {
+    background: #8b5cf6 !important;
+    color: #ffffff !important;
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+/* 7. Datetime / Popups styling */
+.calendarbox, .clockbox {
+    background: #121214 !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5) !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    padding: 12px !important;
+}
+
+.calendarbox h2, .clockbox h2 {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: #ffffff !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    padding: 8px !important;
+}
+
+.calendar table td a {
     color: #cbd5e1 !important;
+    border-radius: 4px !important;
 }
 
-/* Custom interactive animation for Visual Chat */
+.calendar table td.selected a {
+    background: #8b5cf6 !important;
+    color: #ffffff !important;
+}
+
+.calendar table td a:hover {
+    background: rgba(139, 92, 246, 0.2) !important;
+}
+
+.calendar-shortcuts, .clockbox .clock-shortcuts {
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+    color: #7e7e8f !important;
+}
+
+.calendar-shortcuts a, .clockbox .clock-shortcuts a {
+    color: #8b5cf6 !important;
+    text-decoration: none !important;
+}
+
+.datetimeshortcuts {
+    color: #7e7e8f !important;
+    font-size: 12px !important;
+}
+
+.datetimeshortcuts a {
+    color: #8b5cf6 !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+}
+
+.datetimeshortcuts a:hover {
+    color: #c084fc !important;
+}
+
+/* Inline list icons spacing */
+.sidebar-icon-inline {
+    transition: transform 0.2s ease-in-out;
+}
+#nav-sidebar tr.model-row:hover .sidebar-icon-inline,
+.dashboard .module tr:hover .sidebar-icon-inline,
+.system-db-panel .module tr:hover .sidebar-icon-inline {
+    transform: scale(1.1);
+    color: #8b5cf6;
+    opacity: 1 !important;
+}
+
+/* 8. Interactive animation for Visual Chat */
 .sumire-chat-wrapper {
     animation: fadeIn 0.4s ease-out !important;
 }

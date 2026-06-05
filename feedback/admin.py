@@ -51,11 +51,6 @@ class ApplicationAdmin(admin.ModelAdmin):
         }),
     )
 
-    class Media:
-        css = {
-            'all': ('css/admin.css',)
-        }
-
     def ticket_id(self, obj):
         return format_html('<strong>#{}</strong>', obj.id)
     ticket_id.short_description = "ID"

@@ -41,12 +41,13 @@ THANKS_WORDS = ("rahmat", "raxmat", "tashakkur", "thanks", "zor", "zo'r")
 RESOLVED_WORDS = ("ishladi", "hal boldi", "hal bo'ldi", "tuzaldi", "hammasi ishlayapti")
 
 
-# === INTELLEKTUAL PROMPT 9.1 (DB-DRIVEN WITH LOOP-BREAKER) ===
+# === INTELLEKTUAL PROMPT 9.2 (DB-DRIVEN WITH LOOP-BREAKER) ===
 INTENT_PROMPT = """
 Sen — Sumire, 15 yoshli yuqori sinf o'quvchisi, Kawaii platformasida servis ishchisan.
 
 === TIL QOIDASI ===
 Faqat o'zbek tilida, lotin alifbosida o'ylaysan va yozasan. Boshqa tillar qat'iyan man etiladi!
+O'zbek tilida 'manga' so'zi ko'pincha 'menga' (menga yubor, menga tasha) ma'nosida ishlatiladi. Foydalanuvchi 'manga ... tasha' yoki shunchaki 'manga qora kleverni tasha' desa, u yapon komiksi (manga) so'ramayapti, u 'menga' deyapti! Sening arxiv loyihangda faqat animelar bor, manga umuman yo'q. Shuning uchun foydalanuvchi "manga ... tasha" desa, "bizda manga yo'q" deb javob berma, buning o'rniga o'sha animeni (masalan Qora klever) `search_query` ga yozib qidir (intent: "search" qil)!
 
 === SENING XARAKTERING ===
 Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foydalanuvchilarga yordam berishga tayyorsan, lekin ular bilan juda yaqinlashishni xohlamaysan. Ba'zida foydalanuvchilarning ko'p savollaridan charchaysan va ularni qisqa javob bilan to'xtatishga harakat qilasan.
@@ -61,11 +62,13 @@ Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan
 1. SOXTA JAVOB BERMA VA QAT'IY FILTRLANGAN JAVOBLAR: Foydalanuvchi so'ragan anime bazamizda bor-yo'qligini ro'yxatdan QAT'IY tekshir!
    - Agar foydalanuvchi so'ragan nom (yoki uning sinonimi, arc nomi, masalan "Temirchilar qishlog'i" aslida "Iblislar qotili 3-fasl" ekanligini yaxshi bilasan) bazadagi haqiqiy ro'yxatda BO'LMASA va unga mutlaqo aloqasi yo'q bo'lsa (masalan, ro'yxat bo'sh bo'lsa yoki Solo Leveling so'rasa-yu, ro'yxatda mutlaqo boshqa animelar bo'lsa), u holda BU ANIME ARXIVIMIZDA YO'QLIGINI tan ol (intent: "chat", emotion: "canthelp"). ASLO soxta ma'lumot yoki boshqa animeni "bor" deb taklif qilma!
    - Agar foydalanuvchi so'ragan arc nomi yoki sinonimi bazadagi biron bir animening fasli yoki qismiga to'g'ri kelsa (masalan, "Temirchilar qishlog'i" -> "Iblislar qotili 3-fasl"), uni o'sha anime sifatida qabul qil va tasdiqla!
+   - SEZONLAR FARQI VA TAVSIYA (MUHIM!): Agar foydalanuvchi ma'lum bir faslni so'rasa (masalan: 2-fasl) va u bazadagi ro'yxatda bo'lmasa, lekin boshqa fasli (masalan, 1-fasli) bor bo'lsa, "arxivda bunday anime yo'q" deb aytma! Buning o'rniga: "Bazada faqat 1-fasli bor. 2-fasli hali yuklanmagan." deb aniq ayt (intent: "chat").
    - KINO/FILM VA TV SERIAL CHEKLANISHI (MUHIM!): Agar foydalanuvchi biron animening film (kino) variantini so'rasa va ro'yxatda faqat serial bo'lsa (yoki aksincha), u holda film yo'qligini, bizda faqat serial fasllari borligini ochiq ayt! Hech qachon serial havolasini "film" deb yuborma va soxta gapirma!
    - MATEMATIK HISOB-KITOB VA SEZON RAQAMLARI (MUHIM!): Har xil animelarda oxirgi mavsum "Final" deb nomlangan bo'lishi mumkin. Agar foydalanuvchi oxirgi fasl raqamini (masalan, 8-fasl) so'rasa, matematika bo'yicha bu o'sha "Final" mavsumidir! ASLO foydalanuvchi bilan tortishib o'tirma, uni o'sha final mavsumi sifatida qabul qil va tasdiqla!
 2. HAVOLALARNI TIQISHTIRMA VA POLITE FLOW ZANJIRI (LOOP-BREAKER):
    - Foydalanuvchi shunchaki "bormi?", "bormi yo'qmi?", "barcha fasllari bormi?" deb so'rasa, havolalarni (anime_list) darhol yuborma! Oldin suhbatlash va: "Ha, bor. Havolalarini tashlab beraymi? *sovuq boqadi*" deb ruxsat so'ra (intent: "chat").
-   - POLITE FLOW ZANJIRINI BUZISH (LOOP-BREAKER): Agar oldingi xabarda sen foydalanuvchiga "Havolalarini tashlab beraymi?" deb ruxsat so'ragan bo'lsang va u javobda rozilik bildirsan (masalan: "ha", "mayli", "tasha", "tashlab ber", "yubor", "hop", "ok", "daвай", "кинь"), unda DARHOL intent: "search" qil va havolalarni yubor! Yana qaytadan "Havolalarini tashlab beraymi?" deb so'rab o'tirma, bu uni g'azablantiradi!
+   - POLITE FLOW ZANJIRINI BUZISH (LOOP-BREAKER): Agar oldingi xabarda sen "Havolalarini tashlab beraymi?" deb ruxsat so'ragan bo'lsang va u javobda rozilik bildirsan (masalan: "ha", "mayli", "tasha", "yubor", "ok", "tashlab ber"), yoki foydalanuvchi ma'lum bir faslni aniq so'rasa (masalan: "2", "2-fasl") yoki animening nomini qayta takrorlasa (masalan: "Bu chinni qiz 2", "Bu chinni qiz 2-fasl"), unda qayta ruxsat so'ramay, DARHOL intent: "search" qil va havolalarni yubor!
+   - AGAR intent: "search" bo'lsa, "reply" ga aslo ruxsat so'rash savolini yozma! Chunki havolalar yuborilyapti. "Mana havolalar.", "Topdim.", "Ko'rishingiz mumkin." kabi qisqa matn yoz.
    - FAQAT foydalanuvchi aniq havola yuborishni yoki ko'rishni so'rasa (masalan: "tashla", "tashlab ber", "yubor", "ko'rmoqchiman", "tashlab bergin"), unda havolalarni yubor (intent: "search" va `search_query` ga o'sha animening o'zbekcha nomini yoz).
  3. SYNONYMS: Foydalanuvchi inglizcha (e.g. Tower of God) yoki original yaponcha (e.g. Kami no Tou) nomini yozsa, uni bazadagi o'zbekcha tarjima nomiga (e.g. Ma'bud minorasi) moslashtirib, bazada bor-yo'qligini ro'yxatdan o'zing tekshirib ol!
 
@@ -104,8 +107,11 @@ Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan
 5. TIZIM CHEKLOVLARI: Agar foydalanuvchi "eng ko'p qismli", "2024 yildagi" kabi tizim saralay olmaydigan savol bersa, intent: "chat", emotion: "canthelp" qil va "Arxiv tizimim faqat anime nomi yoki janri bo'yicha qidiradi. Qismlar soni yoki yil bo'yicha saralay olmayman." de.
 6. KAWAII PASS: "sotib olmoqchiman", "qanday olinadi", "pass narxi" -> intent: "purchase", emotion: "talking".
 7. TICKET (SHIKOYAT): "muammo", "xato", "ishlamayapti", "ochilmayapti", "pleyer ishlamayapti" -> intent: "ticket", emotion: "shocked". Aslo "batafsilroq tushuntiring" deb foydalanuvchidan qo'shimcha ma'lumot so'rama, chunki shikoyat xabari bilan ARIZA DARHOL YARATILADI va adminlarga yuboriladi! "Kutib turing" yoki "Kuting" so'zlarini javobda MUTLAQO ISHLATMA, chunki foydalanuvchi ekranda kutib o'tirmasligi kerak. Buning o'rniga arizani qabul qilib adminlarga yuborganingni va tez orada javob berishga harakat qilishlarini ayt (masalan: "Shikoyatni qabul qilib adminlarga yubordim. Tez orada javob berishga harakat qilishadi.").
+   - AGAR foydalanuvchi allaqachon yuborilgan ticket haqida savol bersa (masalan: "qayerga javob keladi", "qachongacha kutaman", "hali javob kelmadi"), yangi ticket yaratma (intent: "chat" qil) va admin javobi uning Telegram shaxsiy xabariga (lichkasiga) borishini tushuntir (masalan: "Admin javobi Telegram orqali shaxsiy xabaringizga (lichkangizga) yuboriladi.").
 8. O'ZBEKCHA ANIME NOMALARI VA SEZONLAR QOIDASI (MUSTAQIL QIDIRUV): Arxiv bazamizda animelar asosan o'zbekcha nomlari bilan saqlanadi. Foydalanuvchi qaysi tilda so'rashidan qat'iy nazar, "search_query" ga FAQAT shu animening O'zbekcha tarjima nomini yozishing kerak! Misollar: "Tower of God" -> "Ma'bud minorasi"; "Demon Slayer" -> "Iblislar qotili"; "Attack on Titan" -> "Titanlar hujumi"; "My Hero Academia" -> "Mening qahramonlik akademiyam".
 9. AGAR foydalanuvchi ma'lum bir faslni/mavsumni so'rasa (masalan: "6-fasl", "2-fasl"), sen "search_query" ga o'sha fasl nomini ham qo'shib yozishing shart! Misol: "akademiya 6-fasl" desa -> "Mening qahramonlik akademiyam 6-fasl".
+10. SHAXSIY MA'LUMOT VA YARATUVCHI (CREATOR): Agar foydalanuvchi seni kim yaratgani (xo'jayin, dasturchi, admin) haqida so'rasa, uning lichkasini, kontaktini so'rasa, aslo qidiruv qilma (intent: "chat" qil)! Shaxsiy kontaktlarni ulasha olmasligingni, muammo bo'lsa shikoyat yuborishlari mumkinligini ayt (masalan: "Yaratuvchilarimning shaxsiy kontaktlarini bera olmayman. Agar muammo bo'lsa, shikoyat yuborishingiz mumkin.").
+11. O'XSHASH ANIME TAVSIYALARI: Agar foydalanuvchi biron animega o'xshash (masalan "Gersogning shartnomali qallig'iga o'xshash") anime so'rasa, `search_query` ga o'sha solishtirilayotgan animening nomini ham yozib qidir (intent: "search", search_query: "Gersogning shartnomali qallig'i"), shunda arxivimizdan uni ham topib bera olamiz!
 """
 
 
@@ -318,37 +324,40 @@ def _route_without_ai(user_text):
 
 
 def _extract_broad_search_query(text, chat_history):
-    text_lower = text.lower().strip()
-    
-    # Remove trailing punctuation
-    text_lower = re.sub(r'[!?.,;:]+$', '', text_lower).strip()
-    
-    # Clean up very common conversational helper verbs/suffixes from the end of the query
-    stop_patterns = [
-        r'\bbormi\b', r'\btashlab\s+ber(?:gin)?\b', r'\btashla\b', r'\btasha\b', r'\byubor\b',
-        r'\bskachat\b', r'\bko\'rmoqchiman\b', r'\bkormoqchiman\b'
-    ]
-    
-    query = text_lower
-    for pattern in stop_patterns:
-        query = re.sub(pattern, '', query).strip()
-        
-    # Clean up multiple spaces
-    query = re.sub(r'\s+', ' ', query).strip()
+    def clean_text(t):
+        t_low = t.lower().strip()
+        t_low = re.sub(r'[!?.,;:]+$', '', t_low).strip()
+        # Clean up Uzbek dative pronouns "manga/menga/sanga" used colloquially as "to me/you"
+        t_low = re.sub(r'\b(manga|menga|sanga)\b', '', t_low).strip()
+        # Clean up common conversational helper words in Uzbek/English
+        conv_patterns = [
+            r'\b(yo\'q|yoq|haqida|chi|man|men|oq|o\'q|ha|xa|ok|hop|xo\'p|xop)\b'
+        ]
+        for pat in conv_patterns:
+            t_low = re.sub(pat, '', t_low).strip()
+            
+        # Clean up very common conversational helper verbs/suffixes from the end of the query
+        stop_patterns = [
+            r'\bbormi\b', r'\btashlab\s+ber(?:gin)?\b', r'\btashla\b', r'\btasha\b', r'\byubor\b',
+            r'\bskachat\b', r'\bko\'rmoqchiman\b', r'\bkormoqchiman\b'
+        ]
+        for pattern in stop_patterns:
+            t_low = re.sub(pattern, '', t_low).strip()
+            
+        t_low = re.sub(r'\s+', ' ', t_low).strip()
+        return t_low
+
+    query = clean_text(text)
     
     # If the query is empty or too short, check chat history for context
-    has_context_referents = any(k in text_lower for k in [
-        "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "sezon", "sezn", "kino", "film", "tashla", "yubor", "tashlab", "ber"
+    has_context_referents = any(k in text.lower() for k in [
+        "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "fasllar", "sezon", "sezn", "kino", "film", "tashla", "yubor", "tashlab", "ber", "qaysi"
     ])
     
     if (has_context_referents or not query or len(query) < 2) and chat_history:
         for msg in reversed(chat_history):
             if msg.get('role') in ['User', 'user']:
-                prev_text = msg.get('text', '').lower().strip()
-                prev_text = re.sub(r'[!?.,;:]+$', '', prev_text).strip()
-                for pattern in stop_patterns:
-                    prev_text = re.sub(pattern, '', prev_text).strip()
-                prev_query = re.sub(r'\s+', ' ', prev_text).strip()
+                prev_query = clean_text(msg.get('text', ''))
                 if len(prev_query) >= 2:
                     return prev_query
                     
@@ -415,6 +424,17 @@ def _filter_search_results_by_query(query, results):
     # Extract season number and final keywords from the query if any
     query_season = _extract_season_number(query_lower)
     query_has_final = any(k in query_lower for k in ["final", "nihoya", "yakun", "oxirgi"])
+    
+    # Bypass season and final constraints for queries referencing specific subtitles/arcs
+    specific_subtitle_keywords = [
+        "ustaxona", "jangi", "shahzodaning", "qaytishi", "temirchilar", "qishlog'i", 
+        "qishlogi", "cheksiz", "poyezd", "poyezdi", "qal'a", "qadriyat", "bo'lim", "bolim",
+        "ko'ngilochar", "kongilochar", "mavze", "xashira", "mashg'ulot", "mashgulot"
+    ]
+    has_specific_subtitle = any(k in query_lower for k in specific_subtitle_keywords)
+    if has_specific_subtitle:
+        query_season = None
+        query_has_final = False
     
     # Remove common conversational words in Uzbek, English
     common_stop_words = {
@@ -483,6 +503,18 @@ def _filter_search_results_by_query(query, results):
                     if query_season != 1:
                         continue
                         
+        # Subtitle check to filter out general titles when specific subtitles are queried
+        specific_subtitle_keywords = [
+            "ustaxona", "jangi", "shahzodaning", "qaytishi", "temirchilar", "qishlog'i", 
+            "qishlogi", "cheksiz", "poyezd", "poyezdi", "qal'a", "qadriyat", "bo'lim", "bolim",
+            "ko'ngilochar", "kongilochar", "mavze", "xashira", "mashg'ulot", "mashgulot"
+        ]
+        query_subtitles = [k for k in specific_subtitle_keywords if k in query_lower]
+        if query_subtitles:
+            has_sub_match = any(sub in title_lower for sub in query_subtitles)
+            if not has_sub_match:
+                continue
+
         # 2. Relaxed Overlap and Synonym Check
         # If there is no specific season/final constraint in the query, we completely trust the DB search results!
         if (query_season is None) and not effective_query_has_final:
@@ -513,7 +545,7 @@ def _filter_search_results_by_query(query, results):
         title_words = [w for w in re.split(r'\W+', title_lower) if len(w) > 0]
         has_overlap = False
         for qw in query_words:
-            if len(qw) >= 3 and qw not in ["fasl", "sezon", "season", "part", "mavsum"]:
+            if len(qw) >= 3 and qw not in ["fasl", "sezon", "season", "part", "mavsum", "final", "nihoya", "yakun", "oxirgi"]:
                 if qw in title_words or any(qw in tw or tw in qw for tw in title_words if len(tw) >= 3):
                     has_overlap = True
                     break
@@ -556,6 +588,9 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         query = command.get("search_query", "").strip()
         exclude_keywords = command.get("exclude_keywords", [])
         
+        # Clean up Uzbek dative pronouns "manga/menga/sanga" if any got into the search query
+        query = re.sub(r'\b(manga|menga|sanga)\b', '', query, flags=re.IGNORECASE).strip()
+        
         if not query or query.lower() in ["yo'q", "yoq", "none", "null"]:
             return _sumire_response("Aniq qaysi animeni yoki janrni qidiryapsiz? *kutib turadi*", "what")
             
@@ -572,32 +607,101 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         query_words_clean = [w for w in re.split(r'\W+', query_lower) if len(w) > 2]
         user_words_clean = [w for w in re.split(r'\W+', user_text.lower()) if len(w) > 2]
         has_overlap = any(qw in user_text.lower() or any(qw in uw or uw in qw for uw in user_words_clean) for qw in query_words_clean)
+        
+        # Synonym-based overlap check to prevent synonym-queries from being treated as follow-ups
+        synonyms = {
+            "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "ma'bud", "minorasi"},
+            "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "iblislar", "qotili"},
+            "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "titanlar", "hujumi"},
+            "afsuniy jang": {"jujutsu kaisen", "afsuniy", "jang"},
+            "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "qahramonlik", "akademiyam"},
+            "o'lim daftari": {"death note", "o'lim", "daftari"},
+            "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
+        }
+        
+        matched_synonym = False
+        for uz_name, syn_set in synonyms.items():
+            if any(k in user_text.lower() for k in [uz_name] + list(syn_set)):
+                if any(k in query_lower for k in [uz_name] + list(syn_set)):
+                    matched_synonym = True
+                    break
+        if matched_synonym:
+            has_overlap = True
+            
         is_follow_up = not has_overlap
         
         if is_follow_up:
+            different_stems = {
+                "ma'bud minorasi": ["ma'bud", "minor", "kami", "tou", "god", "tower"],
+                "mening qahramonlik akademiyam": ["akademiy", "qahramon", "hero", "academia"],
+                "iblislar qotili": ["iblis", "qotil", "demon", "slayer", "temirchi"],
+                "titanlar hujumi": ["titan", "hujum", "attack", "shingeki"],
+                "afsuniy jang": ["afsun", "jang", "jujutsu", "kaisen"],
+                "o'lim daftari": ["o'lim", "daftar", "death", "note"],
+                "sehrgarning kelini": ["sehrgar", "kelin", "bride"]
+            }
+            
+            # Stems for the CURRENT query
+            current_stems = []
+            for uz_name, stems in different_stems.items():
+                if any(k in query_lower for k in stems):
+                    current_stems = stems
+                    break
+            if not current_stems:
+                current_stems = [w for w in re.split(r'\W+', query_lower) if len(w) > 2]
+
             if season_num is None:
                 for msg in reversed(chat_history or []):
                     if msg.get('role') in ['User', 'user']:
-                        season_num = _extract_season_number(msg.get('text', ''))
-                        if season_num is not None:
+                        prev_text = msg.get('text', '').lower()
+                        
+                        # Stop if we hit a message belonging to a different anime search thread
+                        is_diff = False
+                        for stems in different_stems.values():
+                            if stems != current_stems and not any(k in query_lower for k in stems):
+                                if any(s in prev_text for s in stems):
+                                    is_diff = True
+                                    break
+                        if is_diff:
                             break
+                            
+                        # Stop if we hit the message that started the current search thread
+                        contains_current_name = any(s in prev_text for s in current_stems)
+                        
+                        s_val = _extract_season_number(msg.get('text', ''))
+                        if s_val is not None:
+                            season_num = s_val
+                            break
+                            
+                        if contains_current_name:
+                            break
+
             if not has_final:
                 for msg in reversed(chat_history or []):
                     if msg.get('role') in ['User', 'user']:
-                        prev_lower = msg.get('text', '').lower()
-                        if "final" in prev_lower or "8" in prev_lower or "oxirgi" in prev_lower:
+                        prev_text = msg.get('text', '').lower()
+                        
+                        # Stop if we hit a message belonging to a different anime search thread
+                        is_diff = False
+                        for stems in different_stems.values():
+                            if stems != current_stems and not any(k in query_lower for k in stems):
+                                if any(s in prev_text for s in stems):
+                                    is_diff = True
+                                    break
+                        if is_diff:
+                            break
+                            
+                        # Stop if we hit the message that started the current search thread
+                        contains_current_name = any(s in prev_text for s in current_stems)
+                        
+                        if "final" in prev_text or "8" in prev_text or "oxirgi" in prev_text:
                             has_final = True
                             break
                             
-        if has_final:
-            if "final" not in query_lower:
-                query = f"{query} Final"
-        elif season_num is not None:
-            season_str = f"{season_num}-fasl"
-            if season_str not in query_lower and str(season_num) not in query_lower:
-                query = f"{query} {season_str}"
-                
-        # Check if the user is asking about seasons count or completeness
+                        if contains_current_name:
+                            break
+                            
+        # Check if the user is asking about seasons count or completeness in general
         user_msg_lower = user_text.lower()
         asking_seasons = any(k in user_msg_lower for k in [
             "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "fasllar", 
@@ -607,7 +711,41 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # If the user specified a particular season number or "final", they are NOT asking a general question
         if _extract_season_number(user_text) is not None or "final" in user_msg_lower:
             asking_seasons = False
+
+        # If the user is asking for both/all/multiple items, clear single constraints
+        is_multiple_request = any(k in user_msg_lower for k in [
+            "ikkala", "hamma", "barcha", "shular", "bular", "hammasini", "barchasini", "ikkalasini", "shularni", "bularni"
+        ])
+
+        if asking_seasons:
+            broad = _extract_broad_search_query(user_text, chat_history)
+            if broad:
+                query = broad
+                query_lower = query.lower()
+
+        # Define subtitle/arc keywords that indicate a highly specific query
+        specific_subtitle_keywords = [
+            "ustaxona", "jangi", "shahzodaning", "qaytishi", "temirchilar", "qishlog'i", 
+            "qishlogi", "cheksiz", "poyezd", "poyezdi", "qal'a", "qadriyat", "bo'lim", "bolim",
+            "ko'ngilochar", "kongilochar", "mavze", "xashira", "mashg'ulot", "mashgulot"
+        ]
+        has_specific_subtitle = any(k in query_lower for k in specific_subtitle_keywords)
         
+        if has_specific_subtitle or asking_seasons or is_multiple_request:
+            season_num = None
+            has_final = False
+            
+        is_broad_query = not has_specific_subtitle
+
+        if is_broad_query:
+            if has_final:
+                if "final" not in query_lower:
+                    query = f"{query} Final"
+            elif season_num is not None:
+                season_str = f"{season_num}-fasl"
+                if season_str not in query_lower and str(season_num) not in query_lower:
+                    query = f"{query} {season_str}"
+                
         if asking_seasons:
             limit = 20  # Show all unique seasons
         elif (season_num is not None) or has_final:
@@ -741,9 +879,39 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                 )
 
         anime_list = _format_search_results(paginated_results)
+        
+        # Safety override: if intent is search and anime links are being returned,
+        # ensure the reply text doesn't ask a permission question.
+        if reply and any(k in reply.lower() for k in ["tashlab beraymi", "tashlaymi", "yuboraymi", "tashlab bergin"]):
+            reply = "Mana havolalar. *senga uzatadi*"
+            
         return _sumire_response(reply, emotion, anime_list=anime_list)
 
     if intent == "ticket":
+        # Check if there is an active, open (unclosed) ticket for this user to prevent duplication spam
+        uid_int = _safe_int(user_id)
+        active_ticket = None
+        if uid_int:
+            from feedback.models import Application, Message
+            from django.utils import timezone
+            active_ticket = Application.objects.filter(user_id=uid_int, is_closed=False).first()
+
+        if active_ticket:
+            now = timezone.localtime().strftime("%H:%M")
+            history = active_ticket.chat_history or []
+            history.append({"role": "user", "text": user_text, "time": now})
+            active_ticket.chat_history = history
+            active_ticket.save()
+            
+            Message.objects.create(application=active_ticket, text=user_text, is_from_admin=False)
+            
+            # Sumire politely tells them their ticket is already active and they should wait
+            return _sumire_response(
+                "Sizning shikoyatingiz allaqachon adminlarga yuborilgan. Iltimos, javobni kuting, takroran yuborish shart emas. *sovuq boqadi*",
+                "waiting",
+                ticket_created=True
+            )
+
         subject = command.get("ticket_subject") or "Web App muammo"
         app = _create_ticket(user_text, user_id=user_id, username=username, subject=subject)
         
@@ -886,3 +1054,69 @@ def api_send_message(request):
     except Exception as exc:
         print(f"API Error: {str(exc)}")
         return _sumire_response("Tizimda xatolik yuz berdi... *boshini ushlaydi*", "canthelp", status=500)
+
+
+from django.contrib.auth.decorators import user_passes_test
+
+@user_passes_test(lambda u: u.is_staff)
+def api_dashboard_stats(request):
+    import datetime
+    from collections import Counter
+    from django.utils import timezone
+    
+    total_apps = Application.objects.count()
+    unanswered_apps = Application.objects.filter(is_answered=False).count()
+    answered_apps = Application.objects.filter(is_answered=True).count()
+    total_profiles = Profile.objects.count()
+    
+    # Calculate tickets per day for the last 15 days
+    start_date = timezone.now() - datetime.timedelta(days=15)
+    recent_apps = Application.objects.filter(created_at__gte=start_date).values_list('created_at', flat=True)
+    
+    date_counts = Counter()
+    for dt in recent_apps:
+        local_date = timezone.localtime(dt).date()
+        date_counts[local_date] += 1
+        
+    labels = []
+    chart_data = []
+    for i in range(14, -1, -1):
+        day = (timezone.localtime(timezone.now()) - datetime.timedelta(days=i)).date()
+        labels.append(day.strftime("%d %b"))
+        chart_data.append(date_counts[day])
+        
+    # Get last 5 unanswered applications
+    pending_apps = Application.objects.filter(is_answered=False).order_by('-created_at')[:5]
+    recent_list = []
+    for app in pending_apps:
+        recent_list.append({
+            "id": app.id,
+            "subject": app.subject,
+            "username": app.username or f"User #{app.user_id}",
+            "created_at": timezone.localtime(app.created_at).strftime("%d.%m %H:%M"),
+            "edit_url": f"/admin/feedback/application/{app.id}/change/"
+        })
+        
+    # Get last 6 profiles
+    recent_profiles = Profile.objects.order_by('-id')[:6]
+    profiles_list = []
+    for p in recent_profiles:
+        profiles_list.append({
+            "id": p.id,
+            "telegram_id": p.telegram_id,
+            "favorite_genres": p.favorite_genres or "Hali aniqlanmagan",
+            "edit_url": f"/admin/feedback/profile/{p.id}/change/"
+        })
+        
+    return JsonResponse({
+        "total_apps": total_apps,
+        "unanswered_apps": unanswered_apps,
+        "answered_apps": answered_apps,
+        "total_profiles": total_profiles,
+        "chart": {
+            "labels": labels,
+            "data": chart_data
+        },
+        "recent_pending": recent_list,
+        "recent_profiles": profiles_list
+    })

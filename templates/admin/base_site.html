@@ -1,0 +1,82 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block branding %}
+<div id="site-name">
+  <a href="{% url 'admin:index' %}">
+    <span class="brand-sakura">🌸</span> <span class="brand-text">Sumire Panel</span>
+  </a>
+</div>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<!-- Load premium typography and custom CSS -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<!-- Load Lucide Icons CDN -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- Global UI enhancements: Glowing Orbs and Dynamic Sidebar Icon Injector -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      // 1. Inject Floating Background Orbs
+      const orb1 = document.createElement('div');
+      orb1.className = 'glowing-orb orb-1';
+      const orb2 = document.createElement('div');
+      orb2.className = 'glowing-orb orb-2';
+      document.body.appendChild(orb1);
+      document.body.appendChild(orb2);
+
+      // 2. Dynamic Sidebar & Dashboard Table Icon Injector
+      const iconMapping = {
+          'ariza': 'message-square',
+          'application': 'message-square',
+          'profil': 'user',
+          'profile': 'user',
+          'user': 'users',
+          'foydalanuvchi': 'users',
+          'group': 'shield-alert',
+          'guruh': 'shield-alert',
+          'xabar': 'mail',
+          'message': 'mail'
+      };
+
+      const links = document.querySelectorAll('#nav-sidebar tr.model-row th a, .dashboard .module th a, .system-db-panel .module th a');
+      links.forEach(link => {
+          const text = link.textContent.toLowerCase();
+          let iconName = 'database'; // default icon
+          for (const [key, icon] of Object.entries(iconMapping)) {
+              if (text.includes(key)) {
+                  iconName = icon;
+                  break;
+              }
+          }
+          
+          if (!link.querySelector('.lucide')) {
+              const iconEl = document.createElement('i');
+              iconEl.setAttribute('data-lucide', iconName);
+              iconEl.classList.add('sidebar-icon-inline');
+              iconEl.style.width = '14px';
+              iconEl.style.height = '14px';
+              iconEl.style.marginRight = '8px';
+              iconEl.style.verticalAlign = 'middle';
+              iconEl.style.display = 'inline-block';
+              iconEl.style.opacity = '0.7';
+              link.insertBefore(iconEl, link.firstChild);
+          }
+      });
+
+      // 3. Initialize Lucide vector SVGs
+      if (window.lucide) {
+          window.lucide.createIcons();
+      }
+  });
+</script>
+{% endblock %}

@@ -6,4 +6,5 @@ app_name = 'feedback'
 urlpatterns = [
     # Наш новый API-эндпоинт для Сумирэ
     path('api/send/', views.api_send_message, name='api_send_message'),
+    path('api/dashboard-stats/', views.api_dashboard_stats, name='api_dashboard_stats'),
 ]
