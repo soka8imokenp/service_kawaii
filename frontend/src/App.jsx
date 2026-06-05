@@ -230,7 +230,7 @@ function App() {
 
   const sendActionMessage = async (text) => {
     handleFirstInteraction(); 
-    if (isLoading || cooldown > 0 || battery < 25) return;
+    if (isLoading) return;
 
     setUserMessage(text);
     setInput('');
