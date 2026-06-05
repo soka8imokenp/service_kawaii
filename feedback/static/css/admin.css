@@ -2172,7 +2172,6 @@ textarea[name="admin_reply_field"]:focus {
     to { opacity: 1; transform: translateY(0); }
 }
 
-
 /* ==========================================
    9. Mobile Responsive Adaptations
    ========================================== */
@@ -2180,15 +2179,28 @@ textarea[name="admin_reply_field"]:focus {
 @media (max-width: 768px) {
 
     /* ==============================================================
-       MOBILE REDESIGN (Minimalist / Tailwind-inspired)
+       MOBILE REDESIGN (Premium Dark Glassmorphism & Pure Black)
        ============================================================== */
+
+    /* Hide scrollbars globally on mobile */
+    ::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+    * {
+        -ms-overflow-style: none !important; /* IE and Edge */
+        scrollbar-width: none !important; /* Firefox */
+    }
 
     /* 1. Base Reset & Typography */
     html, body {
         width: 100% !important;
+        height: auto !important;
+        min-height: 100% !important;
         overflow-x: hidden !important;
         overflow-y: auto !important;
-        background-color: #0f172a !important; /* slate-900 */
+        background-color: #000000 !important; /* Pure Black background */
         color: #f8fafc !important; /* slate-50 */
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
         -webkit-font-smoothing: antialiased;
@@ -2265,8 +2277,8 @@ textarea[name="admin_reply_field"]:focus {
     .saas-search-container {
         width: 100% !important;
         height: 48px !important;
-        background-color: #1e293b !important; /* slate-800 */
-        border: 1px solid #334155 !important; /* slate-700 */
+        background-color: rgba(255, 255, 255, 0.03) !important; /* Subtle glass overlay */
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 12px !important;
         position: relative !important;
     }
@@ -2329,7 +2341,7 @@ textarea[name="admin_reply_field"]:focus {
         color: #cbd5e1 !important; /* slate-300 */
     }
 
-    /* 4. Bottom Navigation */
+    /* 4. Bottom Navigation (Premium Solid Deep Black) */
     .saas-sidebar {
         position: fixed !important;
         bottom: 0 !important;
@@ -2337,28 +2349,27 @@ textarea[name="admin_reply_field"]:focus {
         right: 0 !important;
         top: auto !important;
         width: 100% !important;
-        height: auto !important;
-        background-color: rgba(15, 23, 42, 0.95) !important; /* solid slate-900 translucent */
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border-top: 1.5px solid #334155 !important; /* slate-700 */
+        height: 64px !important;
+        background-color: #050505 !important; /* Solid premium black */
+        border-top: 1px solid rgba(255, 255, 255, 0.05) !important; /* Extremely thin subtle border */
         border-radius: 0 !important;
-        padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) 16px !important;
+        padding: 0 16px calc(env(safe-area-inset-bottom, 0px)) 16px !important;
         margin: 0 !important;
         z-index: 9999 !important;
         display: flex !important;
         flex-direction: row !important;
-        justify-content: space-around !important;
+        justify-content: space-between !important;
         align-items: center !important;
-        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5) !important;
+        box-shadow: none !important; /* Remove top shadow/white borders */
     }
 
     .saas-sidebar > div {
         display: flex !important;
         flex-direction: row !important;
-        width: 100% !important;
-        justify-content: space-between !important;
         align-items: center !important;
+        justify-content: space-around !important;
+        width: auto !important;
+        flex: 1 !important;
     }
 
     .sidebar-brand { display: none !important; }
@@ -2370,10 +2381,8 @@ textarea[name="admin_reply_field"]:focus {
         align-items: center !important;
         margin: 0 !important;
         padding: 0 !important;
-        width: auto !important;
+        flex: 1 !important;
     }
-    
-    .sidebar-menu { flex: 1 !important; }
 
     .sidebar-item, .sidebar-btn-logout {
         display: flex !important;
@@ -2385,7 +2394,7 @@ textarea[name="admin_reply_field"]:focus {
         background: transparent !important;
         border: none !important;
         text-decoration: none !important;
-        color: #64748b !important; /* slate-500 */
+        color: #555562 !important; /* Clean muted gray for inactive states */
         padding: 0 !important;
         margin: 0 !important;
         transition: color 0.2s ease, opacity 0.2s ease !important;
@@ -2396,12 +2405,12 @@ textarea[name="admin_reply_field"]:focus {
     }
 
     .sidebar-item i, .sidebar-btn-logout i {
-        font-size: 22px !important;
-        margin-bottom: 4px !important;
+        font-size: 20px !important;
+        margin-bottom: 2px !important;
     }
 
     .sidebar-text {
-        font-size: 10px !important;
+        font-size: 9.5px !important;
         font-weight: 600 !important;
     }
 
@@ -2410,7 +2419,7 @@ textarea[name="admin_reply_field"]:focus {
     }
 
     .sidebar-item.active {
-        color: #38bdf8 !important; /* sky-400 */
+        color: #ffffff !important; /* Premium White active highlight */
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
@@ -2421,13 +2430,13 @@ textarea[name="admin_reply_field"]:focus {
     }
 
     .sidebar-btn-logout {
-        color: #f43f5e !important; /* rose-500 */
+        color: #f43f5e !important; /* rose-500 red */
         box-shadow: none !important;
         background: transparent !important;
         border: none !important;
     }
 
-    /* 5. Dashboard Grid & Cards */
+    /* 5. Dashboard Grid & Glassmorphism Cards */
     .saas-grid {
         display: flex !important;
         flex-direction: column !important;
@@ -2443,19 +2452,24 @@ textarea[name="admin_reply_field"]:focus {
     }
 
     .saas-widget, .saas-metric-card, .saas-db-card {
-        background-color: #1e293b !important; /* slate-800 */
-        border: 1px solid #334155 !important; /* slate-700 */
+        background-color: rgba(18, 18, 24, 0.6) !important; /* Premium semi-translucent dark background */
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important; /* Clean thin glass border */
         border-radius: 16px !important;
         width: 100% !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+        box-sizing: border-box !important;
     }
 
     .saas-widget-header {
         padding: 16px 20px !important;
-        border-bottom: 1px solid #334155 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
         display: flex !important;
         flex-direction: column !important; /* Stack vertically on small screens to prevent overlap */
         align-items: flex-start !important;
         gap: 6px !important;
+        background: transparent !important;
     }
 
     .saas-widget-header h3 {
@@ -2519,8 +2533,8 @@ textarea[name="admin_reply_field"]:focus {
         display: flex !important;
         flex-direction: column !important;
         padding: 16px 20px !important;
-        border-bottom: 1px solid #334155 !important;
-        background-color: #1e293b !important; /* slate-800 matches the widget card background */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        background-color: rgba(255, 255, 255, 0.015) !important; /* Semi-translucent overlay row background */
     }
     .saas-table tbody tr:last-child {
         border-bottom: none !important;
@@ -2543,10 +2557,15 @@ textarea[name="admin_reply_field"]:focus {
         font-size: 13px !important;
         font-weight: 600 !important;
         margin-top: 12px !important;
-        background-color: #38bdf8 !important; /* sky-400 */
-        color: #0f172a !important; /* dark text */
+        background-color: #ffffff !important; /* Premium White buttons instead of blue */
+        color: #000000 !important; /* Crisp dark text */
         padding: 0 16px !important;
         width: fit-content !important;
+        border: none !important;
+        transition: opacity 0.2s !important;
+    }
+    .saas-action-link:active {
+        opacity: 0.8 !important;
     }
 
     /* 7. Object Tools (Add button) */
@@ -2575,10 +2594,11 @@ textarea[name="admin_reply_field"]:focus {
         border-radius: 12px !important;
         font-size: 15px !important;
         font-weight: 600 !important;
-        background-color: #38bdf8 !important; /* sky-400 */
-        color: #0f172a !important; /* slate-900 */
+        background-color: #ffffff !important; /* Premium White */
+        color: #000000 !important; /* Black text */
         text-decoration: none !important;
         box-sizing: border-box !important;
+        border: none !important;
     }
 
     /* 8. Changelist Main Table & Layout */
@@ -2598,43 +2618,17 @@ textarea[name="admin_reply_field"]:focus {
         display: block !important;
     }
 
+    /* Hide default duplicate changelist search bar to prevent overlapping search fields */
     #changelist-search {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 12px !important;
-        padding: 0 20px 16px 20px !important;
-    }
-
-    #changelist-search #searchbar {
-        width: 100% !important;
-        height: 48px !important;
-        border-radius: 12px !important;
-        padding: 0 16px 0 44px !important;
-        font-size: 15px !important;
-        background-color: #1e293b !important;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E") !important;
-        background-repeat: no-repeat !important;
-        background-position: 14px center !important;
-        background-size: 20px !important;
-        border: 1px solid #334155 !important;
-        color: #f8fafc !important;
-    }
-
-    #changelist-search input[type="submit"] {
-        width: 100% !important;
-        height: 48px !important;
-        border-radius: 12px !important;
-        font-size: 15px !important;
-        font-weight: 600 !important;
-        background-color: #1e293b !important;
-        border: 1px solid #334155 !important;
-        color: #f8fafc !important;
+        display: none !important;
     }
 
     /* 9. Changelist Filter (Card with options wrap) */
     #changelist-filter {
-        background: #1e293b !important; /* slate-800 */
-        border: 1px solid #334155 !important; /* slate-700 */
+        background-color: rgba(18, 18, 24, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 16px !important;
         margin: 0 20px 20px 20px !important;
         padding: 16px !important;
@@ -2649,7 +2643,7 @@ textarea[name="admin_reply_field"]:focus {
         font-size: 14px !important;
         font-weight: 700 !important;
         color: #f8fafc !important;
-        margin: 0 0 12px 0 !important;
+        margin: 0 ... 12px 0 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.5px !important;
         border: none !important;
@@ -2687,17 +2681,17 @@ textarea[name="admin_reply_field"]:focus {
         border-radius: 16px !important;
         font-size: 12.5px !important;
         font-weight: 500 !important;
-        background-color: #0f172a !important; /* slate-900 */
-        border: 1px solid #334155 !important;
+        background-color: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         color: #94a3b8 !important;
         text-decoration: none !important;
         white-space: nowrap !important;
         transition: all 0.2s ease !important;
     }
     #changelist-filter li.selected a {
-        background-color: #38bdf8 !important; /* sky-400 */
-        color: #0f172a !important; /* slate-900 */
-        border-color: #38bdf8 !important;
+        background-color: #ffffff !important; /* Premium White selected state */
+        color: #000000 !important;
+        border-color: #ffffff !important;
         font-weight: 600 !important;
     }
 
@@ -2727,8 +2721,8 @@ textarea[name="admin_reply_field"]:focus {
         border-radius: 12px !important;
         padding: 0 16px !important;
         font-size: 15px !important;
-        background-color: #1e293b !important;
-        border: 1px solid #334155 !important;
+        background-color: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         color: #f8fafc !important;
         margin-top: 6px !important;
     }
@@ -2739,8 +2733,8 @@ textarea[name="admin_reply_field"]:focus {
         border-radius: 12px !important;
         font-size: 15px !important;
         font-weight: 600 !important;
-        background-color: #f8fafc !important; /* white */
-        color: #0f172a !important; /* black */
+        background-color: #ffffff !important; /* Premium White */
+        color: #000000 !important;
         border: none !important;
     }
     
@@ -2768,16 +2762,18 @@ textarea[name="admin_reply_field"]:focus {
     #changelist table tbody tr {
         display: flex !important;
         flex-direction: column !important;
-        background-color: #1e293b !important; /* slate-800 */
-        border: 1px solid #334155 !important;
+        background-color: rgba(18, 18, 24, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 16px !important;
         padding: 16px !important;
         position: relative !important;
     }
 
     #changelist table tbody tr.selected {
-        background-color: rgba(56, 189, 248, 0.1) !important;
-        border-color: rgba(56, 189, 248, 0.3) !important;
+        background-color: rgba(255, 255, 255, 0.03) !important;
+        border-color: rgba(255, 255, 255, 0.15) !important;
     }
 
     /* Checkbox positioning inside the card (top-right) */
@@ -2799,7 +2795,7 @@ textarea[name="admin_reply_field"]:focus {
     #changelist table tbody td.action-checkbox input {
         width: 18px !important;
         height: 18px !important;
-        accent-color: #38bdf8 !important;
+        accent-color: #ffffff !important; /* White accent */
         margin: 0 !important;
         cursor: pointer !important;
         border-radius: 4px !important;
@@ -2811,7 +2807,7 @@ textarea[name="admin_reply_field"]:focus {
         width: 100% !important;
         padding: 0 40px 8px 0 !important; /* Right padding to avoid checkbox overlap */
         margin-bottom: 8px !important;
-        border-bottom: 1px solid #334155 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
         text-align: left !important;
         box-sizing: border-box !important;
     }
@@ -2855,23 +2851,25 @@ textarea[name="admin_reply_field"]:focus {
         border-radius: 8px !important;
         font-size: 14px !important;
         font-weight: 500 !important;
-        background-color: #1e293b !important;
+        background-color: rgba(255, 255, 255, 0.03) !important;
         color: #94a3b8 !important;
         text-decoration: none !important;
-        border: 1px solid #334155 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
 
     .paginator .this-page {
-        background-color: #38bdf8 !important;
-        color: #0f172a !important;
-        border-color: #38bdf8 !important;
+        background-color: #ffffff !important; /* Premium White */
+        color: #000000 !important;
+        border-color: #ffffff !important;
         font-weight: 600 !important;
     }
 
     /* 12. Add/Edit Forms */
     fieldset.module {
-        background-color: #1e293b !important; /* slate-800 */
-        border: 1px solid #334155 !important; /* slate-700 */
+        background-color: rgba(18, 18, 24, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 16px !important;
         padding: 12px !important;
         margin: 0 20px 20px 20px !important;
@@ -2884,7 +2882,7 @@ textarea[name="admin_reply_field"]:focus {
         flex-direction: column !important;
         gap: 8px !important;
         padding: 16px 12px !important;
-        border-bottom: 1px solid #1e293b !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
         align-items: stretch !important;
         width: 100% !important;
         float: none !important;
@@ -2919,8 +2917,8 @@ textarea[name="admin_reply_field"]:focus {
         border-radius: 12px !important;
         padding: 0 16px !important;
         font-size: 15px !important;
-        background-color: #1e293b !important;
-        border: 1px solid #334155 !important;
+        background-color: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         color: #f8fafc !important;
         float: none !important;
         margin: 0 !important;
@@ -2943,7 +2941,7 @@ textarea[name="admin_reply_field"]:focus {
     .form-row .checkbox-row input[type="checkbox"] {
         width: 20px !important;
         height: 20px !important;
-        accent-color: #38bdf8 !important;
+        accent-color: #ffffff !important; /* White accent */
         margin: 0 !important;
     }
 
@@ -2967,9 +2965,11 @@ textarea[name="admin_reply_field"]:focus {
         gap: 12px !important;
         padding: 20px !important;
         margin: 20px !important;
-        background-color: #1e293b !important;
+        background-color: rgba(18, 18, 24, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 16px !important;
-        border: 1px solid #334155 !important;
         position: static !important;
     }
 
@@ -2989,8 +2989,8 @@ textarea[name="admin_reply_field"]:focus {
 
     .submit-row input[type="submit"].default,
     .submit-row input[name="_save"] {
-        background-color: #38bdf8 !important; /* sky-400 */
-        color: #0f172a !important; /* dark slate */
+        background-color: #ffffff !important; /* Premium White default buttons */
+        color: #000000 !important;
     }
 
     .submit-row input[type="submit"]:not(.default):not([name="_save"]),
@@ -2998,7 +2998,7 @@ textarea[name="admin_reply_field"]:focus {
     .submit-row input[name="_continue"] {
         background-color: transparent !important;
         color: #f8fafc !important;
-        border: 1px solid #334155 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
 
     .submit-row .deletelink-box {
@@ -3019,7 +3019,7 @@ textarea[name="admin_reply_field"]:focus {
         justify-content: center !important;
         min-height: 100vh !important;
         min-height: 100dvh !important;
-        background-color: #0f172a !important;
+        background-color: #000000 !important;
     }
 
     body.login #container {
@@ -3030,8 +3030,10 @@ textarea[name="admin_reply_field"]:focus {
     body.login #content {
         padding: 32px 24px !important;
         border-radius: 20px !important;
-        background-color: #1e293b !important;
-        border: 1px solid #334155 !important;
+        background-color: rgba(18, 18, 24, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
 
     body.login #content input[type="text"],
@@ -3041,8 +3043,8 @@ textarea[name="admin_reply_field"]:focus {
         font-size: 15px !important;
         padding: 0 16px !important;
         width: 100% !important;
-        background-color: #0f172a !important;
-        border: 1px solid #334155 !important;
+        background-color: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
 
     body.login .submit-row {
@@ -3056,8 +3058,8 @@ textarea[name="admin_reply_field"]:focus {
         height: 52px !important;
         border-radius: 12px !important;
         font-size: 16px !important;
-        background-color: #38bdf8 !important;
-        color: #0f172a !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
     }
 
     /* Hide redundant elements */
@@ -3067,6 +3069,8 @@ textarea[name="admin_reply_field"]:focus {
     .messagelist {
         margin: 0 20px 16px 20px !important;
         border-radius: 12px !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
     .messagelist li {
         padding: 12px 16px !important;
