@@ -1740,8 +1740,13 @@ body.login .submit-row input[type="submit"]:hover {
     padding: 16px 20px !important;
 }
 
+#changelist-search label {
+    display: none !important;
+}
+
 #changelist-search #searchbar {
     background: rgba(255, 255, 255, 0.02) !important;
+    background-image: none !important;
     color: #ffffff !important;
     border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
     border-radius: 20px !important;
