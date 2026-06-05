@@ -93,9 +93,6 @@
                     
                     {% if user.is_authenticated %}
                     <div class="saas-profile-widget">
-                        <div class="saas-avatar">
-                            {{ user.username|slice:":1|upper" }}
-                        </div>
                         <div class="saas-profile-info">
                             <span class="saas-username">{{ user.username }}</span>
                             <span class="saas-role">{% if user.is_superuser %}Super Administrator{% else %}Administrator{% endif %}</span>
