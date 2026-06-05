@@ -2350,8 +2350,8 @@ textarea[name="admin_reply_field"]:focus {
         top: auto !important;
         width: 100% !important;
         height: 64px !important;
-        background-color: #050505 !important; /* Solid premium black */
-        border-top: 1px solid rgba(255, 255, 255, 0.05) !important; /* Extremely thin subtle border */
+        background-color: #000000 !important; /* Pure Black background */
+        border-top: none !important; /* Remove top border/white lines */
         border-radius: 0 !important;
         padding: 0 16px calc(env(safe-area-inset-bottom, 0px)) 16px !important;
         margin: 0 !important;
@@ -2611,6 +2611,9 @@ textarea[name="admin_reply_field"]:focus {
         box-shadow: none !important;
         margin: 0 !important;
         padding: 0 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border-radius: 0 !important;
     }
 
     #changelist-form {
@@ -2700,17 +2703,24 @@ textarea[name="admin_reply_field"]:focus {
         display: flex !important;
         flex-direction: column !important;
         gap: 12px !important;
-        padding: 0 20px 16px 20px !important;
-        background: transparent !important;
-        border: none !important;
+        padding: 16px !important;
+        margin: 0 20px 20px 20px !important;
+        background-color: rgba(18, 18, 24, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+        box-sizing: border-box !important;
     }
 
     .actions label {
-        display: block !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
         font-size: 14px !important;
         font-weight: 500 !important;
         color: #94a3b8 !important;
-        margin-bottom: 8px !important;
         width: 100% !important;
     }
 
@@ -2724,7 +2734,12 @@ textarea[name="admin_reply_field"]:focus {
         background-color: rgba(255, 255, 255, 0.03) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         color: #f8fafc !important;
-        margin-top: 6px !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23f8fafc'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: calc(100% - 16px) center !important;
+        background-size: 16px !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
     }
 
     .actions button.button {
