@@ -377,25 +377,26 @@ body.login .submit-row input[type="submit"]:hover {
 .saas-centered-wrapper {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    padding: 40px 20px;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
     background-color: #0b0b0e;
     box-sizing: border-box;
     width: 100%;
     position: relative;
     z-index: 10;
+    overflow: hidden;
 }
 
 .saas-container {
     max-width: 1440px;
     width: 100%;
+    height: 820px;
     background: rgba(14, 14, 18, 0.65);
     backdrop-filter: blur(24px);
     border: 1.5px solid rgba(255, 255, 255, 0.05);
     border-radius: 24px;
     display: flex;
-    min-height: calc(100vh - 80px);
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
     overflow: hidden;
     position: relative;
@@ -429,9 +430,7 @@ body.login .submit-row input[type="submit"]:hover {
     padding: 30px 0;
     box-sizing: border-box;
     flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    height: auto;
+    height: 100%;
 }
 
 .sidebar-brand {
@@ -541,6 +540,8 @@ body.login .submit-row input[type="submit"]:hover {
     display: flex;
     flex-direction: column;
     background: radial-gradient(circle at 30% 10%, rgba(139, 92, 246, 0.03) 0%, transparent 60%);
+    height: 100%;
+    overflow-y: auto;
 }
 
 .saas-panel-body {
@@ -570,7 +571,7 @@ body.login .submit-row input[type="submit"]:hover {
     background: rgba(255, 255, 255, 0.03);
     border: 1.5px solid rgba(255, 255, 255, 0.06);
     border-radius: 20px;
-    padding: 10px 18px 10px 45px;
+    padding: 10px 18px 10px 45px !important;
     color: #ffffff;
     font-size: 13.5px;
     box-sizing: border-box;
@@ -1213,20 +1214,21 @@ body.login .submit-row input[type="submit"]:hover {
 }
 
 .saas-db-card {
-    background: rgba(255, 255, 255, 0.015);
-    border: 1px solid rgba(255, 255, 255, 0.03);
-    border-radius: 14px;
+    background: rgba(14, 14, 18, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.03) !important;
+    border-radius: 16px !important;
     overflow: hidden;
-    padding: 16px;
+    padding: 20px !important;
+    box-shadow: none !important;
 }
 
 .saas-db-card h4 {
-    margin: 0 0 12px 0;
-    font-size: 13px;
-    font-weight: 750;
+    margin: 0 0 16px 0;
+    font-size: 12.5px;
+    font-weight: 800;
     color: #a78bfa;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.5px;
 }
 
 .saas-db-card-table {
@@ -1235,28 +1237,30 @@ body.login .submit-row input[type="submit"]:hover {
 }
 
 .saas-db-card-table tr {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
 }
 
 .saas-db-card-table tr:last-child {
-    border-bottom: none;
+    border-bottom: none !important;
 }
 
 .saas-db-card-table td {
-    padding: 10px 0;
-    font-size: 12.5px;
+    padding: 12px 0 !important;
+    font-size: 13px;
 }
 
 .saas-db-card-table td a {
-    color: #cbd5e1;
-    text-decoration: none;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
+    color: #cbd5e1 !important;
+    background: transparent !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    transition: color 0.2s ease;
 }
 
 .saas-db-card-table td a:hover {
-    color: #8b5cf6;
+    color: #8b5cf6 !important;
 }
 
 .saas-db-card-table td.actions-cell {
@@ -1264,32 +1268,48 @@ body.login .submit-row input[type="submit"]:hover {
 }
 
 .saas-db-card-table td.actions-cell a {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 700;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
     text-transform: uppercase;
-    padding: 4px 8px;
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    margin-left: 6px;
+    padding: 5px 10px !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #cbd5e1 !important;
+    margin-left: 6px !important;
+    transition: all 0.2s ease;
+}
+
+.saas-db-card-table td.actions-cell a:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
 }
 
 .saas-db-card-table td.actions-cell a.add-link {
-    color: #34d399;
-    background: rgba(52, 211, 153, 0.05);
-    border-color: rgba(52, 211, 153, 0.1);
+    color: #34d399 !important;
+    border-color: rgba(52, 211, 153, 0.2) !important;
 }
 
 .saas-db-card-table td.actions-cell a.add-link:hover {
-    background: #34d399;
-    color: #ffffff;
-    box-shadow: 0 0 8px rgba(52, 211, 153, 0.3);
+    background: rgba(52, 211, 153, 0.08) !important;
+    border-color: #34d399 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.2);
+}
+
+.saas-db-card-table td.actions-cell a.change-link {
+    color: #cbd5e1 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .saas-db-card-table td.actions-cell a.change-link:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
 }
 
 /* ==========================================================================

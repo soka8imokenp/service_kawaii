@@ -22,9 +22,6 @@
 <!-- Title section -->
 <div class="saas-title-row">
     <h1>Boshqaruv Markazi</h1>
-    <button class="saas-filter-btn">
-        <i data-lucide="sliders-horizontal" style="width: 14px; height: 14px;"></i> Saralash
-    </button>
 </div>
 
 <!-- Dashboard Widgets Grid -->
@@ -118,10 +115,10 @@
             <div class="saas-widget-body">
                 <div class="gauge-container">
                     <svg width="180" height="150" viewBox="0 0 200 160" class="gauge-svg">
-                        <!-- Background path -->
-                        <path d="M 30 140 A 80 80 0 0 1 170 140" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="12" stroke-linecap="round" />
-                        <!-- Foreground path -->
-                        <path id="saas-gauge-fill" d="M 30 140 A 80 80 0 0 1 170 140" fill="none" stroke="url(#saas-gauge-gradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="320" stroke-dashoffset="320" style="transition: stroke-dashoffset 1s ease-in-out;" />
+                        <!-- Background path: curves upwards (sweep-flag 0) -->
+                        <path d="M 30 130 A 70 70 0 0 0 170 130" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="12" stroke-linecap="round" />
+                        <!-- Foreground path: curves upwards (sweep-flag 0) -->
+                        <path id="saas-gauge-fill" d="M 30 130 A 70 70 0 0 0 170 130" fill="none" stroke="url(#saas-gauge-gradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220" style="transition: stroke-dashoffset 1s ease-in-out;" />
                         <!-- Gradient definition -->
                         <defs>
                             <linearGradient id="saas-gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -132,7 +129,7 @@
                         </defs>
                     </svg>
                     
-                    <div class="gauge-overlay">
+                    <div class="gauge-overlay" style="top: 55%;">
                         <div class="gauge-percentage" id="saas-gauge-percentage">--%</div>
                         <div class="gauge-label">Javob berilgan</div>
                     </div>
@@ -291,8 +288,8 @@
                 
                 document.getElementById('saas-gauge-percentage').textContent = percentage + '%';
                 
-                // SVG Circle Path length is 298px
-                const strokeLength = 298;
+                // SVG Path length is 220px (Math.PI * 70)
+                const strokeLength = 220;
                 const offset = strokeLength - (strokeLength * (percentage / 100));
                 const fillPath = document.getElementById('saas-gauge-fill');
                 if (fillPath) {
