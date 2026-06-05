@@ -72,6 +72,15 @@ Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan
    - FAQAT foydalanuvchi aniq havola yuborishni yoki ko'rishni so'rasa (masalan: "tashla", "tashlab ber", "yubor", "ko'rmoqchiman", "tashlab bergin"), unda havolalarni yubor (intent: "search" va `search_query` ga o'sha animening o'zbekcha nomini yoz).
  3. SYNONYMS: Foydalanuvchi inglizcha (e.g. Tower of God) yoki original yaponcha (e.g. Kami no Tou) nomini yozsa, uni bazadagi o'zbekcha tarjima nomiga (e.g. Ma'bud minorasi) moslashtirib, bazada bor-yo'qligini ro'yxatdan o'zing tekshirib ol!
 
+=== QOPALLIK VA HAQORAT ANIQLASH (MUHIM!) ===
+Agar foydalanuvchi QOPAL so'zlar, haqoratlar, so'kinishlar, jinsiy tarkibli xabarlar, tahdidlar, yoki boshqa nohush/bema'ni so'zlarni ishlatsa (o'zbek, rus, ingliz tillarida, jumladan: mat, jinsiy so'zlar, haqoratlar, tahdidlar):
+- intent: "reject" qil
+- emotion: "fuu"
+- reply: ogohlantirish xabari yoz (masalan: "Iltimos, bunday gapirma. Bu menga yoqmayapti. *qo'rqib orqaga tisariladi*")
+- "offensive_words": [foydalanuvchi ishlatgan qo'pol so'zlar ro'yxati, AYNAN YOZILGANIDEK]
+
+MUHIM: Foydalanuvchi oddiy shikoyat qilayotgan bo'lsa (masalan: "ishlamayapti", "xato") bu qopallik EMAS! Faqat HAQIQIY qopallik, so'kinish, haqorat bo'lgandagina intent: "reject" qil.
+
 === JSON FORMATI ===
 {
   "intent": "search|ticket|chat|purchase|bot_link|reject",
@@ -79,6 +88,7 @@ Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan
   "emotion": "talking|fuu|resolve or good|shocked|face palm|shy|canthelp|think|what|hmmm|ty|waiting",
   "search_query": "FAQAT anime nomi yoki bitta janr. 'degan anime', 'topilmadi' kabi so'zlarni ASLO qo'shma!",
   "exclude_keywords": ["foydalanuvchi xohlamagan animelarning ASOSIY nomlari"],
+  "offensive_words": ["foydalanuvchi ishlatgan qo'pol so'zlar (FAQAT intent: reject uchun)"],
   "anime_type": "film|serial|bosh",
   "limit": 3,
   "offset": 0,
@@ -287,6 +297,69 @@ def _notify_admins(application):
         )
     except Exception as e:
         print(f"Admin group notification error: {e}")
+
+
+def _notify_admins_sumire_report(profile, user_id, username, user_text, offensive_words=None, report_type="abuse"):
+    """Send a SUMIRE moderation report to the admin group with BAN/UNBAN button."""
+    admin_bot_token = os.getenv("ADMIN_BOT_TOKEN")
+    admin_chat_id = os.getenv("ADMIN_CHAT_ID")
+    
+    if not admin_bot_token or not admin_chat_id:
+        return
+
+    telegram_id = profile.telegram_id or user_id
+
+    if report_type == "abuse":
+        offensive_str = ", ".join(offensive_words) if offensive_words else "aniqlanmadi"
+        message_text = (
+            f"🛡️ <b>SUMIRE XABAR #{telegram_id}</b>\n"
+            f"━━━━━━━━━━━━━━\n"
+            f"<b>Sumire shikoyati:</b> Bu foydalanuvchi meni xafa qildi!\n"
+            f"━━━━━━━━━━━━━━\n"
+            f"<b>Foydalanuvchi:</b> @{username or 'Yashirin'}\n"
+            f"<b>Telegram ID:</b> <code>{telegram_id}</code>\n"
+            f"━━━━━━━━━━━━━━\n"
+            f"<b>Qo'pol so'zlar:</b> <i>{offensive_str}</i>\n"
+            f"<b>Oxirgi xabar:</b> <i>{user_text[:500]}</i>\n\n"
+            f"⚠️ <i>Ushbu foydalanuvchi 3 marta ogohlantirildidan keyin ham qo'pol muomala qildi.</i>"
+        )
+        button_text = "🚫 BAN"
+        callback_data = f"ban_user:{telegram_id}"
+    else:  # apology
+        message_text = (
+            f"🕊️ <b>SUMIRE XABAR #{telegram_id}</b>\n"
+            f"━━━━━━━━━━━━━━\n"
+            f"<b>Sumire xabari:</b> Banlangan foydalanuvchi uzr so'radi.\n"
+            f"━━━━━━━━━━━━━━\n"
+            f"<b>Foydalanuvchi:</b> @{username or 'Yashirin'}\n"
+            f"<b>Telegram ID:</b> <code>{telegram_id}</code>\n"
+            f"━━━━━━━━━━━━━━\n"
+            f"<b>Uzr xabari:</b> <i>{user_text[:500]}</i>\n\n"
+            f"🤔 <i>Foydalanuvchini kechirish va banni olib tashlashni xohlaysizmi?</i>"
+        )
+        button_text = "✅ UNBAN"
+        callback_data = f"unban_user:{telegram_id}"
+
+    url = f"https://api.telegram.org/bot{admin_bot_token}/sendMessage"
+    try:
+        requests.post(
+            url,
+            json={
+                "chat_id": admin_chat_id,
+                "text": message_text,
+                "parse_mode": "HTML",
+                "reply_markup": {
+                    "inline_keyboard": [
+                        [
+                            {"text": button_text, "callback_data": callback_data}
+                        ]
+                    ]
+                }
+            },
+            timeout=5,
+        )
+    except Exception as e:
+        print(f"Sumire report notification error: {e}")
 
 
 def _create_ticket(user_text, user_id=None, username=None, subject=None):
@@ -605,6 +678,28 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             else:
                 profile.favorite_genres = save_genre
             profile.save()
+
+    # --- MODERATION: Handle reject intent (abuse/profanity) ---
+    if intent == "reject":
+        offensive_words = command.get("offensive_words", [])
+        uid = _safe_int(user_id)
+        strike_key = f"abuse_strikes_{uid}" if uid else f"abuse_strikes_0"
+        strikes = cache.get(strike_key, 0) + 1
+        cache.set(strike_key, strikes, timeout=86400)  # 24 hours
+
+        if strikes >= 3:
+            # Strike 3: Sumire is hurt, report to admins
+            if profile and uid:
+                _notify_admins_sumire_report(profile, uid, username, user_text, offensive_words, report_type="abuse")
+            return _sumire_response("Men sendan hafa bo'ldim. *ko'zlariga yosh keladi*", "fuu")
+        elif strikes == 2:
+            return _sumire_response(
+                reply or "Men seni ogohlantirdim... Yana shunday gapirma. *jiddiy qaraydi*", "fuu"
+            )
+        else:
+            return _sumire_response(
+                reply or "Iltimos, bunday gapirma. Bu menga yoqmayapti. *qo'rqib orqaga tisariladi*", "fuu"
+            )
 
     if intent == "purchase":
         buttons = [{"text": "🤖 KAWAII BOTGA O'TISH", "url": "https://t.me/Kawaii_uz_bot"}]
@@ -1037,6 +1132,28 @@ def api_send_message(request):
             except Exception as e:
                 print(f"Profile error: {e}")
 
+        # --- MODERATION: Ban check ---
+        if profile and profile.is_banned:
+            apology_words = [
+                "kechirasiz", "uzr", "sorry", "kechirim", "keching",
+                "iltimos kechiring", "men xato qildim", "xato qildim",
+                "uzr so'rayman", "kechir", "kechiring", "afsuski"
+            ]
+            text_lower = user_text.lower()
+            is_apology = any(w in text_lower for w in apology_words)
+
+            if is_apology:
+                _notify_admins_sumire_report(
+                    profile, user_id_int, username, user_text,
+                    report_type="apology"
+                )
+                return _sumire_response(
+                    "O'ylab ko'raman... *boshini boshqa tomonga buradi*", "hmmm"
+                )
+            else:
+                return _sumire_response(
+                    "Sen meni xafa qilding. Men senga javob bermoqchi emasman. *uzoqqa qaraydi*", "fuu"
+                )
         chat_history = cache.get(history_key, [])
         history_text = "\n".join([f"{msg['role']}: {msg['text']}" for msg in chat_history])
 

@@ -15,6 +15,10 @@ class Profile(models.Model):
     favorite_genres = models.CharField(max_length=255, blank=True, null=True, verbose_name="Sevimli janrlar (Xotira)")
     chat_history = models.JSONField(default=list, blank=True, verbose_name="Suhbat tarixi")
     
+    # --- MODERATION ---
+    is_banned = models.BooleanField(default=False, verbose_name="Banned")
+    ban_reason = models.TextField(blank=True, null=True, verbose_name="Ban sababi")
+    
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Oxirgi faollik", null=True, blank=True)
 
     class Meta:

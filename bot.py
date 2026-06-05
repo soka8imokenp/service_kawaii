@@ -11,7 +11,7 @@ django.setup()
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
-from feedback.models import Application, Message as DBMessage
+from feedback.models import Application, Message as DBMessage, Profile
 
 load_dotenv()
 
@@ -255,6 +255,136 @@ async def handle_close_ticket_callback(callback: types.CallbackQuery):
                 
     except Exception as e:
         await callback.answer(f"❌ Xatolik yopishda: {str(e)}", show_alert=True)
+
+
+@sync_to_async
+def ban_user_db(telegram_id, reason=""):
+    try:
+        profile = Profile.objects.filter(telegram_id=telegram_id).first()
+        if not profile:
+            return "not_found"
+        if profile.is_banned:
+            return "already_banned"
+        profile.is_banned = True
+        profile.ban_reason = reason
+        profile.save()
+        return "success"
+    except Exception as e:
+        print(f"Ban user error: {e}", flush=True)
+        return "error"
+
+
+@sync_to_async
+def unban_user_db(telegram_id):
+    try:
+        profile = Profile.objects.filter(telegram_id=telegram_id).first()
+        if not profile:
+            return "not_found"
+        if not profile.is_banned:
+            return "already_unbanned"
+        profile.is_banned = False
+        profile.ban_reason = ""
+        profile.save()
+        return "success"
+    except Exception as e:
+        print(f"Unban user error: {e}", flush=True)
+        return "error"
+
+
+@dp.callback_query(F.data.startswith("ban_user:"))
+async def handle_ban_user_callback(callback: types.CallbackQuery):
+    telegram_id = int(callback.data.split(":")[1])
+    try:
+        status = await ban_user_db(telegram_id)
+        if status == "not_found":
+            await callback.answer("❌ Foydalanuvchi profili topilmadi.", show_alert=True)
+            return
+        elif status == "already_banned":
+            await callback.answer("ℹ️ Foydalanuvchi allaqachon banlangan.", show_alert=True)
+            try:
+                await callback.message.edit_reply_markup(reply_markup=None)
+            except Exception:
+                pass
+            return
+
+        await callback.answer("🚫 Foydalanuvchi banlandi!", show_alert=False)
+
+        # Edit the group message to show ban confirmed
+        orig_text = callback.message.text or ""
+        new_text = orig_text + "\n\n🚫 <b>Foydalanuvchi banlandi!</b>"
+        try:
+            await callback.message.edit_text(text=new_text, parse_mode="HTML", reply_markup=None)
+        except Exception:
+            try:
+                await callback.message.edit_reply_markup(reply_markup=None)
+            except Exception:
+                pass
+
+        # Notify the user via PM
+        try:
+            await main_bot.send_message(
+                chat_id=telegram_id,
+                text=(
+                    "<b>Sizga ogohlantirish!</b>\n"
+                    "━━━━━━━━━━━━━━\n"
+                    "Siz Sumire bilan qo'pol muomala qilganingiz uchun xizmatdan foydalanish huquqingiz vaqtincha to'xtatildi.\n\n"
+                    "Agar uzr so'ramoqchi bo'lsangiz, Web App orqali Sumire'ga yozing."
+                ),
+                parse_mode="HTML"
+            )
+        except Exception as pm_err:
+            print(f"Failed to send ban notification to user {telegram_id}: {pm_err}", flush=True)
+
+    except Exception as e:
+        await callback.answer(f"❌ Xatolik: {str(e)}", show_alert=True)
+
+
+@dp.callback_query(F.data.startswith("unban_user:"))
+async def handle_unban_user_callback(callback: types.CallbackQuery):
+    telegram_id = int(callback.data.split(":")[1])
+    try:
+        status = await unban_user_db(telegram_id)
+        if status == "not_found":
+            await callback.answer("❌ Foydalanuvchi profili topilmadi.", show_alert=True)
+            return
+        elif status == "already_unbanned":
+            await callback.answer("ℹ️ Foydalanuvchi allaqachon bandan chiqarilgan.", show_alert=True)
+            try:
+                await callback.message.edit_reply_markup(reply_markup=None)
+            except Exception:
+                pass
+            return
+
+        await callback.answer("✅ Foydalanuvchi bandan chiqarildi!", show_alert=False)
+
+        # Edit the group message to show unban confirmed
+        orig_text = callback.message.text or ""
+        new_text = orig_text + "\n\n✅ <b>Foydalanuvchi bandan chiqarildi!</b>"
+        try:
+            await callback.message.edit_text(text=new_text, parse_mode="HTML", reply_markup=None)
+        except Exception:
+            try:
+                await callback.message.edit_reply_markup(reply_markup=None)
+            except Exception:
+                pass
+
+        # Notify the user via PM
+        try:
+            await main_bot.send_message(
+                chat_id=telegram_id,
+                text=(
+                    "🌸 <b>Sumire sizni kechirdi!</b>\n"
+                    "━━━━━━━━━━━━━━\n"
+                    "Sizning uzringiz qabul qilindi. Endi Web App orqali Sumire bilan yana gaplashishingiz mumkin.\n\n"
+                    "Iltimos, hurmatli munosabatda bo'ling."
+                ),
+                parse_mode="HTML"
+            )
+        except Exception as pm_err:
+            print(f"Failed to send unban notification to user {telegram_id}: {pm_err}", flush=True)
+
+    except Exception as e:
+        await callback.answer(f"❌ Xatolik: {str(e)}", show_alert=True)
 
 
 # 3. Fallback PM reply handler for direct messages from admin

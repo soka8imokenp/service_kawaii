@@ -118,9 +118,10 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("id", "telegram_id", "updated_at", "favorite_genres")
+    list_display = ("id", "telegram_id", "updated_at", "favorite_genres", "is_banned")
+    list_filter = ("is_banned",)
     search_fields = ("telegram_id", "favorite_genres")
-    readonly_fields = ("id", "telegram_id", "favorite_genres", "chat_history_bubbles", "updated_at")
+    readonly_fields = ("id", "telegram_id", "favorite_genres", "chat_history_bubbles", "updated_at", "ban_reason")
     exclude = ("chat_history", "user")
 
     def chat_history_bubbles(self, obj):
