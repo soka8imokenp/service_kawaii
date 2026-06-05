@@ -198,6 +198,65 @@ if ADMIN_CHAT_ID:
             
 
 
+@dp.callback_query(F.data.startswith("close_ticket:"))
+async def handle_close_ticket_callback(callback: types.CallbackQuery):
+    ticket_id = int(callback.data.split(":")[1])
+    try:
+        status, application = await close_ticket_db(ticket_id)
+        if status == "not_found":
+            await callback.answer("❌ Xatolik: Murojaat topilmadi.", show_alert=True)
+            return
+        elif status == "already_closed":
+            await callback.answer("ℹ️ Ushbu murojaat allaqachon yopilgan.", show_alert=True)
+            try:
+                await callback.message.edit_reply_markup(reply_markup=None)
+            except Exception:
+                pass
+            return
+        
+        # Send PM notification to the user via the main bot
+        try:
+            await main_bot.send_message(
+                chat_id=application.user_id,
+                text=(
+                    f"<b>Sizning murojaatingiz yopildi!</b>\n"
+                    f"━━━━━━━━━━━━━━\n"
+                    f"<b>Mavzu:</b> {application.subject}\n\n"
+                    f"Bizga murojaat qilganingiz uchun rahmat! Murojaatingiz admin tomonidan muvaffaqiyatli yopildi. "
+                    f"Agar sizda yangi savollar tug'ilsa, Web App orqali yangi murojaat yaratishingiz mumkin."
+                ),
+                parse_mode="HTML"
+            )
+        except Exception as pm_err:
+            print(f"Failed to send PM notification to user {application.user_id}: {pm_err}", flush=True)
+        
+        # Answer callback
+        await callback.answer("✅ Murojaat yopildi!", show_alert=False)
+        
+        # Edit the group message text/markup to remove the button and display "✅ Murojaat yopildi!"
+        orig_text = callback.message.text or callback.message.caption or ""
+        new_text = orig_text
+        if "✍️ Javob berish uchun ushbu xabarga 'Reply' qiling." in new_text:
+            new_text = new_text.replace("✍️ Javob berish uchun ushbu xabarga 'Reply' qiling.", "✅ <b>Murojaat yopildi!</b>")
+        else:
+            new_text += "\n\n✅ <b>Murojaat yopildi!</b>"
+            
+        try:
+            if callback.message.text:
+                await callback.message.edit_text(text=new_text, parse_mode="HTML", reply_markup=None)
+            elif callback.message.caption:
+                await callback.message.edit_caption(caption=new_text, parse_mode="HTML", reply_markup=None)
+        except Exception as edit_err:
+            print(f"Failed to edit message content on ticket close: {edit_err}", flush=True)
+            try:
+                await callback.message.edit_reply_markup(reply_markup=None)
+            except Exception:
+                pass
+                
+    except Exception as e:
+        await callback.answer(f"❌ Xatolik yopishda: {str(e)}", show_alert=True)
+
+
 # 3. Fallback PM reply handler for direct messages from admin
 if ADMIN_ID:
     try:
@@ -286,11 +345,16 @@ async def handle_user_pm(message: types.Message):
                     f"✍️ <i>Javob berish uchun ushbu xabarga 'Reply' qiling.</i>"
                 )
                 
+                markup = InlineKeyboardMarkup(inline_keyboard=[
+                    [InlineKeyboardButton(text="❌ Murojaatni yopish", callback_data=f"close_ticket:{ticket_id}")]
+                ])
+                
                 # Send via admin bot
                 await admin_bot.send_message(
                     chat_id=admin_chat_id_int,
                     text=msg_text,
-                    parse_mode="HTML"
+                    parse_mode="HTML",
+                    reply_markup=markup
                 )
             except Exception as e:
                 print(f"Failed to forward PM to admin group: {e}")

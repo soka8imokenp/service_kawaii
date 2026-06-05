@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Application, Profile
+from .models import Application, Profile, WantedAnime
 
 # --- CUSTOM BRANDING ---
 admin.site.site_header = "🌸 Sumire Control Panel"
@@ -158,3 +158,11 @@ class ProfileAdmin(admin.ModelAdmin):
         html.append('</div>')
         return format_html('\n'.join(html))
     chat_history_bubbles.short_description = "Suhbat ko'rinishi"
+
+
+@admin.register(WantedAnime)
+class WantedAnimeAdmin(admin.ModelAdmin):
+    list_display = ("query", "request_count", "last_requested")
+    search_fields = ("query",)
+    readonly_fields = ("query", "request_count", "last_requested")
+    ordering = ("-request_count", "-last_requested")

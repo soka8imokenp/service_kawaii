@@ -274,7 +274,14 @@ def _notify_admins(application):
             json={
                 "chat_id": admin_chat_id,
                 "text": message_text,
-                "parse_mode": "HTML"
+                "parse_mode": "HTML",
+                "reply_markup": {
+                    "inline_keyboard": [
+                        [
+                            {"text": "❌ Murojaatni yopish", "callback_data": f"close_ticket:{application.id}"}
+                        ]
+                    ]
+                }
             },
             timeout=5,
         )
@@ -561,6 +568,29 @@ def _filter_search_results_by_query(query, results):
     return filtered
 
 
+def record_wanted_anime(query_str):
+    if not query_str:
+        return
+    query_clean = query_str.strip().lower()
+    if len(query_clean) < 2 or query_clean in ["yo'q", "yoq", "none", "null", "ha", "xa", "ok"]:
+        return
+    
+    query_title = query_str.strip()
+    from .models import WantedAnime
+    from django.db.models import F
+    
+    try:
+        obj, created = WantedAnime.objects.get_or_create(
+            query__iexact=query_clean,
+            defaults={"query": query_title, "request_count": 1}
+        )
+        if not created:
+            obj.request_count = F('request_count') + 1
+            obj.save()
+    except Exception as e:
+        print(f"Error recording wanted anime: {e}", flush=True)
+
+
 def _execute_ai_command(command, user_text, user_id=None, username=None, profile=None, chat_history=None):
     intent = command.get("intent", "chat")
     emotion = command.get("emotion", "talking")
@@ -762,6 +792,9 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             results_any = search_manga_database(query, limit=50, offset=0, anime_type="", exclude_keywords=exclude_keywords)
             filtered_results = _filter_search_results_by_query(query, results_any)
             
+        if not filtered_results:
+            record_wanted_anime(query)
+            
         # Paginate manually if offset/limit are specified (unless we are showing all unique seasons)
         if asking_seasons and filtered_results:
             # Filter filtered_results to only include titles that actually match the query name to prevent third-party hijacking
@@ -920,6 +953,15 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             return _sumire_response(reply, emotion, ticket_created=True)
         else:
             return _sumire_response("Arizani qabul qilishda texnik xatolik yuz berdi... *xo'rsinadi*", "canthelp")
+
+    if intent == "chat":
+        buttons = None
+        if reply and any(k in reply.lower() for k in ["tashlab beraymi", "tashlaymi", "yuboraymi"]):
+            buttons = [
+                {"text": "Ha, yubor"},
+                {"text": "Yo'q, kerakmas"}
+            ]
+        return _sumire_response(reply, emotion, buttons=buttons)
 
     return _sumire_response(reply, emotion)
 

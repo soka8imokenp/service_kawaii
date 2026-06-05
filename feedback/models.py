@@ -137,3 +137,17 @@ class Message(models.Model):
     def __str__(self):
         sender = "ADMIN" if self.is_from_admin else "USER"
         return f"{sender} #{self.application_id}: {self.text[:40]}"
+
+
+class WantedAnime(models.Model):
+    query = models.CharField(max_length=255, verbose_name="Qidiruv so'rovi", db_index=True)
+    request_count = models.PositiveIntegerField(default=1, verbose_name="So'rovlar soni")
+    last_requested = models.DateTimeField(auto_now=True, verbose_name="Oxirgi so'ralgan vaqt")
+
+    class Meta:
+        verbose_name = "Kutilayotgan anime"
+        verbose_name_plural = "Kutilayotgan animelar"
+        ordering = ['-request_count', '-last_requested']
+
+    def __str__(self):
+        return f"{self.query} ({self.request_count} marta)"

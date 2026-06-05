@@ -228,6 +228,71 @@ function App() {
     }
   };
 
+  const sendActionMessage = async (text) => {
+    handleFirstInteraction(); 
+    if (isLoading || cooldown > 0 || battery < 25) return;
+
+    setUserMessage(text);
+    setInput('');
+    setIsLoading(true);
+    
+    setButtons([]); 
+    setAnimeList([]);
+    
+    setEmotion('think');
+    setDialogue("...");
+    setBattery(prev => Math.max(0, prev - 25));
+
+    triggerHaptic('medium');
+
+    try {
+      const telegramUser = getTelegramUser();
+      const response = await fetch(`${API_BASE_URL}/feedback/api/send/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: text,
+          user_id: telegramUser.id || 0,
+          username: telegramUser.username || '',
+          first_name: telegramUser.first_name || '',
+        }),
+      });
+
+      const data = await response.json();
+      
+      let cleanResponse = data.text
+        .replace(/<[^>]*>?/gm, '') 
+        .replace(/\*[^*]+\*/g, '') 
+        .trim();
+      
+      setEmotion(data.emotion || 'talking');
+      
+      if (data.buttons) setButtons(data.buttons);
+      if (data.anime_list) setAnimeList(data.anime_list);
+
+      setDialogue(cleanResponse);
+      triggerHaptic('success'); 
+
+    } catch {
+      setEmotion('canthelp'); 
+      setDialogue("Aloqa uzildi... Server javob bermayapti.");
+      triggerHaptic('error'); 
+    } finally {
+      setIsLoading(false);
+
+      setCooldown(20);
+      const cooldownTimer = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(cooldownTimer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+  };
+
   const isBatteryLow = battery < 25;
 
   // Настройки пружинной анимации для карточек аниме
@@ -366,29 +431,52 @@ function App() {
                 </motion.div>
               )}
 
-              {/* СИСТЕМНАЯ ССЫЛОЧНАЯ КНОПКА (НЕОНОВО-СИНЯЯ С ЭФФЕКТОМ ГЛИТЧ-ПРОЯВЛЕНИЯ) */}
               {!isTyping && buttons.length > 0 && (
                 <div className="mt-4 flex flex-col gap-3 pb-2">
-                  {buttons.map((btn, i) => (
-                    <motion.a 
-                      key={i} 
-                      href={btn.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ type: "spring", delay: 0.2 }}
-                      whileHover={{ scale: 1.01, boxShadow: "0px 0px 8px rgba(6,182,212,0.6)" }}
-                      whileTap={{ scale: 0.99 }}
-                      className="group relative flex items-center justify-center gap-3 w-full bg-[#05030a]/80 border-2 border-cyan-500/70 hover:border-cyan-400 text-cyan-400 hover:text-cyan-200 text-[10px] md:text-xs font-ui px-4 py-2.5 transition-all shadow-[4px_4px_0_rgba(6,182,212,0.5)]"
-                    >
-                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-cyan-500 animate-pulse"></div>
-                      <span className="tracking-widest drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]">
-                        {btn.text.toUpperCase()}
-                      </span>
-                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-cyan-500 animate-pulse"></div>
-                    </motion.a>
-                  ))}
+                  {buttons.map((btn, i) => {
+                    const isLink = !!btn.url;
+                    if (isLink) {
+                      return (
+                        <motion.a 
+                          key={i} 
+                          href={btn.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ type: "spring", delay: 0.2 }}
+                          whileHover={{ scale: 1.01, boxShadow: "0px 0px 8px rgba(6,182,212,0.6)" }}
+                          whileTap={{ scale: 0.99 }}
+                          className="group relative flex items-center justify-center gap-3 w-full bg-[#05030a]/80 border-2 border-cyan-500/70 hover:border-cyan-400 text-cyan-400 hover:text-cyan-200 text-[10px] md:text-xs font-ui px-4 py-2.5 transition-all shadow-[4px_4px_0_rgba(6,182,212,0.5)] cursor-pointer"
+                        >
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-cyan-500 animate-pulse"></div>
+                          <span className="tracking-widest drop-shadow-[0_0_5px_rgba(6,182,212,0.8)]">
+                            {btn.text.toUpperCase()}
+                          </span>
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-cyan-500 animate-pulse"></div>
+                        </motion.a>
+                      );
+                    } else {
+                      return (
+                        <motion.button 
+                          key={i} 
+                          onClick={() => sendActionMessage(btn.text)}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ type: "spring", delay: 0.2 }}
+                          whileHover={{ scale: 1.01, boxShadow: "0px 0px 8px rgba(217,70,239,0.6)", borderColor: "rgba(217,70,239,0.7)", color: "#fdf4ff" }}
+                          whileTap={{ scale: 0.99 }}
+                          className="group relative flex items-center justify-center gap-3 w-full bg-[#05030a]/80 border-2 border-fuchsia-500/70 text-fuchsia-400 text-[10px] md:text-xs font-ui px-4 py-2.5 transition-all shadow-[4px_4px_0_rgba(217,70,239,0.5)] cursor-pointer"
+                        >
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-fuchsia-500 animate-pulse"></div>
+                          <span className="tracking-widest drop-shadow-[0_0_5px_rgba(217,70,239,0.8)]">
+                            {btn.text.toUpperCase()}
+                          </span>
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-fuchsia-500 animate-pulse"></div>
+                        </motion.button>
+                      );
+                    }
+                  })}
                 </div>
               )}
             </div>
