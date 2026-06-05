@@ -1192,6 +1192,7 @@ def api_send_message(request):
         if user_id_int > 0:
             try:
                 profile, _ = Profile.objects.get_or_create(telegram_id=user_id_int)
+                print(f"DEBUG MODERATION: telegram_id={user_id_int}, is_banned={profile.is_banned if profile else None}, is_offended={profile.is_offended if profile else None}", flush=True)
             except Exception as e:
                 print(f"Profile error: {e}")
 
