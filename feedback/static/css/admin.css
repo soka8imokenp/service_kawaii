@@ -2180,69 +2180,70 @@ textarea[name="admin_reply_field"]:focus {
 
    /* ==============================================================
    MOBILE REDESIGN (Premium Dark Glassmorphism & Pure Black)
-   Optimized for Django Admin Mobile View
+   Fixed & Optimized Version for Django Mobile Admin
    ============================================================== */
 
-/* 1. Глобальный сброс скроллбаров и плавность */
+/* 1. Глобальный сброс скроллбаров и тапов */
 ::-webkit-scrollbar {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
 }
-
 * {
-    -ms-overflow-style: none !important;  /* IE and Edge */
-    scrollbar-width: none !important;     /* Firefox */
-    -webkit-tap-highlight-color: transparent; /* Убираем синий сиквел при тапе на iOS */
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box !important;
 }
 
 /* 2. Базовые настройки страницы */
 html, body {
-    width: 100%;
-    min-height: 100dvh; /* Используем динамический viewport для мобильных */
+    width: 100% !important;
+    min-height: 100dvh !important;
     background-color: #000000 !important;
-    color: #f8fafc !important; /* slate-50 */
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+    color: #f8fafc !important;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    margin: 0;
-    padding: 0 0 100px 0 !important; /* Безопасный отступ под нижний навигатор */
-    overflow-x: hidden;
+    margin: 0 !important;
+    padding: 0 0 120px 0 !important; /* Отступ внизу экрана под таббар */
+    overflow-x: hidden !important;
 }
 
-*, *::before, *::after {
-    box-sizing: border-box;
-}
-
-/* 3. Исправление контейнеров Django Admin (Убрали деструктивный padding: 0) */
+/* 3. Жесткий сброс контейнеров Django (Чтобы контент не сжимался влево) */
 .saas-centered-wrapper, 
 .saas-container, 
 .saas-content, 
 .saas-panel-body,
 #container,
 #content, 
-#content-main {
-    display: block;
-    width: 100%;
-    margin: 0;
-    border: none;
-    box-shadow: none;
-    background: transparent;
-    overflow: visible;
+#content-main,
+#changelist,
+#changelist-form,
+.results {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    float: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
 }
 
-/* Системный контейнер Django */
+/* Создаем правильные боковые отступы для контента */
 #content {
-    padding: 16px 16px 24px 16px !important;
+    padding: 16px 20px !important;
 }
 
-/* 4. Премиальный Шапка (Header & Search) */
+/* 4. Шапка (Header & Search) */
 .saas-header {
-    padding: 16px 4px 0 4px !important;
-    margin-bottom: 20px !important;
+    padding: 0 !important;
+    margin-bottom: 24px !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 16px !important;
+    width: 100% !important;
 }
 
 .saas-header-right {
@@ -2252,9 +2253,7 @@ html, body {
     width: 100% !important;
 }
 
-.saas-clock, .saas-profile-avatar { 
-    display: none !important; 
-}
+.saas-clock, .saas-profile-avatar { display: none !important; }
 
 .saas-profile-widget {
     display: flex !important;
@@ -2266,158 +2265,238 @@ html, body {
     font-size: 18px !important;
     font-weight: 700 !important;
     color: #ffffff !important;
-    letter-spacing: -0.3px;
 }
 
 .saas-role {
     font-size: 12px !important;
-    color: #94a3b8 !important; /* slate-400 */
+    color: #94a3b8 !important;
     font-weight: 500 !important;
-    margin-top: 2px;
+    margin-top: 2px !important;
 }
 
-/* Современный инпут поиска */
+/* Поиск */
 .saas-search-container {
     width: 100% !important;
-    height: 46px !important;
+    height: 48px !important;
     background: rgba(255, 255, 255, 0.04) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 14px !important;
     position: relative !important;
-    transition: all 0.25s ease;
-}
-
-.saas-search-container:focus-within {
-    background: rgba(255, 255, 255, 0.07) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
 }
 
 .saas-search-input {
     width: 100% !important;
     height: 100% !important;
-    padding: 0 16px 0 42px !important;
-    font-size: 14px !important;
+    padding: 0 16px 0 44px !important;
+    font-size: 15px !important;
     background: transparent !important;
     border: none !important;
     color: #f8fafc !important;
     outline: none !important;
 }
 
-.saas-search-input::placeholder {
-    color: #64748b !important; /* slate-500 */
-}
+.saas-search-input::placeholder { color: #64748b !important; }
 
 .saas-search-icon {
     position: absolute !important;
-    left: 14px !important;
+    left: 16px !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
     color: #64748b !important;
-    font-size: 16px !important;
-    pointer-events: none !important;
+    font-size: 18px !important;
 }
 
-/* Typography */
-.saas-title-row {
-    margin-bottom: 16px !important;
-}
-
-.saas-title-row h1, .saas-page-title, #content > h1, #content-main > h1 {
+/* Заголовки */
+h1, .saas-page-title, #content > h1, #content-main > h1 {
     font-size: 22px !important;
     font-weight: 800 !important;
     color: #ffffff !important;
-    letter-spacing: -0.5px;
-    line-height: 1.25 !important;
-    margin: 0 0 8px 0 !important;
-}
-
-#content > p, #content-main > p, .form-row p {
-    font-size: 14px !important;
-    line-height: 1.5 !important;
-    color: #cbd5e1 !important; /* slate-300 */
+    line-height: 1.3 !important;
     margin: 0 0 16px 0 !important;
 }
 
-/* 5. Премиальный Bottom Navigation (iOS-style Solid Black Бар) */
-.saas-sidebar {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    top: auto !important;
+/* 5. Инструменты (Кнопка "Добавить / Arizako'shish") */
+.object-tools {
+    display: block !important;
     width: 100% !important;
-    height: 72px !important;
-    background-color: #050505 !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-    padding: 8px 16px calc(env(safe-area-inset-bottom, 12px)) 16px !important; /* Защита выреза iPhone */
-    z-index: 9999 !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-}
-
-.sidebar-brand { 
-    display: none !important; 
-}
-
-.sidebar-menu, .sidebar-footer {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-around !important;
-    align-items: center !important;
-    margin: 0 !important;
+    float: none !important;
+    margin: 0 0 16px 0 !important;
     padding: 0 !important;
-    flex: 1 !important;
+    list-style: none !important;
 }
 
-.sidebar-item, .sidebar-btn-logout {
+.object-tools li {
+    width: 100% !important;
+    display: block !important;
+    margin: 0 !important;
+}
+
+.object-tools a {
     display: flex !important;
-    flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    flex: 1 !important;
+    width: 100% !important;
     height: 48px !important;
-    background: transparent !important;
-    border: none !important;
+    border-radius: 14px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
     text-decoration: none !important;
-    color: #64748b !important; /* Приглушенный серый */
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
-.sidebar-item i, .sidebar-btn-logout i {
-    font-size: 22px !important;
-    margin-bottom: 3px !important;
+/* 6. Панель действий (Actions / Harakat) */
+.actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 16px !important;
+    background: rgba(18, 18, 24, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 16px !important;
+    margin: 0 0 20px 0 !important;
+    width: 100% !important;
+    float: none !important;
 }
 
-.sidebar-text {
-    font-size: 10px !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.2px;
+.actions label {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    font-size: 14px !important;
+    color: #94a3b8 !important;
+    width: 100% !important;
 }
 
-.sidebar-item:active {
-    transform: scale(0.92);
+.actions select {
+    display: block !important;
+    width: 100% !important;
+    height: 48px !important;
+    border-radius: 12px !important;
+    padding: 0 16px !important;
+    font-size: 15px !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #f8fafc !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23f8fafc'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: calc(100% - 16px) center !important;
+    background-size: 16px !important;
 }
 
-.sidebar-item.active {
-    color: #ffffff !important; /* Активный белый */
+.actions button.button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: none !important;
+    cursor: pointer !important;
 }
 
-.sidebar-item.active::before { 
-    display: none !important; 
+.actions > span, #changelist-search, #toolbar { display: none !important; }
+
+/* 7. Главная таблица данных в виде полноценных карточек (Changelist) */
+#changelist table {
+    display: block !important;
+    width: 100% !important;
+    border: none !important;
 }
 
-.sidebar-btn-logout {
-    color: #fda4af !important; /* Нежно-красный rose-300 */
+#changelist table thead { display: none !important; }
+
+#changelist table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    width: 100% !important;
 }
 
-/* 6. Сетка Карточек (Dashboard & Grid) */
+/* Карточка строки */
+#changelist table tbody tr {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    background: rgba(18, 18, 24, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 18px !important;
+    padding: 18px 20px !important;
+    position: relative !important;
+}
+
+#changelist table tbody tr.selected {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Чекбокс в верхнем правом углу */
+#changelist table tbody td.action-checkbox {
+    position: absolute !important;
+    top: 18px !important;
+    right: 20px !important;
+    width: 24px !important;
+    height: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#changelist table tbody td.action-checkbox input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px !important;
+    accent-color: #ffffff !important;
+    margin: 0 !important;
+}
+
+/* Заголовок (ID / Главная ссылка) внутри карточки */
+#changelist table tbody th {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 40px 10px 0 !important; /* Отступ справа, чтобы не перекрыть чекбокс */
+    margin-bottom: 10px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    text-align: left !important;
+}
+
+#changelist table tbody th a {
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+/* Остальные поля данных внутри карточки */
+#changelist table tbody td {
+    display: block !important;
+    width: 100% !important;
+    padding: 4px 0 !important;
+    font-size: 14px !important;
+    color: #94a3b8 !important;
+    text-align: left !important;
+    border: none !important;
+}
+
+/* 8. Dashboard Grid &Widgets (Первый скриншот) */
 .saas-grid {
     display: flex !important;
     flex-direction: column !important;
     gap: 16px !important;
+    width: 100% !important;
 }
 
 .saas-left-col, .saas-right-col {
@@ -2427,25 +2506,18 @@ html, body {
     width: 100% !important;
 }
 
-/* Стеклянные карточки (Glassmorphism) */
-.saas-widget, .saas-metric-card, .saas-db-card, .messagelist {
-    background: rgba(18, 18, 24, 0.5) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
+.saas-widget, .saas-metric-card, .saas-db-card {
+    background-color: rgba(18, 18, 24, 0.5) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 18px !important;
     width: 100% !important;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5) !important;
-    overflow: hidden;
 }
 
 .saas-widget-header {
     padding: 16px 20px !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 4px !important;
 }
 
 .saas-widget-header h3 {
@@ -2455,177 +2527,102 @@ html, body {
     margin: 0 !important;
 }
 
-.saas-widget-body {
-    padding: 16px 20px !important;
-}
+.saas-widget-body { padding: 20px !important; }
 
-/* Сетка метрик 50/50 */
+/* Метрики */
 .saas-metrics-row {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 12px !important;
-    margin-bottom: 16px;
+    width: 100% !important;
 }
 
-.saas-metric-card {
+.saas-metric-card { padding: 16px !important; }
+.saas-metric-title { font-size: 12px !important; font-weight: 600 !important; color: #94a3b8 !important; }
+.saas-metric-value { font-size: 26px !important; font-weight: 800 !important; margin: 4px 0 !important; color: #ffffff !important; }
+.saas-metric-subtext { font-size: 12px !important; color: #64748b !important; }
+
+/* Таблица виджетов */
+.saas-table { display: block !important; width: 100% !important; }
+.saas-table thead { display: none !important; }
+.saas-table tbody { display: flex !important; flex-direction: column !important; gap: 10px !important; width: 100% !important; }
+.saas-table tbody tr {
+    display: flex !important;
+    flex-direction: column !important;
     padding: 16px !important;
+    background-color: rgba(255, 255, 255, 0.02) !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
+.saas-table td { display: block !important; width: 100% !important; padding: 2px 0 !important; border: none !important; }
+.saas-subject { font-size: 14px !important; color: #cbd5e1 !important; margin-top: 4px !important; }
 
-.saas-metric-title {
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    color: #94a3b8 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.saas-metric-value {
-    font-size: 26px !important;
-    font-weight: 800 !important;
-    margin: 6px 0 !important;
-    color: #ffffff !important;
-    letter-spacing: -0.5px;
-}
-
-.saas-metric-subtext {
-    font-size: 12px !important;
-    color: #64748b !important;
-}
-
-/* 7. Адаптивные Таблицы -> Конвертация в Красивые Карточки */
-.saas-table, #changelist table {
-    display: block !important;
-    width: 100% !important;
-    background: transparent !important;
-}
-
-.saas-table thead, #changelist table thead { 
-    display: none !important; 
-}
-
-.saas-table tbody, #changelist table tbody {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    width: 100% !important;
-}
-
-/* Элемент списка (Раньше строка tr) */
-.saas-table tbody tr, #changelist table tbody tr {
-    display: flex !important;
-    flex-direction: column !important;
-    padding: 16px 20px !important;
-    background: rgba(255, 255, 255, 0.02) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
-    border-radius: 16px !important;
-    position: relative !important;
-    transition: border-color 0.2s ease;
-}
-
-#changelist table tbody tr.selected {
-    background-color: rgba(255, 255, 255, 0.04) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-/* Изящный чекбокс в верхнем правом углу карточки */
-#changelist table tbody td.action-checkbox {
-    position: absolute !important;
-    top: 18px !important;
-    right: 18px !important;
-    width: auto !important;
-    height: auto !important;
-    padding: 0 !important;
-    z-index: 10 !important;
-}
-
-#changelist table tbody td.action-checkbox input[type="checkbox"] {
-    width: 20px !important;
-    height: 20px !important;
-    accent-color: #ffffff !important;
-    cursor: pointer !important;
-    margin: 0 !important;
-}
-
-/* Заголовок карточки объекта */
-#changelist table tbody th {
-    display: block !important;
-    width: 100% !important;
-    padding: 0 40px 10px 0 !important; /* Защита от наложения на чекбокс */
-    margin: 0 0 8px 0 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-    text-align: left !important;
-}
-
-#changelist table tbody th a {
-    font-size: 16px !important;
-    font-weight: 700 !important;
-    color: #ffffff !important;
-    text-decoration: none !important;
-}
-
-/* Поля данных внутри карточки */
-.saas-table td, #changelist table tbody td {
-    display: flex !important;
-    justify-content: space-between;
-    align-items: center;
-    width: 100% !important;
-    padding: 6px 0 !important;
-    font-size: 14px !important;
-    color: #cbd5e1 !important;
-    border: none !important;
-}
-
-/* Скрываем ненужные пустые ячейки */
-.saas-table tbody tr td:nth-child(3) { 
-    display: none !important; 
-}
-
-/* Кнопки действий внутри карточек */
-.saas-action-link, .object-tools a, .actions button.button, .submit-row input, .submit-row a {
-    height: 46px !important;
+.saas-action-link {
+    height: 38px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border-radius: 12px !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    text-decoration: none !important;
-    transition: all 0.2s ease !important;
-    border: none !important;
-    width: 100% !important;
-}
-
-/* Кнопки Solid White (Главные экшены) */
-.saas-action-link, .object-tools a, .actions button.button, .submit-row input[type="submit"].default, .submit-row input[name="_save"] {
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    margin-top: 12px !important;
     background-color: #ffffff !important;
     color: #000000 !important;
+    width: auto !important;
+    padding: 0 16px !important;
 }
 
-.saas-action-link:active, .object-tools a:active, .actions button.button:active, .submit-row input:active {
-    transform: scale(0.98);
-    opacity: 0.9;
+/* 9. Нижний Таббар (iOS-style fixed Bottom Navigation) */
+.saas-sidebar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 76px !important;
+    background-color: #050505 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 6px 16px calc(env(safe-area-inset-bottom, 10px)) 16px !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
 }
 
-/* 8. Инструменты и Фильтры (Django Admin Tools) */
-.object-tools {
+.sidebar-menu, .sidebar-footer {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    flex: 1 !important;
+}
+
+.sidebar-item, .sidebar-btn-logout {
     display: flex !important;
     flex-direction: column !important;
-    padding: 0 !important;
-    margin: 0 0 16px 0 !important;
-    list-style: none !important;
-    gap: 10px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1 !important;
+    height: 50px !important;
+    background: transparent !important;
+    border: none !important;
+    color: #555562 !important;
+    text-decoration: none !important;
 }
 
-#changelist-search, #toolbar { 
-    display: none !important; 
-}
+.sidebar-item i, .sidebar-btn-logout i { font-size: 22px !important; margin-bottom: 2px !important; }
+.sidebar-text { font-size: 10px !important; font-weight: 600 !important; }
+.sidebar-item.active { color: #ffffff !important; }
+.sidebar-btn-logout { color: #f43f5e !important; }
+.sidebar-brand, .sidebar-item.active::before { display: none !important; }
 
-/* Премиальный блок фильтров (Горизонтальный скролл-пакет) */
+/* 10. Фильтры (Filter Package) */
 #changelist-filter {
-    background: rgba(18, 18, 24, 0.4) !important;
+    background-color: rgba(18, 18, 24, 0.5) !important;
     backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 16px !important;
     margin: 0 0 20px 0 !important;
     padding: 16px !important;
@@ -2634,25 +2631,23 @@ html, body {
 
 #changelist-filter h2 {
     font-size: 13px !important;
-    font-weight: 800 !important;
+    font-weight: 700 !important;
     color: #ffffff !important;
     margin: 0 0 12px 0 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.8px !important;
 }
 
 #changelist-filter h3 {
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    color: #64748b !important;
-    margin: 12px 0 8px 0 !important;
-    text-transform: uppercase !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #94a3b8 !important;
+    margin: 12px 0 6px 0 !important;
 }
 
 #changelist-filter ul {
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 6px !important;
+    gap: 8px !important;
     padding: 0 !important;
     margin: 0 !important;
     list-style: none !important;
@@ -2662,12 +2657,11 @@ html, body {
     display: inline-flex !important;
     align-items: center !important;
     height: 32px !important;
-    padding: 0 14px !important;
-    border-radius: 20px !important;
+    padding: 0 12px !important;
+    border-radius: 16px !important;
     font-size: 13px !important;
-    font-weight: 500 !important;
     background-color: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     color: #94a3b8 !important;
     text-decoration: none !important;
 }
@@ -2679,74 +2673,28 @@ html, body {
     font-weight: 700 !important;
 }
 
-/* Блок массовых действий (Actions) */
-.actions {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    padding: 16px !important;
-    background: rgba(18, 18, 24, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 16px !important;
-    margin-bottom: 20px !important;
-}
-
-.actions label {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 6px !important;
-    font-size: 13px !important;
-    color: #94a3b8 !important;
-}
-
-.actions select {
-    width: 100% !important;
-    height: 46px !important;
-    border-radius: 12px !important;
-    padding: 0 16px !important;
-    font-size: 14px !important;
-    background-color: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    color: #f8fafc !important;
-    outline: none !important;
-    appearance: none !important;
-    -webkit-appearance: none !important;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
-    background-repeat: no-repeat !important;
-    background-position: calc(100% - 16px) center !important;
-    background-size: 16px !important;
-}
-
-.actions select option {
-    background-color: #0a0a0c !important;
-    color: #f8fafc !important;
-}
-
-.actions > span { 
-    display: none !important; 
-}
-
-/* Пагинация */
+/* 11. Пагинация */
 .paginator {
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 6px !important;
+    gap: 8px !important;
     justify-content: center !important;
-    padding: 20px 0 !important;
+    padding: 24px 0 !important;
+    width: 100% !important;
 }
 
 .paginator a, .paginator span {
-    display: inline-flex !important;
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    min-width: 36px !important;
-    height: 36px !important;
-    padding: 0 8px !important;
+    min-width: 38px !important;
+    height: 38px !important;
+    padding: 0 10px !important;
     border-radius: 10px !important;
-    font-size: 13px !important;
+    font-size: 14px !important;
     background-color: rgba(255, 255, 255, 0.03) !important;
     color: #94a3b8 !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     text-decoration: none !important;
 }
 
@@ -2755,191 +2703,4 @@ html, body {
     color: #000000 !important;
     border-color: #ffffff !important;
     font-weight: 700 !important;
-}
-
-/* 9. Формы создания и редактирования (Add/Edit Forms) */
-fieldset.module {
-    background: rgba(18, 18, 24, 0.5) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 18px !important;
-    padding: 8px 16px !important;
-    margin: 0 0 20px 0 !important;
-}
-
-.form-row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    padding: 14px 0 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-    width: 100% !important;
-}
-
-.form-row:last-child {
-    border-bottom: none !important;
-}
-
-.form-row label {
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    color: #ffffff !important;
-}
-
-/* Современные текстовые инпуты */
-.form-row input[type="text"],
-.form-row input[type="password"],
-.form-row input[type="email"],
-.form-row input[type="number"],
-.form-row input[type="url"],
-.form-row textarea,
-.form-row select,
-.vTextField, .vLargeTextField, .vUUIDField {
-    width: 100% !important;
-    height: 46px !important;
-    border-radius: 12px !important;
-    padding: 0 16px !important;
-    font-size: 14px !important;
-    background-color: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    color: #f8fafc !important;
-    outline: none !important;
-    transition: all 0.2s ease;
-}
-
-.form-row input:focus, .form-row textarea:focus, .form-row select:focus {
-    border-color: rgba(255, 255, 255, 0.25) !important;
-    background-color: rgba(255, 255, 255, 0.05) !important;
-}
-
-.form-row textarea {
-    height: 120px !important;
-    padding: 12px 16px !important;
-    resize: vertical;
-}
-
-/* Чекбоксы в формах */
-.form-row .checkbox-row {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 12px !important;
-    padding: 6px 0;
-}
-
-.form-row .checkbox-row input[type="checkbox"] {
-    width: 22px !important;
-    height: 22px !important;
-    accent-color: #ffffff !important;
-}
-
-/* Текст подсказок (Help Text) */
-.form-row .help, .form-row p.help, .form-row .help-block, .help {
-    font-size: 12px !important;
-    color: #64748b !important;
-    margin: 4px 0 0 0 !important;
-    line-height: 1.4 !important;
-}
-
-/* Нижняя панель сохранения (Submit Row) */
-.submit-row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
-    padding: 16px !important;
-    background: rgba(10, 10, 12, 0.8) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 18px !important;
-    margin: 20px 0 !important;
-}
-
-/* Второстепенные кнопки (Save and continue, etc.) */
-.submit-row input[type="submit"]:not(.default):not([name="_save"]),
-.submit-row input[name="_addanother"],
-.submit-row input[name="_continue"] {
-    background-color: rgba(255, 255, 255, 0.04) !important;
-    color: #f8fafc !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
-
-.submit-row .deletelink-box {
-    width: 100% !important;
-    margin: 0 !important;
-}
-
-.submit-row a.deletelink {
-    background-color: rgba(244, 63, 94, 0.1) !important;
-    color: #f43f5e !important;
-    border: 1px solid rgba(244, 63, 94, 0.15) !important;
-}
-
-/* 10. Страница Авторизации (Login Page) */
-body.login {
-    padding: 16px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-height: 100dvh !important;
-    background-color: #000000 !important;
-}
-
-body.login #container {
-    width: 100% !important;
-    max-width: 360px !important;
-}
-
-body.login #content {
-    padding: 28px 24px !important;
-    border-radius: 24px !important;
-    background: rgba(18, 18, 24, 0.5) !important;
-    backdrop-filter: blur(30px) !important;
-    -webkit-backdrop-filter: blur(30px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
-}
-
-body.login #content input[type="text"],
-body.login #content input[type="password"] {
-    height: 48px !important;
-    background-color: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 12px !important;
-}
-
-body.login .submit-row {
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 20px 0 0 0 !important;
-}
-
-body.login .submit-row input[type="submit"] {
-    height: 48px !important;
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-}
-
-/* 11. Системные уведомления (Messages) */
-.messagelist {
-    margin: 0 0 16px 0 !important;
-    padding: 0 !important;
-    list-style: none;
-}
-
-.messagelist li {
-    padding: 14px 16px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-}
-
-.messagelist li:last-child {
-    border-bottom: none !important;
-}
-
-/* Декорации */
-.glowing-orb { 
-    display: none !important; 
 }
