@@ -151,55 +151,7 @@
     
 </div>
 
-<!-- Emergency system tables details section at the bottom -->
-<div class="saas-db-section" id="system-tables">
-    <details class="saas-db-details" id="saas-db-accordion">
-        <summary class="saas-db-summary">
-            <div class="saas-db-summary-inner">
-                <i data-lucide="database" style="width: 16px; height: 16px;"></i>
-                Tizim Sozlamalari (Barcha Jadvallar)
-            </div>
-            <i data-lucide="chevron-down" class="saas-db-arrow" style="width: 18px; height: 18px;"></i>
-        </summary>
-        
-        <div class="saas-db-body">
-            {% if app_list %}
-                <div class="saas-db-grid">
-                    {% for app in app_list %}
-                        <div class="saas-db-card">
-                            <h4>{{ app.name }}</h4>
-                            <table class="saas-db-card-table">
-                                <tbody>
-                                    {% for model in app.models %}
-                                        <tr>
-                                            <td>
-                                                {% if model.admin_url %}
-                                                    <a href="{{ model.admin_url }}">{{ model.name }}</a>
-                                                {% else %}
-                                                    <span style="color: #7e7e8f;">{{ model.name }}</span>
-                                                {% endif %}
-                                            </td>
-                                            <td class="actions-cell">
-                                                {% if model.add_url %}
-                                                    <a href="{{ model.add_url }}" class="add-link" title="Qo'shish"><i data-lucide="plus" style="width: 11px; height: 11px; display: inline; vertical-align: middle;"></i> Qo'shish</a>
-                                                {% endif %}
-                                                {% if model.changelist_url %}
-                                                    <a href="{{ model.changelist_url }}" class="change-link" title="O'zgartirish">O'zgartirish</a>
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p style="color: #7e7e8f; text-align: center; margin: 20px 0;">Sizda ushbu ma'lumotlarni ko'rishga ruxsat yo'q.</p>
-            {% endif %}
-        </div>
-    </details>
-</div>
+
 
 <!-- JavaScript to fetch AJAX Stats and Render Charts -->
 <script>
@@ -207,33 +159,7 @@
     let saasGaugeChart = null;
 
     document.addEventListener("DOMContentLoaded", function() {
-        // Toggle database accordion on sidebar click or hash trigger
-        const dbAccordion = document.getElementById('saas-db-accordion');
-        const dbTrigger = document.getElementById('sidebar-db-trigger');
-        
-        function openAndScrollToDb() {
-            if (dbAccordion) {
-                dbAccordion.open = true;
-                dbAccordion.scrollIntoView({ behavior: 'smooth' });
-                const summary = dbAccordion.querySelector('.saas-db-summary');
-                summary.style.background = 'rgba(139, 92, 246, 0.15)';
-                setTimeout(() => {
-                    summary.style.background = 'transparent';
-                }, 800);
-            }
-        }
 
-        if (dbTrigger) {
-            dbTrigger.addEventListener('click', function(e) {
-                e.preventDefault();
-                openAndScrollToDb();
-            });
-        }
-        
-        // Also check if url hash is #system-tables on load
-        if (window.location.hash === '#system-tables') {
-            openAndScrollToDb();
-        }
 
         // Live Clock is handled globally in base.html
 
