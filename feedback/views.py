@@ -1247,7 +1247,31 @@ def api_send_message(request):
         else:
             db_context_text = "Qidiruv so'rovi aniqlanmadi (suhbatga oid emas)."
 
-        command = _parse_ai_command(user_text, history_text, profile, db_context_text)
+        # Fail-safe local profanity check
+        profanity_detected = False
+        detected_words = []
+        text_lower = user_text.lower()
+        
+        rude_keywords = [
+            "daun", "gandon", "suka", "blyad", "tvar", "pidor", "ahmoq",
+            "jalab", "qotoq", "yiban", "lox", "lo'x", "dalbayob", "dalbaob",
+            "hezi", "haromi", "iflos"
+        ]
+        
+        for word in rude_keywords:
+            if re.search(rf"\b{word}\b", text_lower):
+                profanity_detected = True
+                detected_words.append(word)
+        
+        if profanity_detected:
+            command = {
+                "intent": "reject",
+                "reply": "Iltimos, bunday gapirma. Bu menga yoqmayapti.",
+                "emotion": "fuu",
+                "offensive_words": detected_words
+            }
+        else:
+            command = _parse_ai_command(user_text, history_text, profile, db_context_text)
         
         # Increment request count without resetting the existing key's TTL
         if user_requests > 0:
