@@ -2172,7 +2172,7 @@ textarea[name="admin_reply_field"]:focus {
    9. Mobile Responsive Adaptations (Mockup-inspired)
    ========================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     /* Centered Wrapper & Container layout resets */
     .saas-centered-wrapper {
         padding: 0 !important;
@@ -2331,7 +2331,68 @@ textarea[name="admin_reply_field"]:focus {
         margin: 8px 0 !important;
     }
 
-    /* Tables, Forms, and Changelists */
+    /* Dashboard tickets table transformed to cards list on mobile */
+    #saas-tickets-table thead {
+        display: none !important; /* Hide header */
+    }
+
+    #saas-tickets-table, 
+    #saas-tickets-table tbody, 
+    #saas-tickets-table tr, 
+    #saas-tickets-table td {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    #saas-tickets-table tr {
+        background: rgba(255, 255, 255, 0.015) !important;
+        border: 1px solid rgba(255, 255, 255, 0.04) !important;
+        border-radius: 16px !important;
+        padding: 16px !important;
+        margin-bottom: 14px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    #saas-tickets-table td {
+        padding: 0 !important;
+        border: none !important;
+        text-align: left !important;
+    }
+
+    #saas-tickets-table tr td:last-child {
+        display: flex !important;
+        justify-content: flex-end !important;
+        margin-top: 8px !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.03) !important;
+        padding-top: 10px !important;
+    }
+
+    /* Database card accordion tables stacking layout */
+    .saas-db-card-table tr {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+        padding: 12px 0 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    }
+
+    .saas-db-card-table td {
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+    }
+
+    .saas-db-card-table td.actions-cell {
+        display: flex !important;
+        gap: 10px !important;
+        justify-content: flex-start !important;
+    }
+
+    /* Changelists, Tables, and Forms */
     #changelist {
         flex-direction: column !important;
     }
@@ -2349,6 +2410,20 @@ textarea[name="admin_reply_field"]:focus {
         width: 100% !important;
         -webkit-overflow-scrolling: touch !important;
         border-radius: 12px !important;
+    }
+
+    /* Actions toolbar layout */
+    .actions {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        padding: 12px 16px !important;
+    }
+
+    .actions select, .actions button.button {
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     /* Form fields stacking on mobile */
