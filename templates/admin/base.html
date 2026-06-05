@@ -164,6 +164,10 @@
                             <i data-lucide="users" style="width: 20px; height: 20px;"></i>
                             <span class="sidebar-text">Profillar</span>
                         </a>
+                        <a href="/admin/feedback/wantedanime/" class="sidebar-item" id="nav-wanted" title="Kutilayotgan animelar">
+                            <i data-lucide="search" style="width: 20px; height: 20px;"></i>
+                            <span class="sidebar-text">Kutilayotganlar</span>
+                        </a>
                     </div>
                 </div>
                 
@@ -268,6 +272,9 @@
             if (navApps) navApps.classList.add('active');
         } else if (currentPath.includes('/admin/feedback/profile/')) {
             if (navProfiles) navProfiles.classList.add('active');
+        } else if (currentPath.includes('/admin/feedback/wantedanime/')) {
+            const navWanted = document.getElementById('nav-wanted');
+            if (navWanted) navWanted.classList.add('active');
         } else if (currentPath.includes('/admin/password_change/') || currentPath.includes('/admin/settings/')) {
             if (navSettings) navSettings.classList.add('active');
         } else {

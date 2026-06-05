@@ -955,6 +955,15 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             return _sumire_response("Arizani qabul qilishda texnik xatolik yuz berdi... *xo'rsinadi*", "canthelp")
 
     if intent == "chat":
+        if emotion == "canthelp":
+            q = command.get("search_query", "").strip()
+            if q:
+                record_wanted_anime(q)
+            else:
+                broad = _extract_broad_search_query(user_text, chat_history)
+                if broad:
+                    record_wanted_anime(broad)
+
         buttons = None
         if reply and any(k in reply.lower() for k in ["tashlab beraymi", "tashlaymi", "yuboraymi"]):
             buttons = [
