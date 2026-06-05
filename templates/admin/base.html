@@ -1,6 +1,6 @@
 {% load i18n static %}<!DOCTYPE html>
-{% get_current_language as LANGUAGE_CODE %}{% get_current_language_direction as LANGUAGE_DIRECTIONS %}
-<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_DIRECTIONS }}">
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
 <title>{% block title %}{% endblock %}</title>
 <meta charset="utf-8">
@@ -13,7 +13,7 @@
 
 <link rel="stylesheet" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
 {% block extrastyle %}{% endblock %}
-{% if LANGUAGE_DIRECTIONS == 'rtl' %}
+{% if LANGUAGE_BIDI %}
 <link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">
 {% endif %}
 
