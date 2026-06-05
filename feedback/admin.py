@@ -118,9 +118,9 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("id", "telegram_id", "favorite_genres")
+    list_display = ("id", "telegram_id", "updated_at", "favorite_genres")
     search_fields = ("telegram_id", "favorite_genres")
-    readonly_fields = ("id", "telegram_id", "favorite_genres", "chat_history_bubbles")
+    readonly_fields = ("id", "telegram_id", "favorite_genres", "chat_history_bubbles", "updated_at")
     exclude = ("chat_history", "user")
 
     def chat_history_bubbles(self, obj):

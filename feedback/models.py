@@ -14,10 +14,13 @@ class Profile(models.Model):
     # Сюда Сумире автоматически сохраняет жанры, которые нравятся человеку
     favorite_genres = models.CharField(max_length=255, blank=True, null=True, verbose_name="Sevimli janrlar (Xotira)")
     chat_history = models.JSONField(default=list, blank=True, verbose_name="Suhbat tarixi")
+    
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Oxirgi faollik", null=True, blank=True)
 
     class Meta:
         verbose_name = "Profil"
         verbose_name_plural = "Profillar"
+        ordering = ['-updated_at']
 
     def __str__(self):
         if self.user:
