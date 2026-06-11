@@ -552,11 +552,13 @@ def _route_without_ai(user_text):
     text_lower = user_text.lower().strip()
     if not text_lower:
         return _sumire_response("Iltimos, matn kiriting.", "what", status=400)
-        
-
-
-
-
+    # Check if searching by year (funny/cool response)
+    query_year = _extract_year_from_text(user_text)
+    if query_year is not None:
+        return _sumire_response(
+            "Mening kompyuterim yillar bo'yicha qidirishga sozlanmagan. Menga ortiqcha ish orttirmay, yaxshisi animening nomi yoki janri bo'yicha qidir.",
+            "canthelp"
+        )
     if _is_greeting(text_lower):
         return _sumire_response("Salom. Qanday yordam kerak?", "talking")
     if _contains_any(text_lower, THANKS_WORDS):
@@ -879,20 +881,8 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Clean up Uzbek dative pronouns "manga/menga/sanga" if any got into the search query
         query = re.sub(r'\b(manga|menga|sanga)\b', '', query, flags=re.IGNORECASE).strip()
         
-        # Extract year
-        query_year = _extract_year_from_text(user_text)
-        if query_year is None:
-            query_year = _extract_year_from_text(query)
-            
-        if query_year:
-            query = re.sub(rf'\b{query_year}\b', '', query, flags=re.IGNORECASE).strip()
-            query = re.sub(r'\b(yilgi|yil|yildagi)\b', '', query, flags=re.IGNORECASE).strip()
-            
-        if not query_year and (not query or query.lower() in ["yo'q", "yoq", "none", "null"]):
+        if not query or query.lower() in ["yo'q", "yoq", "none", "null"]:
             return _sumire_response("Aniq qaysi animeni yoki janrni qidiryapsiz?", "what")
-            
-        if not query:
-            query = ""
             
         anime_type = command.get("anime_type", "")
         limit = min(max(_safe_int(command.get("limit"), 3), 1), 10)
@@ -1057,59 +1047,12 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Apply custom word-overlap matching to filter out fallback/irrelevant results
         filtered_results = _filter_search_results_by_query(query, results)
         
-        if query_year:
-            year_filtered = []
-            for r in filtered_results:
-                try:
-                    r_year = int(r.get("year", 0))
-                except (ValueError, TypeError):
-                    r_year = 0
-                if r_year == query_year:
-                    is_generic = False
-                    q_clean_lower = query.lower().strip()
-                    genres = ["sevgi", "romantika", "jangari", "sarguzasht", "fantastika", "komediya", "drama", "triller", "dahshat", "sport", "maktab", "kino", "film", "serial", ""]
-                    if q_clean_lower in genres:
-                        is_generic = True
-                    if is_generic:
-                        t_title = r.get("title", "")
-                        s_num = _extract_season_number(t_title)
-                        has_final_title = any(k in t_title.lower() for k in ["final", "nihoya", "yakun", "oxirgi"])
-                        if (s_num is None or s_num == 1) and not has_final_title:
-                            year_filtered.append(r)
-                    else:
-                        year_filtered.append(r)
-            filtered_results = year_filtered
-        
         # FALLBACK: If nothing was found with the specific anime_type filter (e.g. "film"), retry without the type filter
         if not filtered_results and anime_type:
             results_any = search_manga_database(query, limit=50, offset=0, anime_type="", exclude_keywords=exclude_keywords)
             filtered_results = _filter_search_results_by_query(query, results_any)
-            if query_year:
-                year_filtered = []
-                for r in filtered_results:
-                    try:
-                        r_year = int(r.get("year", 0))
-                    except (ValueError, TypeError):
-                        r_year = 0
-                    if r_year == query_year:
-                        is_generic = False
-                        q_clean_lower = query.lower().strip()
-                        genres = ["sevgi", "romantika", "jangari", "sarguzasht", "fantastika", "komediya", "drama", "triller", "dahshat", "sport", "maktab", "kino", "film", "serial", ""]
-                        if q_clean_lower in genres:
-                            is_generic = True
-                        if is_generic:
-                            t_title = r.get("title", "")
-                            s_num = _extract_season_number(t_title)
-                            has_final_title = any(k in t_title.lower() for k in ["final", "nihoya", "yakun", "oxirgi"])
-                            if (s_num is None or s_num == 1) and not has_final_title:
-                                year_filtered.append(r)
-                        else:
-                            year_filtered.append(r)
-                filtered_results = year_filtered
             
         if not filtered_results:
-            if query_year:
-                return _sumire_response(f"Kechirasiz, {query_year}-yilda boshlangan bunday anime bizning arxivimizda topilmadi.", "canthelp")
             record_wanted_anime(query)
             
         # Paginate manually if offset/limit are specified (unless we are showing all unique seasons)
