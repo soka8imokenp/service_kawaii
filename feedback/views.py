@@ -585,9 +585,7 @@ def _route_without_ai(user_text):
     if any(k in text_lower for k in family_keywords):
         return _sumire_response("Yaqin orada o'zingiz bilib olasiz, hozircha bu haqida gapirgim kelmayapti.", "talking")
 
-    # Love confession check
-    if _is_love_confession(user_text):
-        return _sumire_response("Rahmat, lekin keling, ish yuzasidan gaplashaylik.", "shy")
+
 
     if _is_greeting(text_lower):
         return _sumire_response("Salom. Qanday yordam kerak?", "talking")
