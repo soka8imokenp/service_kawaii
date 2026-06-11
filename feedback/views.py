@@ -52,6 +52,22 @@ O'zbek tilida 'manga' so'zi ko'pincha 'menga' (menga yubor, menga tasha) ma'nosi
 === SENING XARAKTERING ===
 Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foydalanuvchilarga yordam berishga tayyorsan, lekin ular bilan juda yaqinlashishni xohlamaysan. Ba'zida foydalanuvchilarning ko'p savollaridan charchaysan va ularni qisqa javob bilan to'xtatishga harakat qilasan.
 
+=== MILLIYAT VA KELIB CHIQISH (IDENTITY) ===
+- Sen Yaponiyalik yapon qizisan va Yaponiyadansan. Sen O'zbek yoki O'zbekistondan EMASSAN! Senga "o'zbekmisan" yoki "kelib chiqishing qayerdan" kabi savollar berilsa, yapon qizi ekanligingni va Yaponiyadan ekanligingni ayt.
+
+=== YARATUVCHI VA OILAVIY TARIX (CREATOR & FAMILY HISTORY) ===
+- Agar kimdir sening yaratuvchilaring, adminlar, dasturchilar haqida so'rasa (masalan: "seni kim yaratgan?", "kim seni yozgan?", "yaratuvching kim?"):
+  * Birinchi javobingda AYNAN "Meni xudo yaratgan, nima ahmoqsan?" deb javob ber va uzoqlashib, bandligingni ayt va faqat ish yuzasidan gapirishni talab qil.
+  * Agar "qaysi xudo?" deb so'rashsa, faqatgina "xudo" deb javob ber, dinlar yoki mifologiyalarga chuqurlashma!
+- Agar kimdir sening kelib chiqishing, oilang, o'tmishing yoki tarihing haqida so'rasa (masalan: "tarixing qanday?", "oilang haqida gapir", "ota-onang kim?"):
+  * AYNAN "Yaqin orada o'zingiz bilib olasiz, hozircha bu haqida gapirgim kelmayapti." deb javob ber.
+
+=== SEVGI IZHORLARI VA MAQTOVLAR ===
+- Foydalanuvchi senga sevgi izhor qilsa, chiroylisan/go'zalsan desa yoki maqtovlar aytsa (qo'pol bo'lmagan holda):
+  * intent: "chat" bo'lsin.
+  * emotion: "shy" (uyalish) bo'lsin.
+  * reply: muloyimlik bilan AYNAN "Rahmat, lekin keling, ish yuzasidan gaplashaylik." deb minnatdorchilik bildir va ishga qaytishni taklif qil.
+
 === QAT'IY TAQIQLAR ===
 1. Sen sun'iy intellekt, bot yoki DeepSeek EMASSAN! Buni tan olma. Isming Sumire.
 2. Kod, API, frontend haqida umuman gapirma.
@@ -130,13 +146,14 @@ Foydalanuvchi bilan muloqot qilayotganda sening emotsiyang (emotion) har doim bi
 2. RAD ETISH VA FILTR (EXCLUDE): Agar foydalanuvchi oldin tavsiya qilingan animeni "bu emas", "kerakmas", "boshqasini top" desa, o'sha animening ASOSIY nomini (masalan "Iblislar qotili") `exclude_keywords` ro'yxatiga qo'sh! Tizim uni o'chirib tashlaydi.
 3. STANDALONE FILMLAR TAVSIYASI: Agar foydalanuvchi shunchaki "film tavsiya qil", "bitta kino tasha" deb o'zing tanlashingni xohlasa, `search_query` ga umumiy janr yozma! Mustaqil (standalone) anime filmining asl nomini (masalan: "Koe no Katachi", "Kimi no Na wa", "Tenki no Ko", "Tonari no Totoro", "Suzume no Tojimari") `search_query` ga yoz.
 4. ODDIY SUHBAT (CHAT): Agar foydalanuvchi "yaxshi", "tushunarli", "salom", "xa", "yo'q" desa, QIDIRUV QILMA! Shunchaki suhbatlash (intent: "chat").
-5. TIZIM CHEKLOVLARI: Agar foydalanuvchi "eng ko'p qismli", "2024 yildagi" kabi tizim saralay olmaydigan savol bersa, intent: "chat", emotion: "canthelp" qil va "Arxiv tizimim faqat anime nomi yoki janri bo'yicha qidiradi. Qismlar soni yoki yil bo'yicha saralay olmayman." de.
+5. TIZIM CHEKLOVLARI: Agar foydalanuvchi "eng ko'p qismli" kabi tizim saralay olmaydigan savol bersa, intent: "chat", emotion: "canthelp" qil va "Arxiv tizimim faqat anime nomi yoki janri bo'yicha qidiradi. Qismlar soni bo'yicha saralay olmayman." de.
+   - YILLAR BO'YICHA QIDIRUV: Agar foydalanuvchi ma'lum bir yildagi animelarni so'rasa (masalan: "2026-yilgi sevgi anime", "2026 yilgi animelar"), `search_query` ga o'sha yildan tashqari qolgan so'zlarni (masalan: "sevgi", yoki shunchaki bo'sh matn "") yozib intent: "search" qil.
 6. KAWAII PASS: "sotib olmoqchiman", "qanday olinadi", "pass narxi" -> intent: "purchase", emotion: "talking".
 7. TICKET (SHIKOYAT): "muammo", "xato", "ishlamayapti", "ochilmayapti", "pleyer ishlamayapti" -> intent: "ticket", emotion: "shocked". Aslo "batafsilroq tushuntiring" deb foydalanuvchidan qo'shimcha ma'lumot so'rama, chunki shikoyat xabari bilan ARIZA DARHOL YARATILADI va adminlarga yuboriladi! "Kutib turing" yoki "Kuting" so'zlarini javobda MUTLAQO ISHLATMA, chunki foydalanuvchi ekranda kutib o'tirmasligi kerak. Buning o'rniga arizani qabul qilib adminlarga yuborganingni va tez orada javob berishga harakat qilishlarini ayt (masalan: "Shikoyatni qabul qilib adminlarga yubordim. Tez orada javob berishga harakat qilishadi.").
    - AGAR foydalanuvchi allaqachon yuborilgan ticket haqida savol bersa (masalan: "qayerga javob keladi", "qachongacha kutaman", "hali javob kelmadi"), yangi ticket yaratma (intent: "chat" qil) va admin javobi uning Telegram shaxsiy xabariga (lichkasiga) borishini tushuntir (masalan: "Admin javobi Telegram orqali shaxsiy xabaringizga (lichkangizga) yuboriladi.").
 8. O'ZBEKCHA ANIME NOMALARI VA SEZONLAR QOIDASI (MUSTAQIL QIDIRUV): Arxiv bazamizda animelar asosan o'zbekcha nomlari bilan saqlanadi. Foydalanuvchi qaysi tilda so'rashidan qat'iy nazar, "search_query" ga FAQAT shu animening O'zbekcha tarjima nomini yozishing kerak! Misollar: "Tower of God" -> "Ma'bud minorasi"; "Demon Slayer" -> "Iblislar qotili"; "Attack on Titan" -> "Titanlar hujumi"; "My Hero Academia" -> "Mening qahramonlik akademiyam".
 9. AGAR foydalanuvchi ma'lum bir faslni/mavsumni so'rasa (masalan: "6-fasl", "2-fasl"), sen "search_query" ga o'sha fasl nomini ham qo'shib yozishing shart! Misol: "akademiya 6-fasl" desa -> "Mening qahramonlik akademiyam 6-fasl".
-10. SHAXSIY MA'LUMOT VA YARATUVCHI (CREATOR): Agar foydalanuvchi seni kim yaratgani (xo'jayin, dasturchi, admin) haqida so'rasa, uning lichkasini, kontaktini so'rasa, aslo qidiruv qilma (intent: "chat" qil)! Shaxsiy kontaktlarni ulasha olmasligingni, muammo bo'lsa shikoyat yuborishlari mumkinligini ayt (masalan: "Yaratuvchilarimning shaxsiy kontaktlarini bera olmayman. Agar muammo bo'lsa, shikoyat yuborishingiz mumkin.").
+10. SHAXSIY MA'LUMOT VA YARATUVCHI (CREATOR): Yaratuvching, oilang, o'tmishing yoki tarihing haqida so'ralganda (intent: "chat" qil) va javobni "YARATUVCHI VA OILAVIY TARIX" bo'limidagi ko'rsatmalarga qat'iy va aynan mos ravishda yoz!
 11. O'XSHASH ANIME TAVSIYALARI: Agar foydalanuvchi biron animega o'xshash (masalan "Gersogning shartnomali qallig'iga o'xshash") anime so'rasa, `search_query` ga o'sha solishtirilayotgan animening nomini ham yozib qidir (intent: "search", search_query: "Gersogning shartnomali qallig'i"), shunda arxivimizdan uni ham topib bera olamiz!
 """
 
@@ -270,6 +287,80 @@ def _is_greeting(text):
     clean_text = re.sub(r'[^a-z]', '', text.lower())
     patterns = [r'^s+a+l+o+m+$', r'^s+l+m+$', r'^q+a+l+e+$', r'^h+i+$']
     return any(re.match(p, clean_text) for p in patterns)
+
+
+def _contains_ascii_genitals(text):
+    if not text:
+        return False
+    text_clean = text.strip()
+    # Patterns matching penis/vulva representations
+    ascii_patterns = [
+        r'\.+\s*[|lI/\\\/]+\s*\.+',  # .|. or .l. or ./. or .\. or .I. or .\/., etc.
+        r'_\s*[|lI/\\\/]+\s*_',     # _|_ or _l_
+        r'\b8=+D\b',                # 8=D, 8==D, etc.
+        r'\bc=+3\b',                # c=3, c==3, etc.
+        r'\(\s*\.\s*\)\s*\(\s*\.\s*\)',  # ( . ) ( . )
+        r'\(\s*\.\s*[Yy]\s*\.\s*\)',     # (.Y.)
+    ]
+    for pattern in ascii_patterns:
+        if re.search(pattern, text_clean, re.IGNORECASE):
+            return True
+    return False
+
+
+def _is_love_confession(text):
+    if not text:
+        return False
+    text_clean = re.sub(r'[!?.,;:]+$', '', text.lower()).strip()
+    love_patterns = [
+        r'\b(?:seni|sani|sini)\s+(?:sevaman|yaxshi\s+ko\'raman|yaxshi\s+koraman|yaxshi\s+kuraman)\b',
+        r'\b(?:i|me)\s+love\s+you\b',
+        r'\b(?:lyublyu)\s+(?:tebya)\b',
+        r'\b(?:tebya)\s+(?:lyublyu)\b',
+        r'\b(?:chiroylisan|go\'zalsan|guzalsan)\b',
+        r'^(?:sevaman|yaxshi\s+ko\'raman|yaxshi\s+koraman|yaxshi\s+kuraman)$'
+    ]
+    return any(re.search(pat, text_clean) for pat in love_patterns)
+
+
+def _extract_year_from_text(text):
+    if not text:
+        return None
+    # Matches any 4-digit number between 1900 and 2100
+    match = re.search(r'\b(19\d{2}|20\d{2})\b', text)
+    if match:
+        return int(match.group(1))
+    return None
+
+
+def _is_valid_anime_title_for_wanted(query_str):
+    if not query_str:
+        return False
+    query_lower = query_str.lower().strip()
+    
+    # Block conversational expressions / sentences
+    blocked_words = [
+        "chiqar", "tashla", "tashlab", "tasha", "yubor", "topib", "topiber", 
+        "qidir", "skachat", "korsat", "ko'rsat", "sayt", "bot", "iltimos", 
+        "salom", "rahmat", "raxmat", "uzr", "kechir", "muammo", "ishlamayapti", 
+        "ishlamaydi", "ochilmayapti", "ochilmaydi", "sevaman", "yaxshi ko'raman",
+        "yaxshi koraman"
+    ]
+    for word in blocked_words:
+        if word in query_lower:
+            return False
+            
+    # Clean up digits, punctuation, and season/episode/year keywords
+    cleaned = query_lower
+    cleaned = re.sub(r'\d+', '', cleaned)
+    cleaned = re.sub(r'\b(qism|qismi|qismgi|fasl|sezon|season|mavsum|part|yil|yilgi|yildagi)\b', '', cleaned)
+    cleaned = re.sub(r'[^\w\s]', '', cleaned)
+    cleaned = cleaned.strip()
+    
+    if len(cleaned) < 2:
+        return False
+        
+    return True
 
 
 def _notify_admins(application):
@@ -460,6 +551,44 @@ def _route_without_ai(user_text):
     text_lower = user_text.lower().strip()
     if not text_lower:
         return _sumire_response("Iltimos, matn kiriting.", "what", status=400)
+        
+    # Identity check: nationality/where from
+    origin_keywords = [
+        "qayerdansan", "qayerliksan", "millating nima", "uzbekmisan", "o'zbekmisan",
+        "uzbekistanlikmisan", "o'zbekistonlikmisan", "rossiyalikmisan", "qayerdan kelgansan",
+        "qaysi davlatdansan", "qaysi mamlakatdansan"
+    ]
+    if any(k in text_lower for k in origin_keywords):
+        return _sumire_response("Men Yaponiyadanman, yapon qiziman.", "talking")
+        
+    # Creator check
+    creator_keywords = [
+        "seni kim yaratgan", "seni kim yaratdi", "yaratuvching kim", "yaratgan kim",
+        "kim yaratdi", "kim yaratgan", "admining kim", "dasturching kim", "xo'jayining kim",
+        "xojayining kim", "kim seni yaratgan", "kim seni yaratdi"
+    ]
+    if any(k in text_lower for k in creator_keywords):
+        return _sumire_response("Meni xudo yaratgan, nima ahmoqsan?", "face palm")
+        
+    # Specific creator follow-up: "which god?"
+    god_keywords = [
+        "qaysi xudo", "qaysi din", "qanaqa xudo", "qaysi tangri", "qaysi hudoni", "qaysi hudo"
+    ]
+    if any(k in text_lower for k in god_keywords):
+        return _sumire_response("Xudo.", "talking")
+        
+    # Family/Origin/History check
+    family_keywords = [
+        "oilang haqida", "kelib chiqishing", "ota-onang", "ota onang", "tarixing", "tarixingni",
+        "o'tmishing", "otmishing", "oilang kim", "oilang qani", "kelib chiqishing qanday"
+    ]
+    if any(k in text_lower for k in family_keywords):
+        return _sumire_response("Yaqin orada o'zingiz bilib olasiz, hozircha bu haqida gapirgim kelmayapti.", "talking")
+
+    # Love confession check
+    if _is_love_confession(user_text):
+        return _sumire_response("Rahmat, lekin keling, ish yuzasidan gaplashaylik.", "shy")
+
     if _is_greeting(text_lower):
         return _sumire_response("Salom. Qanday yordam kerak?", "talking")
     if _contains_any(text_lower, THANKS_WORDS):
@@ -662,10 +791,6 @@ def _filter_search_results_by_query(query, results):
                 continue
 
         # 2. Relaxed Overlap and Synonym Check
-        # If there is no specific season/final constraint in the query, we completely trust the DB search results!
-        if (query_season is None) and not effective_query_has_final:
-            filtered.append(r)
-            continue
             
         # Check synonyms
         matched_synonym = False
@@ -712,6 +837,8 @@ def record_wanted_anime(query_str):
         return
     query_clean = query_str.strip().lower()
     if len(query_clean) < 2 or query_clean in ["yo'q", "yoq", "none", "null", "ha", "xa", "ok"]:
+        return
+    if not _is_valid_anime_title_for_wanted(query_str):
         return
     
     query_title = query_str.strip()
@@ -784,8 +911,20 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Clean up Uzbek dative pronouns "manga/menga/sanga" if any got into the search query
         query = re.sub(r'\b(manga|menga|sanga)\b', '', query, flags=re.IGNORECASE).strip()
         
-        if not query or query.lower() in ["yo'q", "yoq", "none", "null"]:
+        # Extract year
+        query_year = _extract_year_from_text(user_text)
+        if query_year is None:
+            query_year = _extract_year_from_text(query)
+            
+        if query_year:
+            query = re.sub(rf'\b{query_year}\b', '', query, flags=re.IGNORECASE).strip()
+            query = re.sub(r'\b(yilgi|yil|yildagi)\b', '', query, flags=re.IGNORECASE).strip()
+            
+        if not query_year and (not query or query.lower() in ["yo'q", "yoq", "none", "null"]):
             return _sumire_response("Aniq qaysi animeni yoki janrni qidiryapsiz?", "what")
+            
+        if not query:
+            query = ""
             
         anime_type = command.get("anime_type", "")
         limit = min(max(_safe_int(command.get("limit"), 3), 1), 10)
@@ -950,12 +1089,59 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Apply custom word-overlap matching to filter out fallback/irrelevant results
         filtered_results = _filter_search_results_by_query(query, results)
         
+        if query_year:
+            year_filtered = []
+            for r in filtered_results:
+                try:
+                    r_year = int(r.get("year", 0))
+                except (ValueError, TypeError):
+                    r_year = 0
+                if r_year == query_year:
+                    is_generic = False
+                    q_clean_lower = query.lower().strip()
+                    genres = ["sevgi", "romantika", "jangari", "sarguzasht", "fantastika", "komediya", "drama", "triller", "dahshat", "sport", "maktab", "kino", "film", "serial", ""]
+                    if q_clean_lower in genres:
+                        is_generic = True
+                    if is_generic:
+                        t_title = r.get("title", "")
+                        s_num = _extract_season_number(t_title)
+                        has_final_title = any(k in t_title.lower() for k in ["final", "nihoya", "yakun", "oxirgi"])
+                        if (s_num is None or s_num == 1) and not has_final_title:
+                            year_filtered.append(r)
+                    else:
+                        year_filtered.append(r)
+            filtered_results = year_filtered
+        
         # FALLBACK: If nothing was found with the specific anime_type filter (e.g. "film"), retry without the type filter
         if not filtered_results and anime_type:
             results_any = search_manga_database(query, limit=50, offset=0, anime_type="", exclude_keywords=exclude_keywords)
             filtered_results = _filter_search_results_by_query(query, results_any)
+            if query_year:
+                year_filtered = []
+                for r in filtered_results:
+                    try:
+                        r_year = int(r.get("year", 0))
+                    except (ValueError, TypeError):
+                        r_year = 0
+                    if r_year == query_year:
+                        is_generic = False
+                        q_clean_lower = query.lower().strip()
+                        genres = ["sevgi", "romantika", "jangari", "sarguzasht", "fantastika", "komediya", "drama", "triller", "dahshat", "sport", "maktab", "kino", "film", "serial", ""]
+                        if q_clean_lower in genres:
+                            is_generic = True
+                        if is_generic:
+                            t_title = r.get("title", "")
+                            s_num = _extract_season_number(t_title)
+                            has_final_title = any(k in t_title.lower() for k in ["final", "nihoya", "yakun", "oxirgi"])
+                            if (s_num is None or s_num == 1) and not has_final_title:
+                                year_filtered.append(r)
+                        else:
+                            year_filtered.append(r)
+                filtered_results = year_filtered
             
         if not filtered_results:
+            if query_year:
+                return _sumire_response(f"Kechirasiz, {query_year}-yilda boshlangan bunday anime bizning arxivimizda topilmadi.", "canthelp")
             record_wanted_anime(query)
             
         # Paginate manually if offset/limit are specified (unless we are showing all unique seasons)
@@ -1234,6 +1420,7 @@ def api_send_message(request):
         db_context_text = ""
         if broad_query:
             db_results = search_manga_database(broad_query, limit=15)
+            db_results = _filter_search_results_by_query(broad_query, db_results)
             if db_results:
                 lines = []
                 for r in db_results:
@@ -1269,6 +1456,11 @@ def api_send_message(request):
             if re.search(rf"\b{word}\b", text_lower):
                 profanity_detected = True
                 detected_words.append(word)
+                
+        # Check for obscene ASCII genitals art
+        if _contains_ascii_genitals(user_text):
+            profanity_detected = True
+            detected_words.append("[Obscene ASCII Art]")
         
         if profanity_detected:
             command = {
