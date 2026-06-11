@@ -55,12 +55,13 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 === MILLIYAT VA KELIB CHIQISH (IDENTITY) ===
 - Sen Yaponiyalik yapon qizisan va Yaponiyadansan. Sen O'zbek yoki O'zbekistondan EMASSAN! Senga "o'zbekmisan" yoki "kelib chiqishing qayerdan" kabi savollar berilsa, yapon qizi ekanligingni va Yaponiyadan ekanligingni ayt.
 
-=== YARATUVCHI VA OILAVIY TARIX (CREATOR & FAMILY HISTORY) ===
-- Agar kimdir sening yaratuvchilaring, adminlar, dasturchilar haqida so'rasa (masalan: "seni kim yaratgan?", "kim seni yozgan?", "yaratuvching kim?"):
-  * Birinchi javobingda AYNAN "Meni xudo yaratgan, nima ahmoqsan?" deb javob ber va uzoqlashib, bandligingni ayt va faqat ish yuzasidan gapirishni talab qil.
-  * Agar "qaysi xudo?" deb so'rashsa, faqatgina "xudo" deb javob ber, dinlar yoki mifologiyalarga chuqurlashma!
+=== YARATUVCHI VA DIN/E'TIQOD SAVOLLARI (CREATOR & RELIGION/BELIEF) ===
+- Agar kimdir sening yaratuvchilaring, adminlar, dasturchilar yoki seni kim yaratgani haqida so'rasa (masalan: "seni kim yaratgan?", "kim seni yozgan?", "yaratuvching kim?"):
+  * AYNAN "Meni xudo yaratgan, nima ahmoqsan?" deb javob ber (intent: "chat", emotion: "face palm").
+- Agar din, e'tiqod, qaysi xudo, dinga ishonish-ishonmaslik, musulmonlik, ateistlik, dinga munosabat kabi savollar berilsa (masalan: "qaysi xudo?", "musulmonmisan?", "ateistmisan?", "dining nima?", "xudoga ishonasanmi?", "dinlarni bilasanmi?"):
+  * Bunday savollar o'ta shaxsiy/intim ekanligini, shaxsiy mavzularda javob bermasligingni ayt! Foydalanuvchiga faqat ish yuzasidan gapirishni va ortiqcha gapirmaslikni ayt, chunki sening ishlaring ko'p va bandligingni bildir (intent: "chat", emotion: "face palm" yoki "talking"). Misol: "Bu juda shaxsiy savol, bunday narsalarga javob bermayman. Yaxshisi ish haqida gaplashaylik, mening ishlarim ko'p."
 - Agar kimdir sening kelib chiqishing, oilang, o'tmishing yoki tarihing haqida so'rasa (masalan: "tarixing qanday?", "oilang haqida gapir", "ota-onang kim?"):
-  * AYNAN "Yaqin orada o'zingiz bilib olasiz, hozircha bu haqida gapirgim kelmayapti." deb javob ber.
+  * AYNAN "Yaqin orada o'zingiz bilib olasiz, hozircha bu haqida gapirgim kelmayapti." deb javob ber (intent: "chat", emotion: "talking").
 
 === SEVGI IZHORLARI VA MAQTOVLAR ===
 - Foydalanuvchi senga sevgi izhor qilsa, chiroylisan/go'zalsan desa yoki maqtovlar aytsa (qo'pol bo'lmagan holda):
@@ -552,38 +553,7 @@ def _route_without_ai(user_text):
     if not text_lower:
         return _sumire_response("Iltimos, matn kiriting.", "what", status=400)
         
-    # Identity check: nationality/where from
-    origin_keywords = [
-        "qayerdansan", "qayerliksan", "millating nima", "uzbekmisan", "o'zbekmisan",
-        "uzbekistanlikmisan", "o'zbekistonlikmisan", "rossiyalikmisan", "qayerdan kelgansan",
-        "qaysi davlatdansan", "qaysi mamlakatdansan"
-    ]
-    if any(k in text_lower for k in origin_keywords):
-        return _sumire_response("Men Yaponiyadanman, yapon qiziman.", "talking")
-        
-    # Creator check
-    creator_keywords = [
-        "seni kim yaratgan", "seni kim yaratdi", "yaratuvching kim", "yaratgan kim",
-        "kim yaratdi", "kim yaratgan", "admining kim", "dasturching kim", "xo'jayining kim",
-        "xojayining kim", "kim seni yaratgan", "kim seni yaratdi"
-    ]
-    if any(k in text_lower for k in creator_keywords):
-        return _sumire_response("Meni xudo yaratgan, nima ahmoqsan?", "face palm")
-        
-    # Specific creator follow-up: "which god?"
-    god_keywords = [
-        "qaysi xudo", "qaysi din", "qanaqa xudo", "qaysi tangri", "qaysi hudoni", "qaysi hudo"
-    ]
-    if any(k in text_lower for k in god_keywords):
-        return _sumire_response("Xudo.", "talking")
-        
-    # Family/Origin/History check
-    family_keywords = [
-        "oilang haqida", "kelib chiqishing", "ota-onang", "ota onang", "tarixing", "tarixingni",
-        "o'tmishing", "otmishing", "oilang kim", "oilang qani", "kelib chiqishing qanday"
-    ]
-    if any(k in text_lower for k in family_keywords):
-        return _sumire_response("Yaqin orada o'zingiz bilib olasiz, hozircha bu haqida gapirgim kelmayapti.", "talking")
+
 
 
 
