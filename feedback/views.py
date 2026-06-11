@@ -1252,11 +1252,9 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             else:
                 # Custom detailed response with alternative language suggestions as requested by the user
                 return _sumire_response(
-                    f"Kechirasiz, '{query}' nomli anime bizning arxivimizda topilmadi.\n\n"
-                    f"Balki u hali saytga yuklanmagandir yoki boshqa tilda yozilgandir. Qidiruv aniq ishlashi uchun, "
-                    f"iltimos, animening <b>inglizcha</b> yoki <b>original yaponcha (romaji)</b> nomini yuborib ko'ring "
-                    f"(masalan: <i>Attack on Titan</i> yoki <i>Shingeki no Kyojin</i>). "
-                    f"Shunda uni aniqroq qidirib ko'raman!",
+                    f"Kechirasiz, '{query}' nomli anime bizning arxivimizda topilmadi. Uni tez orada qo'shishlari uchun adminlarga so'rov yubordim!\n\n"
+                    f"Qidiruv aniqroq ishlashi uchun, iltimos, animening <b>inglizcha</b> yoki <b>original yaponcha (romaji)</b> nomini yuborib ko'ring "
+                    f"(masalan: <i>Attack on Titan</i>).",
                     "canthelp"
                 )
 
