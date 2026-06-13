@@ -536,10 +536,11 @@ async def handle_user_pm(message: types.Message):
         if admin_chat_id:
             try:
                 admin_chat_id_int = int(admin_chat_id)
+                user_mention = f"<a href=\"tg://user?id={user_id}\">@{username}</a>" if username else f"<a href=\"tg://user?id={user_id}\">{message.from_user.first_name or 'Yashirin'}</a> (username yo'q)"
                 msg_text = (
                     f"🚨 <b>YANGI XABAR #{ticket_id} (Suhbatdan)</b>\n"
                     f"━━━━━━━━━━━━━━\n"
-                    f"<b>Foydalanuvchi:</b> @{username or 'Yashirin'}\n"
+                    f"<b>Foydalanuvchi:</b> {user_mention}\n"
                     f"<b>Telegram ID:</b> <code>{user_id}</code>\n"
                     f"━━━━━━━━━━━━━━\n"
                     f"<b>Foydalanuvchi javobi:</b>\n<i>{text}</i>\n\n"

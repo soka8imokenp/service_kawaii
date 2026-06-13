@@ -374,10 +374,11 @@ def _notify_admins(application):
         
     last_user_msg = application.chat_history[-1].get('text', '') if application.chat_history else ''
     
+    user_mention = f"<a href=\"tg://user?id={application.user_id}\">@{application.username}</a>" if application.username else f"<a href=\"tg://user?id={application.user_id}\">Yashirin</a> (username yo'q)"
     message_text = (
         f"🚨 <b>YANGI SHIKOYAT #{application.id}</b>\n"
         f"━━━━━━━━━━━━━━\n"
-        f"<b>Foydalanuvchi:</b> @{application.username or 'Yashirin'}\n"
+        f"<b>Foydalanuvchi:</b> {user_mention}\n"
         f"<b>Telegram ID:</b> <code>{application.user_id}</code>\n"
         f"<b>Mavzu:</b> {application.subject}\n"
         f"━━━━━━━━━━━━━━\n"
@@ -416,6 +417,7 @@ def _notify_admins_sumire_report(profile, user_id, username, user_text, offensiv
         return
 
     telegram_id = profile.telegram_id or user_id
+    user_mention = f"<a href=\"tg://user?id={telegram_id}\">@{username}</a>" if username else f"<a href=\"tg://user?id={telegram_id}\">Yashirin</a> (username yo'q)"
 
     if report_type == "abuse":
         offensive_str = ", ".join(offensive_words) if offensive_words else "aniqlanmadi"
@@ -424,7 +426,7 @@ def _notify_admins_sumire_report(profile, user_id, username, user_text, offensiv
             f"━━━━━━━━━━━━━━\n"
             f"<b>Sumire shikoyati:</b> Bu foydalanuvchi meni xafa qildi!\n"
             f"━━━━━━━━━━━━━━\n"
-            f"<b>Foydalanuvchi:</b> @{username or 'Yashirin'}\n"
+            f"<b>Foydalanuvchi:</b> {user_mention}\n"
             f"<b>Telegram ID:</b> <code>{telegram_id}</code>\n"
             f"━━━━━━━━━━━━━━\n"
             f"<b>Qo'pol so'zlar:</b> <i>{offensive_str}</i>\n"
@@ -443,7 +445,7 @@ def _notify_admins_sumire_report(profile, user_id, username, user_text, offensiv
             f"━━━━━━━━━━━━━━\n"
             f"<b>Sumire xabari:</b> Banlangan foydalanuvchi uzr so'radi.\n"
             f"━━━━━━━━━━━━━━\n"
-            f"<b>Foydalanuvchi:</b> @{username or 'Yashirin'}\n"
+            f"<b>Foydalanuvchi:</b> {user_mention}\n"
             f"<b>Telegram ID:</b> <code>{telegram_id}</code>\n"
             f"━━━━━━━━━━━━━━\n"
             f"<b>Uzr xabari:</b> <i>{user_text[:500]}</i>\n\n"
@@ -1242,7 +1244,7 @@ def api_send_message(request):
         data = json.loads(request.body)
         user_text = (data.get("text") or "").strip()
         user_id = data.get("user_id")
-        username = data.get("username") or data.get("first_name") or ""
+        username = data.get("username") or ""
 
         direct_response = _route_without_ai(user_text)
         if direct_response:
