@@ -849,6 +849,20 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
     emotion = command.get("emotion", "talking")
     reply = command.get("reply", "Nima deyishni ham bilmayman...").strip()
 
+    # Reset strikes on successful apology/forgiveness
+    is_apology = False
+    apology_keywords = ["kechir", "uzr", "kechiring", "kechirasiz", "aybga buyurmang", "tavba", "hazl", "hazillashdim"]
+    user_text_lower = user_text.lower()
+    if any(k in user_text_lower for k in apology_keywords):
+        is_apology = True
+    if "kechir" in reply.lower() or "uzr" in reply.lower():
+        is_apology = True
+
+    if is_apology and intent != "reject":
+        uid = _safe_int(user_id)
+        strike_key = f"abuse_strikes_{uid}" if uid else f"abuse_strikes_0"
+        cache.delete(strike_key)
+
     save_genre = command.get("save_genre", "").strip()
     if save_genre and profile:
         current_genres = profile.favorite_genres or ""
@@ -876,11 +890,11 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             return _sumire_response("Men sendan hafa bo'ldim.", "fuu")
         elif strikes == 2:
             return _sumire_response(
-                reply or "Men seni ogohlantirdim... Yana shunday gapirma.", "fuu"
+                "Agar yana shunday yomon so'z gapirsangiz, sizdan qattiq xafa bo'laman va bu haqda adminlarga aytaman. Sizni esa butunlay ban qilishadi!", "fuu"
             )
         else:
             return _sumire_response(
-                reply or "Iltimos, bunday gapirma. Bu menga yoqmayapti.", "fuu"
+                "Iltimos, bunday gapirma. Bu menga yoqmayapti.", "fuu"
             )
 
     if intent == "purchase":
@@ -1375,7 +1389,9 @@ def api_send_message(request):
             "jalab", "qotoq", "yiban", "lox", "lo'x", "dalbayob", "dalbaob",
             "hezi", "haromi", "iflos", "yeban", "eban", "yobani", "yobaniy",
             "skaman", "sikaman", "sikey", "sikay", "siki", "sikish", "sikiş", "sik", "ski",
-            "ami", "aminga", "am", "poxuy", "pohuy", "naxuy", "nahuy", "chmo"
+            "ami", "aminga", "am", "poxuy", "pohuy", "naxuy", "nahuy", "chmo",
+            "dnx", "dnh", "amigni", "amni", "amingni", "amila", "aming", "amlar", "amining",
+            "qotogini", "qotog'ingni", "qotogingni", "qotoging", "sex", "seks"
         ]
         
         for word in rude_keywords:
