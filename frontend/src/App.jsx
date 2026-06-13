@@ -315,7 +315,7 @@ function App() {
   };
 
   return (
-    <div onClick={handleFirstInteraction} className="flex flex-col h-[100dvh] relative bg-[#05030a] font-ui selection:bg-fuchsia-500 selection:text-white overflow-hidden cursor-default">
+    <div onClick={handleFirstInteraction} className="flex flex-col h-full relative bg-[#05030a] font-ui selection:bg-fuchsia-500 selection:text-white overflow-hidden cursor-default">
       
       <div className="cyber-grid pointer-events-none opacity-60"></div>
       <div className="scanlines pointer-events-none"></div>
@@ -400,7 +400,7 @@ function App() {
                     <motion.div 
                       key={i} 
                       variants={itemVariants}
-                      whileHover={{ scale: 1.01, backgroundColor: "rgba(19, 11, 36, 0.8)" }}
+                      whileHover={{ backgroundColor: "rgba(19, 11, 36, 0.8)", borderColor: "rgba(217, 70, 239, 0.5)" }}
                       className="flex justify-between items-center bg-[#130b24]/60 border border-purple-900/50 p-2 shadow-sm"
                     >
                       <span className="text-[#e2e8f0] text-sm md:text-base font-dialogue tracking-wide pr-2 flex items-center">
@@ -445,7 +445,7 @@ function App() {
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ type: "spring", delay: 0.2 }}
-                          whileHover={{ scale: 1.01, boxShadow: "0px 0px 8px rgba(6,182,212,0.6)" }}
+                          whileHover={{ borderColor: "rgba(6,182,212,0.9)", boxShadow: "0px 0px 8px rgba(6,182,212,0.6)" }}
                           whileTap={{ scale: 0.99 }}
                           className="group relative flex items-center justify-center gap-3 w-full bg-[#05030a]/80 border-2 border-cyan-500/70 hover:border-cyan-400 text-cyan-400 hover:text-cyan-200 text-[10px] md:text-xs font-ui px-4 py-2.5 transition-all shadow-[4px_4px_0_rgba(6,182,212,0.5)] cursor-pointer"
                         >
@@ -464,7 +464,7 @@ function App() {
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ type: "spring", delay: 0.2 }}
-                          whileHover={{ scale: 1.01, boxShadow: "0px 0px 8px rgba(217,70,239,0.6)", borderColor: "rgba(217,70,239,0.7)", color: "#fdf4ff" }}
+                          whileHover={{ borderColor: "rgba(217,70,239,0.9)", boxShadow: "0px 0px 8px rgba(217,70,239,0.6)", color: "#fdf4ff" }}
                           whileTap={{ scale: 0.99 }}
                           className="group relative flex items-center justify-center gap-3 w-full bg-[#05030a]/80 border-2 border-fuchsia-500/70 text-fuchsia-400 text-[10px] md:text-xs font-ui px-4 py-2.5 transition-all shadow-[4px_4px_0_rgba(217,70,239,0.5)] cursor-pointer"
                         >
