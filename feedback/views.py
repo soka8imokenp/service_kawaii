@@ -387,15 +387,18 @@ def _notify_admins(application):
     if not admin_bot_token or not admin_chat_id: 
         return
         
-    last_user_msg = application.chat_history[-1].get('text', '') if application.chat_history else ''
+    import html as html_lib
+    last_user_msg = html_lib.escape(application.chat_history[-1].get('text', '')) if application.chat_history else ''
+    subject_escaped = html_lib.escape(application.subject or '')
     
-    user_mention = f"<a href=\"tg://user?id={application.user_id}\">@{application.username}</a>" if application.username else f"<a href=\"tg://user?id={application.user_id}\">Yashirin</a> (username yo'q)"
+    username_escaped = html_lib.escape(application.username or '')
+    user_mention = f"<a href=\"tg://user?id={application.user_id}\">@{username_escaped}</a>" if application.username else f"<a href=\"tg://user?id={application.user_id}\">Yashirin</a> (username yo'q)"
     message_text = (
         f"🚨 <b>YANGI SHIKOYAT #{application.id}</b>\n"
         f"━━━━━━━━━━━━━━\n"
         f"<b>Foydalanuvchi:</b> {user_mention}\n"
         f"<b>Telegram ID:</b> <code>{application.user_id}</code>\n"
-        f"<b>Mavzu:</b> {application.subject}\n"
+        f"<b>Mavzu:</b> {subject_escaped}\n"
         f"━━━━━━━━━━━━━━\n"
         f"<b>Shikoyat matni:</b>\n<i>{last_user_msg}</i>\n\n"
         f"✍️ <i>Javob berish uchun ushbu xabarga 'Reply' qiling.</i>"
@@ -431,11 +434,15 @@ def _notify_admins_sumire_report(profile, user_id, username, user_text, offensiv
     if not admin_bot_token or not admin_chat_id:
         return
 
+    import html as html_lib
     telegram_id = profile.telegram_id or user_id
-    user_mention = f"<a href=\"tg://user?id={telegram_id}\">@{username}</a>" if username else f"<a href=\"tg://user?id={telegram_id}\">Yashirin</a> (username yo'q)"
+    username_escaped = html_lib.escape(username or '')
+    user_mention = f"<a href=\"tg://user?id={telegram_id}\">@{username_escaped}</a>" if username else f"<a href=\"tg://user?id={telegram_id}\">Yashirin</a> (username yo'q)"
+    user_text_escaped = html_lib.escape(user_text[:500])
 
     if report_type == "abuse":
         offensive_str = ", ".join(offensive_words) if offensive_words else "aniqlanmadi"
+        offensive_str_escaped = html_lib.escape(offensive_str)
         message_text = (
             f"🛡️ <b>SUMIRE XABAR #{telegram_id}</b>\n"
             f"━━━━━━━━━━━━━━\n"
@@ -444,8 +451,8 @@ def _notify_admins_sumire_report(profile, user_id, username, user_text, offensiv
             f"<b>Foydalanuvchi:</b> {user_mention}\n"
             f"<b>Telegram ID:</b> <code>{telegram_id}</code>\n"
             f"━━━━━━━━━━━━━━\n"
-            f"<b>Qo'pol so'zlar:</b> <i>{offensive_str}</i>\n"
-            f"<b>Oxirgi xabar:</b> <i>{user_text[:500]}</i>\n\n"
+            f"<b>Qo'pol so'zlar:</b> <i>{offensive_str_escaped}</i>\n"
+            f"<b>Oxirgi xabar:</b> <i>{user_text_escaped}</i>\n\n"
             f"⚠️ <i>Ushbu foydalanuvchi 3 marta ogohlantirildidan keyin ham qo'pol muomala qildi.</i>"
         )
         inline_keyboard = [
@@ -463,7 +470,7 @@ def _notify_admins_sumire_report(profile, user_id, username, user_text, offensiv
             f"<b>Foydalanuvchi:</b> {user_mention}\n"
             f"<b>Telegram ID:</b> <code>{telegram_id}</code>\n"
             f"━━━━━━━━━━━━━━\n"
-            f"<b>Uzr xabari:</b> <i>{user_text[:500]}</i>\n\n"
+            f"<b>Uzr xabari:</b> <i>{user_text_escaped}</i>\n\n"
             f"🤔 <i>Foydalanuvchini kechirish va banni olib tashlashni xohlaysizmi?</i>"
         )
         inline_keyboard = [
@@ -1264,6 +1271,37 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
     return _sumire_response(reply, emotion)
 
 
+def _verify_telegram_init_data(init_data_str):
+    if not init_data_str:
+        return False
+    try:
+        import hmac
+        import hashlib
+        from urllib.parse import parse_qsl
+        parsed_data = dict(parse_qsl(init_data_str))
+        if "hash" not in parsed_data:
+            return False
+        
+        received_hash = parsed_data.pop("hash")
+        
+        # Sort and join fields
+        data_check_list = sorted([f"{k}={v}" for k, v in parsed_data.items()])
+        data_check_string = "\n".join(data_check_list)
+        
+        bot_token = os.getenv("BOT_TOKEN")
+        if not bot_token:
+            return False
+            
+        # Secret key calculation: hmac-sha256 of bot_token using key "WebAppData"
+        secret_key = hmac.new(b"WebAppData", bot_token.encode("utf-8"), hashlib.sha256).digest()
+        
+        # Calculated hash: hmac-sha256 of data_check_string using secret_key
+        calculated_hash = hmac.new(secret_key, data_check_string.encode("utf-8"), hashlib.sha256).hexdigest()
+        
+        return hmac.compare_digest(calculated_hash, received_hash)
+    except Exception as e:
+        print(f"Error validating Telegram init_data: {e}", flush=True)
+        return False
 @csrf_exempt
 def api_send_message(request):
     if request.method != "POST":
@@ -1275,19 +1313,36 @@ def api_send_message(request):
         user_id = data.get("user_id")
         username = data.get("username") or ""
 
-        direct_response = _route_without_ai(user_text)
-        if direct_response:
-            return direct_response
-
         # Determine client IP and secure TG User ID
         user_ip = request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0] or request.META.get("REMOTE_ADDR", "unknown")
         user_id_int = _safe_int(user_id)
 
         from django.conf import settings
+        from urllib.parse import parse_qsl
 
-        # Production security: Require valid Telegram user_id to prevent external spammers/crawlers
-        if not settings.DEBUG and user_id_int <= 0:
+        # Production security: Validate Telegram initData signature and check user_id
+        if not settings.DEBUG or (data.get("init_data") and settings.DEBUG):
+            init_data = data.get("init_data") or ""
+            if not _verify_telegram_init_data(init_data):
+                return _sumire_response("Faqat Telegram bot ichidan foydalanishga ruxsat berilgan.", "fuu", status=403)
+            
+            # Double check that the user_id in the body matches the id in the verified initData user JSON
+            try:
+                parsed_init = dict(parse_qsl(init_data))
+                import json as json_lib
+                user_json = json_lib.loads(parsed_init.get("user") or "{}")
+                verified_user_id = user_json.get("id")
+                if verified_user_id != user_id_int:
+                    return _sumire_response("Faqat Telegram bot ichidan foydalanishga ruxsat berilgan.", "fuu", status=403)
+            except Exception as e:
+                print(f"Error validating user ID match in init_data: {e}", flush=True)
+                return _sumire_response("Faqat Telegram bot ichidan foydalanishga ruxsat berilgan.", "fuu", status=403)
+        elif not settings.DEBUG and user_id_int <= 0:
             return _sumire_response("Faqat Telegram bot ichidan foydalanishga ruxsat berilgan.", "fuu", status=403)
+
+        direct_response = _route_without_ai(user_text)
+        if direct_response:
+            return direct_response
 
         # Cache key for daily request rate-limiting and chat history
         if user_id_int > 0:

@@ -190,6 +190,7 @@ function App() {
           user_id: telegramUser.id || 0,
           username: telegramUser.username || '',
           first_name: telegramUser.first_name || '',
+          init_data: window.Telegram?.WebApp?.initData || '',
         }),
       });
 
@@ -255,6 +256,7 @@ function App() {
           user_id: telegramUser.id || 0,
           username: telegramUser.username || '',
           first_name: telegramUser.first_name || '',
+          init_data: window.Telegram?.WebApp?.initData || '',
         }),
       });
 

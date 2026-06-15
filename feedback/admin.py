@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib import admin
-from django.utils.html import format_html
+from django.utils.html import format_html, escape
 
 from .models import Application, Profile, WantedAnime
 
@@ -63,8 +63,8 @@ class ApplicationAdmin(admin.ModelAdmin):
         html = ['<div class="sumire-chat-wrapper" style="display: flex; flex-direction: column; gap: 14px; max-width: 650px; padding: 20px; background: #0b0f19; border-radius: 16px; border: 1px solid #1f2937; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5); font-family: system-ui, -apple-system, sans-serif;">']
         for msg in obj.chat_history:
             role = msg.get('role', 'user')
-            text = msg.get('text', '')
-            time = msg.get('time', '')
+            text = escape(msg.get('text', ''))
+            time = escape(msg.get('time', ''))
             
             if role == 'admin':
                 # Admin bubble (sleek gradient purple-pink)
@@ -79,10 +79,11 @@ class ApplicationAdmin(admin.ModelAdmin):
                 ''')
             else:
                 # User bubble (slate-grey)
+                username_escaped = escape(obj.username or 'Yashirin')
                 html.append(f'''
                 <div style="align-self: flex-start; max-width: 80%; display: flex; flex-direction: column; align-items: flex-start;">
                     <div style="background: #1e293b; color: #f8fafc; padding: 12px 16px; border-radius: 18px 18px 18px 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid #334155; word-wrap: break-word; text-align: left;">
-                        <div style="font-weight: 700; font-size: 10px; color: #38bdf8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">@{obj.username or 'Yashirin'} ({obj.user_id})</div>
+                        <div style="font-weight: 700; font-size: 10px; color: #38bdf8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">@{username_escaped} ({obj.user_id})</div>
                         <div style="font-size: 13.5px; line-height: 1.5; white-space: pre-wrap;">{text}</div>
                         <div style="text-align: right; font-size: 9px; color: #94a3b8; margin-top: 6px; font-weight: 500;">{time}</div>
                     </div>
@@ -131,8 +132,8 @@ class ProfileAdmin(admin.ModelAdmin):
         html = ['<div class="sumire-chat-wrapper" style="display: flex; flex-direction: column; gap: 14px; max-width: 650px; padding: 20px; background: #0b0f19; border-radius: 16px; border: 1px solid #1f2937; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5); font-family: system-ui, -apple-system, sans-serif;">']
         for msg in obj.chat_history:
             role = msg.get('role', 'user')
-            text = msg.get('text', '')
-            time = msg.get('time', '')
+            text = escape(msg.get('text', ''))
+            time = escape(msg.get('time', ''))
             
             if role == 'admin':
                 # Sumire bubble (sleek gradient purple-pink)

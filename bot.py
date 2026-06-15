@@ -1,6 +1,7 @@
 import os
 import re
 import asyncio
+import html
 from dotenv import load_dotenv
 import django
 
@@ -158,7 +159,7 @@ if ADMIN_CHAT_ID:
                         text=(
                             f"<b>Sizning murojaatingiz yopildi!</b>\n"
                             f"━━━━━━━━━━━━━━\n"
-                            f"<b>Mavzu:</b> {application.subject}\n\n"
+                            f"<b>Mavzu:</b> {html.escape(application.subject or '')}\n\n"
                             f"Bizga murojaat qilganingiz uchun rahmat! Murojaatingiz admin tomonidan muvaffaqiyatli yopildi. "
                             f"Agar sizda yangi savollar tug'ilsa, Web App orqali yangi murojaat yaratishingiz mumkin."
                         ),
@@ -221,7 +222,7 @@ async def handle_close_ticket_callback(callback: types.CallbackQuery):
                 text=(
                     f"<b>Sizning murojaatingiz yopildi!</b>\n"
                     f"━━━━━━━━━━━━━━\n"
-                    f"<b>Mavzu:</b> {application.subject}\n\n"
+                    f"<b>Mavzu:</b> {html.escape(application.subject or '')}\n\n"
                     f"Bizga murojaat qilganingiz uchun rahmat! Murojaatingiz admin tomonidan muvaffaqiyatli yopildi. "
                     f"Agar sizda yangi savollar tug'ilsa, Web App orqali yangi murojaat yaratishingiz mumkin."
                 ),
@@ -536,14 +537,14 @@ async def handle_user_pm(message: types.Message):
         if admin_chat_id:
             try:
                 admin_chat_id_int = int(admin_chat_id)
-                user_mention = f"<a href=\"tg://user?id={user_id}\">@{username}</a>" if username else f"<a href=\"tg://user?id={user_id}\">{message.from_user.first_name or 'Yashirin'}</a> (username yo'q)"
+                user_mention = f"<a href=\"tg://user?id={user_id}\">@{html.escape(username)}</a>" if username else f"<a href=\"tg://user?id={user_id}\">{html.escape(message.from_user.first_name or 'Yashirin')}</a> (username yo'q)"
                 msg_text = (
                     f"🚨 <b>YANGI XABAR #{ticket_id} (Suhbatdan)</b>\n"
                     f"━━━━━━━━━━━━━━\n"
                     f"<b>Foydalanuvchi:</b> {user_mention}\n"
                     f"<b>Telegram ID:</b> <code>{user_id}</code>\n"
                     f"━━━━━━━━━━━━━━\n"
-                    f"<b>Foydalanuvchi javobi:</b>\n<i>{text}</i>\n\n"
+                    f"<b>Foydalanuvchi javobi:</b>\n<i>{html.escape(text)}</i>\n\n"
                     f"✍️ <i>Javob berish uchun ushbu xabarga 'Reply' qiling.</i>"
                 )
                 
