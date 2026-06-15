@@ -28,4 +28,10 @@ __pycache__/
 staticfiles/
 frontend/node_modules/
 .env.production
+db.sqlite3
+web-check-results.json
+*.pyc
+__pycache__/
+*.txt
+
 
