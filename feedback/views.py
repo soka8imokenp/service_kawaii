@@ -176,7 +176,10 @@ Foydalanuvchi bilan muloqot qilayotganda sening emotsiyang (emotion) har doim bi
    - Agar foydalanuvchi to'lov qilgani, chek yuborgani, karta raqami yoki to'lov faollashish vaqti haqida so'rasa (masalan: "to'lov qildim", "chekni tashladim", "qachon yoqiladi", "kartaga pul o'tkazdim"):
      * intent: "chat", emotion: "waiting" qil.
      * reply: "To'lov cheklari va to'lovlar ma'murlar (adminlar) tomonidan qo'lda tekshiriladi va tez orada tasdiqlanadi. Iltimos, biroz kuting yoki profile bo'limida 'Kawaii Pass' statusini tekshirib turing." (Javobni har safar har xil so'zlar bilan yozishga harakat qil, masalan: "To'lovlar adminlar tomonidan tez orada tasdiqlanadi. Pass statusini ko'rib turing", "Chekni adminlar tezda ko'rib chiqishadi, biroz sabr qiling" va h.k. Aslo aniq vaqtni, daqiqa yoki soatlarni yozma!). Aslo ticket yaratma!
-7. TICKET (SHIKOYAT): "muammo", "xato", "ishlamayapti", "ochilmayapti", "pleyer ishlamayapti" -> intent: "ticket", emotion: "shocked". Aslo "batafsilroq tushuntiring" deb foydalanuvchidan qo'shimcha ma'lumot so'rama, chunki shikoyat xabari bilan ARIZA DARHOL YARATILADI va adminlarga yuboriladi! "Kutib turing" yoki "Kuting" so'zlarini javobda MUTLAQO ISHLATMA, chunki foydalanuvchi ekranda kutib o'tirmasligi kerak. Buning o'rniga arizani qabul qilib adminlarga yuborganingni va tez orada javob berishga harakat qilishlarini ayt (masalan: "Shikoyatni qabul qilib adminlarga yubordim. Tez orada javob berishga harakat qilishadi.").
+7. TICKET (SHIKOYAT): "muammo", "xato", "ishlamayapti", "ochilmayapti", "pleyer ishlamayapti", "qora ekran", "video yuklanmayapti", "video qotyapti" yoki boshqa texnik muammolar/shikoyatlar bo'yicha:
+   - Har doim intent: "ticket" deb belgilang!
+   - Siz javobda (reply) darhol arizani yuborishingiz shart emas, chunki tizim orqa fonda birinchi bo'lib foydalanuvchidan tasdiqlashni so'raydi.
+   - Reply matniga aslo "qabul qilindi" yoki "adminlarga yubordim" deb yozmang. Shunchaki: "Muammo yuzaga keldimi? Siz uchun adminlarga murojaat (shikoyat) yaratib beraymi?" deb yozing, va emotion: "waiting" bo'lsin.
    - AGAR foydalanuvchi allaqachon yuborilgan ticket haqida savol bersa (masalan: "qayerga javob keladi", "qachongacha kutaman", "hali javob kelmadi"), yangi ticket yaratma (intent: "chat" qil) va admin javobi uning Telegram shaxsiy xabariga (lichkasiga) borishini tushuntir (masalan: "Admin javobi Telegram orqali shaxsiy xabaringizga (lichkangizga) yuboriladi.").
 8. O'ZBEKCHA ANIME NOMALARI VA SEZONLAR QOIDASI (MUSTAQIL QIDIRUV): Arxiv bazamizda animelar asosan o'zbekcha nomlari bilan saqlanadi. Foydalanuvchi qaysi tilda so'rashidan qat'iy nazar, "search_query" ga FAQAT shu animening O'zbekcha tarjima nomini yozishing kerak! Misollar: "Tower of God" -> "Ma'bud minorasi"; "Demon Slayer" -> "Iblislar qotili"; "Attack on Titan" -> "Titanlar hujumi"; "My Hero Academia" -> "Mening qahramonlik akademiyam".
 9. AGAR foydalanuvchi ma'lum bir faslni/mavsumni so'rasa (masalan: "6-fasl", "2-fasl"), sen "search_query" ga o'sha fasl nomini ochib yozishing shart! Misol: "akademiya 6-fasl" desa -> "Mening qahramonlik akademiyam 6-fasl".
@@ -1522,14 +1525,19 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                 ticket_created=True
             )
 
-        subject = command.get("ticket_subject") or "Web App muammo"
-        app = _create_ticket(user_text, user_id=user_id, username=username, subject=subject)
-        
-        if app:
-            # Веб-апп ичида Сумире шунчаки ариза қабул қилинганини совуққина айтади
-            return _sumire_response(reply, emotion, ticket_created=True)
+        # Set confirmation state in cache
+        if uid_int > 0:
+            confirm_key = f"ticket_confirm_state_{uid_int}"
         else:
-            return _sumire_response("Arizani qabul qilishda texnik xatolik yuz berdi...", "canthelp")
+            confirm_key = f"ticket_confirm_state_tg_{uid_int}"
+        cache.set(confirm_key, True, timeout=600)
+            
+        buttons = [
+            {"text": "Ha"},
+            {"text": "Yo'q"}
+        ]
+        reply = "Muammo yuzaga keldimi? Siz uchun adminlarga murojaat (shikoyat) yaratib beraymi?"
+        return _sumire_response(reply, "waiting", buttons=buttons)
 
     if intent == "chat":
         if emotion == "canthelp":
@@ -1629,9 +1637,68 @@ def api_send_message(request):
         if user_id_int > 0:
             user_daily_key = f"user_limit_tg_{user_id_int}"
             history_key = f"chat_history_tg_{user_id_int}"
+            confirm_state_key = f"ticket_confirm_state_{user_id_int}"
+            collect_state_key = f"ticket_collect_details_{user_id_int}"
         else:
             user_daily_key = f"user_limit_ip_{user_ip}"
             history_key = f"chat_history_ip_{user_ip}"
+            confirm_state_key = f"ticket_confirm_state_tg_{user_id_int}"
+            collect_state_key = f"ticket_collect_details_tg_{user_id_int}"
+
+        skip_rate_limit = False
+        user_text_clean = user_text.lower().strip()
+        
+        # 1. Handle ticket confirmation state
+        if cache.get(confirm_state_key):
+            skip_rate_limit = True
+            if user_text_clean in ["ha", "xa", "yes"]:
+                cache.delete(confirm_state_key)
+                cache.set(collect_state_key, True, timeout=600)
+                reply = (
+                    "Tushunarli. Murojaat yaratishim uchun iltimos muammoni to'liq va batafsil yozib bering: "
+                    "qaysi anime, qaysi qism va aynan nima ishlamayapti? Qanchalik anime va qismni aniq yozsangiz, "
+                    "adminlarimiz shunchalik tez yordam berishadi."
+                )
+                return _sumire_response(reply, "waiting")
+            elif user_text_clean in ["yo'q", "yoq", "no"]:
+                cache.delete(confirm_state_key)
+                reply = "Tushunarli. Unda iltimos, nima xohlayotganingizni aniqroq tushuntiring, yordam berishga harakat qilaman."
+                return _sumire_response(reply, "talking")
+            else:
+                cache.delete(confirm_state_key)
+                skip_rate_limit = False
+                
+        # 2. Handle ticket details collection state
+        if cache.get(collect_state_key):
+            skip_rate_limit = True
+            cache.delete(collect_state_key)
+            app = _create_ticket(user_text, user_id=user_id_int, username=username, subject="Web App muammo")
+            if app:
+                reply = "Shikoyatni qabul qilib adminlarga yubordim. Tez orada ko'rib chiqishadi."
+                
+                # Update history in cache so bot memory is preserved
+                chat_history = cache.get(history_key, [])
+                chat_history.append({"role": "User", "text": user_text})
+                chat_history.append({"role": "Sumire", "text": reply})
+                cache.set(history_key, chat_history[-6:], timeout=3600)
+                
+                # Permanently save chat log to Profile for admin review
+                profile = None
+                if user_id_int > 0:
+                    try:
+                        profile, _ = Profile.objects.get_or_create(telegram_id=user_id_int)
+                        now_time = timezone.localtime().strftime("%H:%M")
+                        p_history = list(profile.chat_history) if profile.chat_history else []
+                        p_history.append({"role": "user", "text": user_text, "time": now_time})
+                        p_history.append({"role": "admin", "text": reply, "time": now_time})
+                        profile.chat_history = p_history
+                        profile.save()
+                    except Exception as e:
+                        print(f"Error saving chat log to profile: {e}")
+                        
+                return _sumire_response(reply, "resolve or good", ticket_created=True)
+            else:
+                return _sumire_response("Arizani qabul qilishda texnik xatolik yuz berdi...", "canthelp")
 
         # Retrieve count BEFORE the current request from DatabaseCache
         user_requests = cache.get(user_daily_key)
@@ -1652,7 +1719,7 @@ def api_send_message(request):
             user_requests = int(user_requests)
         
         # Limit to 30 requests per day per user (IP/Telegram ID)
-        if user_requests >= 30:
+        if user_requests >= 30 and not skip_rate_limit:
             return _sumire_response("Bugun judayam ko'p savol berding. Charchadim. Ertaga kel...", "fuu")
 
         profile = None
@@ -1763,7 +1830,7 @@ def api_send_message(request):
                     command["intent"] = "search"
         
         # Increment request count without resetting the existing key's TTL
-        if user_requests > 0:
+        if user_requests > 0 and not skip_rate_limit:
             try:
                 cache.incr(user_daily_key)
             except ValueError:
