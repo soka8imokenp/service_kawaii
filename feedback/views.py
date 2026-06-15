@@ -701,7 +701,7 @@ def _extract_season_number(text):
     
     # Matches patterns like: 6-fasl, 6 fasl, 6-sezon, 6 sezon, 6-mavsum, 6 mavsum, season 6, 6 season, fasl 6, sezon 6, 6
     match = re.search(
-        r'(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона))|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)\s*-?\s*(\d+)))',
+        r'(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?)|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?\s*-?\s*(\d+)))',
         text_lower
     )
     if match:
@@ -722,7 +722,7 @@ def _clean_base_title(title):
         return ""
     # Strip common season suffixes like "2-fasl", "2-mavsum", "season 2", "2nd season", etc.
     cleaned = re.sub(
-        r'\b(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона))|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)\s*-?\s*(\d+)))\b',
+        r'\b(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?)|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?\s*-?\s*(\d+)))\b',
         '',
         title,
         flags=re.IGNORECASE
@@ -755,6 +755,25 @@ def _canonicalize_query(query):
     return res
 
 
+def _levenshtein_distance(s1, s2):
+    if len(s1) < len(s2):
+        return _levenshtein_distance(s2, s1)
+    if len(s2) == 0:
+        return len(s1)
+    
+    previous_row = range(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1
+            deletions = current_row[j] + 1
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+        
+    return previous_row[-1]
+
+
 def _is_anime_title_match(query, title):
     if not query or not title:
         return False
@@ -764,6 +783,14 @@ def _is_anime_title_match(query, title):
     if q_clean in t_clean or t_clean in q_clean:
         return True
         
+    # Check Levenshtein distance for fuzzy matching (typos)
+    max_len = max(len(q_clean), len(t_clean))
+    if max_len > 0:
+        dist = _levenshtein_distance(q_clean, t_clean)
+        similarity = 1.0 - (dist / max_len)
+        if similarity >= 0.75:
+            return True
+            
     query_lower = query.lower()
     title_lower = title.lower()
     for uz_name, syn_set in ANIME_SYNONYMS.items():
@@ -1018,6 +1045,15 @@ def _filter_search_results_by_query(query, results):
         if q_clean in t_clean or t_clean in q_clean:
             filtered.append(r)
             continue
+            
+        # Check Levenshtein distance for fuzzy matching (typos)
+        max_len = max(len(q_clean), len(t_clean))
+        if max_len > 0:
+            dist = _levenshtein_distance(q_clean, t_clean)
+            similarity = 1.0 - (dist / max_len)
+            if similarity >= 0.75:
+                filtered.append(r)
+                continue
             
         # Basic word-overlap check for season-restricted queries: if any name-word of length >= 3 overlaps
         title_words = _split_uzbek_words(title_lower)
