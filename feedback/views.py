@@ -647,7 +647,10 @@ def _extract_broad_search_query(text, chat_history):
     
     # If the query is empty or too short, check chat history for context
     has_context_referents = any(k in text.lower() for k in [
-        "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "fasllar", "sezon", "sezn", "kino", "film", "tashla", "yubor", "tashlab", "ber", "qaysi"
+        "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "fasllar", 
+        "sezon", "sezn", "kino", "film", "tashla", "yubor", "tashlab", "ber", "qaysi",
+        "final", "part", "bo'lim", "bolim", "qism", "epizod", "seriya", "oxirgi", 
+        "barchasi", "hammasi", "qolgan", "yana", "ikkinchi", "uchunchi", "birinchi", "bormi"
     ])
     
     if (has_context_referents or not query or len(query) < 2) and chat_history:
@@ -1176,8 +1179,23 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Clean up Uzbek dative pronouns "manga/menga/sanga" if any got into the search query
         query = re.sub(r'\b(manga|menga|sanga)\b', '', query, flags=re.IGNORECASE).strip()
         
+        # Determine if query is invalid/too short/context-dependent
+        query_cleaned = _clean_base_title(query).lower()
+        # Strip Uzbek possessive and case suffixes from the end of query_cleaned
+        query_cleaned = re.sub(r'(?:i|ni|ning|ini|ining|sini|siniki)$', '', query_cleaned).strip()
+        # Remove common season/format/helper words
+        for w in ["fasl", "sezon", "season", "mavsum", "part", "kino", "film", "yana", "bormi", "qism", "epizod", "seriya"]:
+            query_cleaned = query_cleaned.replace(w, "").strip()
+
+        is_query_invalid = (
+            not query or 
+            query.lower() in ["yo'q", "yoq", "none", "null"] or 
+            len(query_cleaned) < 3 or
+            query.lower() in ["kino", "film", "tashla", "yubor", "barchasi", "hammasi", "qolgan", "yana", "bormi"]
+        )
+
         # Fallback to broad search query from user_text if LLM query is empty/invalid
-        if not query or query.lower() in ["yo'q", "yoq", "none", "null"]:
+        if is_query_invalid:
             query = _extract_broad_search_query(user_text, chat_history)
             
         if not query or query.lower() in ["yo'q", "yoq", "none", "null"]:
@@ -1680,7 +1698,7 @@ def api_send_message(request):
                 chat_history = cache.get(history_key, [])
                 chat_history.append({"role": "User", "text": user_text})
                 chat_history.append({"role": "Sumire", "text": reply})
-                cache.set(history_key, chat_history[-6:], timeout=3600)
+                cache.set(history_key, chat_history[-12:], timeout=3600)
                 
                 # Permanently save chat log to Profile for admin review
                 profile = None
@@ -1851,7 +1869,7 @@ def api_send_message(request):
             
             chat_history.append({"role": "User", "text": user_text})
             chat_history.append({"role": "Sumire", "text": reply_text})
-            cache.set(history_key, chat_history[-6:], timeout=3600)
+            cache.set(history_key, chat_history[-12:], timeout=3600)
 
             # Permanently save chat log to Profile for admin review/analysis
             if profile:
