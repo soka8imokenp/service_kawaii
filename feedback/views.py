@@ -92,7 +92,7 @@ Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan
 1. SOXTA JAVOB BERMA VA QAT'IY FILTRLANGAN JAVOBLAR: Foydalanuvchi so'ragan anime bazamizda bor-yo'qligini ro'yxatdan QAT'IY tekshir!
    - Agar foydalanuvchi so'ragan nom (yoki uning sinonimi, arc nomi, masalan "Temirchilar qishlog'i" aslida "Iblislar qotili 3-fasl" ekanligini yaxshi bilasan) bazadagi haqiqiy ro'yxatda BO'LMASA va unga mutlaqo aloqasi yo'q bo'lsa (masalan, ro'yxat bo'sh bo'lsa yoki Solo Leveling so'rasa-yu, ro'yxatda mutlaqo boshqa animelar bo'lsa), u holda BU ANIME ARXIVIMIZDA YO'QLIGINI tan ol (intent: "chat", emotion: "canthelp"). ASLO soxta ma'lumot yoki boshqa animeni "bor" deb taklif qilma!
    - Agar foydalanuvchi so'ragan arc nomi yoki sinonimi bazadagi biron bir animening fasli yoki qismiga to'g'ri kelsa (masalan, "Temirchilar qishlog'i" -> "Iblislar qotili 3-fasl"), uni o'sha anime sifatida qabul qil va tasdiqla!
-   - SEZONLAR FARQI VA TAVSIYA (MUHIM!): Agar foydalanuvchi ma'lum bir faslni so'rasa (masalan: 2-fasl) va u bazadagi ro'yxatda bo'lmasa, lekin boshqa fasli (masalan: 1-fasli) bor bo'lsa, "arxivda bunday anime yo'q" deb aytma! Buning o'rniga: "Bazada faqat 1-fasli bor. 2-fasli hali yuklanmagan." deb aniq ayt (intent: "chat").
+   - SEZONLAR VA FASLLAR SO'ROVI (MUHIM!): Agar foydalanuvchi ma'lum bir faslni so'rasa (masalan: 2-fasl, 3-fasl va h.k.), arxivda u bor yoki yo'qligidan qat'iy nazar, har doim intent: "search" deb belgilashing va "search_query" ga o'sha so'ralgan fasl nomini aniq yozishing shart (masalan: "Davolash sehridan 2-fasl"). Aslo intent: "chat" qilib "arxivda yo'q" deb javob yozma! Tizim o'zi orqa fonda bazani va internetni qidirib, to'g'ri javobni shakllantiradi.
    - KINO/FILM VA TV SERIAL CHEKLANISHI (MUHIM!): Agar foydalanuvchi biron animening film (kino) variantini so'rasa va ro'yxatda faqat serial bo'lsa (yoki aksincha), u holda film yo'qligini, bizda faqat serial fasllari borligini ochiq ayt! Hech qachon serial havolasini "film" deb yuborma va soxta gapirma!
    - MATEMATIK HISOB-KITOB VA SEZON RAQAMLARI (MUHIM!): Har xil animelarda oxirgi mavsum "Final" deb nomlangan bo'lishi mumkin. Agar foydalanuvchi oxirgi fasl raqamini (masalan: 8-fasl) so'rasa, matematika bo'yicha bu o'sha "Final" mavsumidir! ASLO foydalanuvchi bilan tortishib o'tirma, uni o'sha final mavsumi sifatida qabul qil va tasdiqla!
 2. HAVOLALARNI TIQISHTIRMA VA POLITE FLOW ZANJIRI (LOOP-BREAKER):
@@ -219,6 +219,7 @@ def _normalize_search_item(item):
 
     normalized = {
         "title": str(title),
+        "title_org": item.get("title_org"),
         "url": url,
         "episodes": item.get("episode_kawaii"),
         "year": item.get("year"),
@@ -672,6 +673,16 @@ def _parse_ai_command(user_text, chat_history_text="", profile=None, db_context_
         print(f"DeepSeek API Error: {e}")
         return {"intent": "chat", "reply": "Miyam og'rib ketdi...", "emotion": "face palm"}
 
+def _split_uzbek_words(text):
+    if not text:
+        return []
+    # Normalize different apostrophes/backticks to a single quote
+    normalized = re.sub(r"[’‘ʻ`]", "'", text.lower())
+    # Split by characters that are not alphanumeric or single quote
+    parts = re.split(r"[^a-z0-9']+", normalized)
+    return [p.strip("'") for p in parts if p.strip("'")]
+
+
 def _extract_season_number(text):
     if not text:
         return None
@@ -693,6 +704,152 @@ def _extract_season_number(text):
             if not (1900 <= val <= 2100):
                 return val
     return None
+
+
+def _clean_base_title(title):
+    if not title:
+        return ""
+    # Strip common season suffixes like "2-fasl", "2-mavsum", "season 2", "2nd season", etc.
+    cleaned = re.sub(
+        r'\b(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона))|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)\s*-?\s*(\d+)))\b',
+        '',
+        title,
+        flags=re.IGNORECASE
+    )
+    # Also strip "2", "3", etc. at the end if it's preceded by space
+    cleaned = re.sub(r'\s+\d+$', '', cleaned)
+    return cleaned.strip()
+
+
+def _search_anime_season_on_web(anime_title_uz, anime_title_org, season_num):
+    from urllib.parse import quote_plus
+    import html as html_lib
+    
+    clean_org = _clean_base_title(anime_title_org)
+    clean_uz = _clean_base_title(anime_title_uz)
+    
+    subject = clean_org if clean_org else clean_uz
+    if not subject:
+        return []
+        
+    query = f"{subject} season {season_num} release date"
+    url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    try:
+        response = requests.get(url, headers=headers, timeout=8)
+        if response.status_code != 200:
+            return []
+        
+        html_content = response.text
+        snippets = re.findall(r'<a class="result__snippet[^"]*"[^>]*>(.*?)</a>', html_content, re.DOTALL)
+        titles = re.findall(r'<a class="result__url[^"]*"[^>]*>(.*?)</a>', html_content, re.DOTALL)
+        
+        results = []
+        for t, s in zip(titles[:6], snippets[:6]):
+            clean_s = re.sub(r'<[^>]+>', '', s).strip()
+            clean_t = re.sub(r'<[^>]+>', '', t).strip()
+            clean_s = html_lib.unescape(clean_s)
+            clean_t = html_lib.unescape(clean_t)
+            results.append({"title": clean_t, "snippet": clean_s})
+        return results
+    except Exception as e:
+        print(f"Web search error: {e}", flush=True)
+        return []
+
+
+def _analyze_season_status_with_llm(snippets, anime_title, season_num):
+    if not client or not snippets:
+        return {"status": "unknown", "release_date": None, "explanation": "Qidiruv natijalari topilmadi."}
+        
+    snippets_text = ""
+    for idx, item in enumerate(snippets):
+        snippets_text += f"[{idx+1}] Source: {item['title']}\nSnippet: {item['snippet']}\n\n"
+        
+    prompt = f"""
+You are analyzing search engine snippets to determine if Season {season_num} of the anime "{anime_title}" exists, is officially announced, or does not exist.
+
+Search Results:
+{snippets_text}
+
+Analyze the results carefully. You must classify the anime season status into one of:
+1. "released": The season is already released/available (or some episodes have already aired).
+2. "announced": The season is officially confirmed or announced by the production committee/studio, but not yet fully released. It should have a release date or release window (e.g. "2026", "January 2025", "fall 2025").
+3. "not_exists": There is no official announcement of Season {season_num}, or it is confirmed to not exist, or the snippets explicitly state there is no news/plans/announcements for Season {season_num}.
+
+Output the result in the following JSON format:
+{{
+  "status": "released" | "announced" | "not_exists",
+  "release_date": "Year/Date/Window (e.g. 2026-yil, 2025-yil yanvar)" or null,
+  "explanation": "A very brief explanation in English of why you chose this status."
+}}
+Do NOT output anything other than raw JSON.
+"""
+    try:
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[
+                {"role": "system", "content": "You are a helpful data analyst helper. Output only valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.1, 
+        )
+        return json.loads(response.choices[0].message.content)
+    except Exception as e:
+        print(f"DeepSeek analysis error: {e}", flush=True)
+        return {"status": "unknown", "release_date": None, "explanation": str(e)}
+
+
+def _generate_sumire_season_reply(anime_title, season_num, status, release_date, explanation, has_base_in_db):
+    prompt = f"""
+You are Sumire, a 15-year-old high school student working as a support assistant.
+Character: Cold, sarcastic, introvert. Speak only in Uzbek (Latin). Do NOT use any emojis.
+
+A user is asking for Season {season_num} of the anime "{anime_title}".
+We searched the database, and this season is NOT in our archive.
+We searched the web, and found the following info:
+- Status: {status} (options: released / announced / not_exists)
+- Release Date/Window: {release_date} (if announced)
+- Web findings summary: {explanation}
+- Do we have Season 1 (or other seasons) of this anime in our DB? {'Yes' if has_base_in_db else 'No'}
+
+Your task:
+Write a reply to the user in Uzbek (Latin) explaining the situation in Sumire's classic personality (sarcastic/cold but helpful):
+1. If status is "released": Explain that Season {season_num} of the anime exists/has been released in the world, but it is not in our archive yet. Let them know we will try to add it soon.
+2. If status is "announced": Explain that Season {season_num} has been officially announced and is expected to release in {release_date or 'the future'}. Let them know that once it is fully released, we will try to add it.
+3. If status is "not_exists": Explain that Season {season_num} of this anime does not exist in the world at all (there is no news or announcement). If we have other seasons (has_base_in_db is True), suggest they watch the seasons we do have in our archive.
+
+Guidelines:
+- Keep the response concise, clear, and in character.
+- Do NOT use emojis.
+- Do NOT make precise time promises (like "10 minutes" or "tomorrow").
+- Speak ONLY in Uzbek.
+"""
+    try:
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[
+                {"role": "system", "content": "You are Sumire. Speak only in Uzbek (Latin) without emojis. Sarcastic, cold support assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"Error generating Sumire reply: {e}", flush=True)
+        # Fallback template
+        if status == "released":
+            return f"Ushbu animening {season_num}-fasli chiqqan, ammo bizning arxivda hali yo'q. Tez orada qo'shishga harakat qilamiz."
+        elif status == "announced":
+            date_str = f" {release_date} yilda" if release_date else ""
+            return f"Ushbu animening {season_num}-fasli e'lon qilingan va u{date_str} chiqadi. Chiqqanidan keyin arxivga qo'xamiz."
+        else:
+            if has_base_in_db:
+                return f"Ushbu animening {season_num}-fasli hali chiqmagan. Arxivimizda faqat mavjud qismlarini tomosha qilishingiz mumkin."
+            else:
+                return f"Ushbu animening {season_num}-fasli umuman mavjud emas va e'lon qilinmagan."
 
 
 def _filter_search_results_by_query(query, results):
@@ -726,10 +883,10 @@ def _filter_search_results_by_query(query, results):
     
     import re
     # Extract query words
-    raw_words = [w for w in re.split(r'\W+', query_lower) if len(w) > 0 and w not in common_stop_words]
+    raw_words = [w for w in _split_uzbek_words(query_lower) if w not in common_stop_words]
     query_words = [w for w in raw_words if len(w) > 2 or w.isdigit()]
     if not query_words:
-        query_words = [w for w in re.split(r'\W+', query_lower) if len(w) > 0]
+        query_words = _split_uzbek_words(query_lower)
         
     if not query_words:
         return []
@@ -819,17 +976,22 @@ def _filter_search_results_by_query(query, results):
             continue
             
         # Basic word-overlap check for season-restricted queries: if any name-word of length >= 3 overlaps
-        title_words = [w for w in re.split(r'\W+', title_lower) if len(w) > 0]
+        title_words = _split_uzbek_words(title_lower)
         has_overlap = False
         for qw in query_words:
             if len(qw) >= 3 and qw not in ["fasl", "sezon", "season", "part", "mavsum", "final", "nihoya", "yakun", "oxirgi"]:
-                if qw in title_words or any(qw in tw or tw in qw for tw in title_words if len(tw) >= 3):
+                if qw in title_words:
                     has_overlap = True
                     break
                     
         # Fallback check: if there is no explicit name-word overlap, but the query contains "fasl" and matches season,
         # and the DB returned it, let's keep it (since the DB rank is already high and season matches).
-        if not has_overlap and any(qw in ["fasl", "sezon", "season", "part", "mavsum"] for qw in query_words):
+        # We ONLY allow this fallback if the query has no significant name-words (e.g., it is a very short acronym like "SL" or "Re")
+        has_significant_query_word = any(
+            len(w) >= 3 and w not in ["fasl", "sezon", "season", "part", "mavsum", "final", "nihoya", "yakun", "oxirgi"]
+            for w in query_words
+        )
+        if not has_overlap and not has_significant_query_word and any(qw in ["fasl", "sezon", "season", "part", "mavsum"] for qw in query_words):
             has_overlap = True
             
         if has_overlap:
@@ -944,8 +1106,8 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         has_final = "final" in user_text.lower() or "8" in user_text.lower() or "oxirgi" in user_text.lower()
         
         # Check if the current message is a follow-up (does not contain the explicit anime title or its parts)
-        query_words_clean = [w for w in re.split(r'\W+', query_lower) if len(w) > 2]
-        user_words_clean = [w for w in re.split(r'\W+', user_text.lower()) if len(w) > 2]
+        query_words_clean = [w for w in _split_uzbek_words(query_lower) if len(w) > 2]
+        user_words_clean = [w for w in _split_uzbek_words(user_text.lower()) if len(w) > 2]
         has_overlap = any(qw in user_text.lower() or any(qw in uw or uw in qw for uw in user_words_clean) for qw in query_words_clean)
         
         # Synonym-based overlap check to prevent synonym-queries from being treated as follow-ups
@@ -988,7 +1150,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                     current_stems = stems
                     break
             if not current_stems:
-                current_stems = [w for w in re.split(r'\W+', query_lower) if len(w) > 2]
+                current_stems = [w for w in _split_uzbek_words(query_lower) if len(w) > 2]
 
             if season_num is None:
                 for msg in reversed(chat_history or []):
@@ -1108,7 +1270,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Paginate manually if offset/limit are specified (unless we are showing all unique seasons)
         if asking_seasons and filtered_results:
             # Filter filtered_results to only include titles that actually match the query name to prevent third-party hijacking
-            q_words = [w for w in re.split(r'\W+', query.lower()) if len(w) >= 3 and w not in ["fasl", "sezon", "season", "part", "mavsum"]]
+            q_words = [w for w in _split_uzbek_words(query.lower()) if len(w) >= 3 and w not in ["fasl", "sezon", "season", "part", "mavsum"]]
             q_synonyms = {
                 "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "ma'bud", "minorasi"},
                 "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "iblislar", "qotili"},
@@ -1144,7 +1306,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                     continue
                     
                 # Check word overlap
-                t_words = [w for w in re.split(r'\W+', t_lower) if len(w) >= 3]
+                t_words = [w for w in _split_uzbek_words(t_lower) if len(w) >= 3]
                 overlap_count = 0
                 for qw in q_words:
                     if qw in t_words or any(qw in tw or tw in qw for tw in t_words):
@@ -1210,14 +1372,56 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         if not paginated_results:
             if offset > 0 or exclude_keywords:
                 return _sumire_response(f"Kechirasiz, arxivda '{query}' bo'yicha boshqa anime qolmagan ko'rinadi...", "canthelp")
-            else:
-                # Custom detailed response with alternative language suggestions as requested by the user
-                return _sumire_response(
-                    f"Kechirasiz, '{query}' nomli anime bizning arxivimizda topilmadi. Uni tez orada qo'shishlari uchun adminlarga so'rov yubordim!\n\n"
-                    f"Qidiruv aniqroq ishlashi uchun, iltimos, animening <b>inglizcha</b> yoki <b>original yaponcha (romaji)</b> nomini yuborib ko'ring "
-                    f"(masalan: <i>Attack on Titan</i>).",
-                    "canthelp"
-                )
+            
+            s_num = season_num or _extract_season_number(query)
+            if s_num is not None and s_num >= 2:
+                base_query = _clean_base_title(query)
+                base_db_results = search_manga_database(base_query, limit=10, offset=0, anime_type="")
+                base_anime_item = None
+                for item in base_db_results:
+                    title = item.get("title", "")
+                    title_clean = _clean_base_title(title).lower()
+                    q_clean = base_query.lower()
+                    if q_clean in title_clean or title_clean in q_clean:
+                        base_anime_item = item
+                        break
+                
+                has_base_in_db = base_anime_item is not None
+                anime_title_uz = base_anime_item.get("title") if has_base_in_db else base_query
+                anime_title_org = base_anime_item.get("title_org") if has_base_in_db else ""
+                
+                snippets = _search_anime_season_on_web(anime_title_uz, anime_title_org, s_num)
+                if snippets:
+                    analysis = _analyze_season_status_with_llm(snippets, anime_title_uz, s_num)
+                    status = analysis.get("status", "not_exists")
+                    release_date = analysis.get("release_date")
+                    explanation = analysis.get("explanation", "")
+                    
+                    reply = _generate_sumire_season_reply(
+                        anime_title=anime_title_uz,
+                        season_num=s_num,
+                        status=status,
+                        release_date=release_date,
+                        explanation=explanation,
+                        has_base_in_db=has_base_in_db
+                    )
+                    record_wanted_anime(f"{anime_title_uz} {s_num}-fasl")
+                    return _sumire_response(reply, "canthelp")
+                else:
+                    if has_base_in_db:
+                        reply = f"Kechirasiz, arxivimizda {s_num}-fasl hali yo'q. Internetdan ham ma'lumot topib bo'lmadi."
+                    else:
+                        reply = f"Kechirasiz, '{anime_title_uz}' nomli animening {s_num}-fasli topilmadi."
+                    record_wanted_anime(f"{anime_title_uz} {s_num}-fasl")
+                    return _sumire_response(reply, "canthelp")
+            
+            # Custom detailed response with alternative language suggestions as requested by the user
+            return _sumire_response(
+                f"Kechirasiz, '{query}' nomli anime bizning arxivimizda topilmadi. Uni tez orada qo'shishlari uchun adminlarga so'rov yubordim!\n\n"
+                f"Qidiruv aniqroq ishlashi uchun, iltimos, animening <b>inglizcha</b> yoki <b>original yaponcha (romaji)</b> nomini yuborib ko'ring "
+                f"(masalan: <i>Attack on Titan</i>).",
+                "canthelp"
+            )
 
         anime_list = _format_search_results(paginated_results)
         
@@ -1426,8 +1630,9 @@ def api_send_message(request):
         broad_query = _extract_broad_search_query(user_text, chat_history)
         db_context_text = ""
         if broad_query:
-            db_results = search_manga_database(broad_query, limit=15)
-            db_results = _filter_search_results_by_query(broad_query, db_results)
+            base_broad_query = _clean_base_title(broad_query)
+            db_results = search_manga_database(base_broad_query, limit=15)
+            db_results = _filter_search_results_by_query(base_broad_query, db_results)
             if db_results:
                 lines = []
                 for r in db_results:
