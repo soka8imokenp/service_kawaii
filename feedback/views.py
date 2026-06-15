@@ -40,6 +40,17 @@ ALLOWED_EMOTIONS = {
 THANKS_WORDS = ("rahmat", "raxmat", "tashakkur", "thanks", "zor", "zo'r")
 RESOLVED_WORDS = ("ishladi", "hal boldi", "hal bo'ldi", "tuzaldi", "hammasi ishlayapti")
 
+ANIME_SYNONYMS = {
+    "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "ma'bud", "minorasi"},
+    "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "iblislar", "qotili"},
+    "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "titanlar", "hujumi"},
+    "jodugarlar jangi": {"jujutsu kaisen", "afsuniy jang", "jodugarlar", "jangi"},
+    "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "qahramonlik", "akademiyam"},
+    "o'lim daftari": {"death note", "o'lim", "daftari"},
+    "o'lim kundaligi": {"death note", "o'lim", "daftari", "kundaligi"},
+    "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
+}
+
 
 # === INTELLEKTUAL PROMPT 9.2 (DB-DRIVEN WITH LOOP-BREAKER) ===
 # === INTELLEKTUAL PROMPT 9.3 (DB-DRIVEN WITH LOOP-BREAKER & STRICT TOPIC FILTERS) ===
@@ -721,6 +732,49 @@ def _clean_base_title(title):
     return cleaned.strip()
 
 
+def _canonicalize_query(query):
+    if not query:
+        return query
+    # Extract season
+    season_num = _extract_season_number(query)
+    has_final = any(k in query.lower() for k in ["final", "nihoya", "yakun", "oxirgi"])
+    
+    base = _clean_base_title(query)
+    canonical_base = base
+    base_lower = base.lower().strip()
+    for uz_name, syn_set in ANIME_SYNONYMS.items():
+        if base_lower == uz_name.lower().strip() or any(s.lower().strip() == base_lower for s in syn_set):
+            canonical_base = uz_name
+            break
+            
+    res = canonical_base
+    if has_final:
+        res = f"{res} Final"
+    elif season_num is not None:
+        res = f"{res} {season_num}-fasl"
+    return res
+
+
+def _is_anime_title_match(query, title):
+    if not query or not title:
+        return False
+    # Check exact or substring overlap
+    q_clean = _clean_base_title(query).lower().replace(" ", "")
+    t_clean = _clean_base_title(title).lower().replace(" ", "")
+    if q_clean in t_clean or t_clean in q_clean:
+        return True
+        
+    query_lower = query.lower()
+    title_lower = title.lower()
+    for uz_name, syn_set in ANIME_SYNONYMS.items():
+        title_matches = (uz_name in title_lower) or any(s in title_lower for s in syn_set)
+        query_matches = (uz_name in query_lower) or any(s in query_lower for s in syn_set)
+        if title_matches and query_matches:
+            return True
+            
+    return False
+
+
 def _search_anime_season_on_web(anime_title_uz, anime_title_org, season_num):
     from urllib.parse import quote_plus
     import html as html_lib
@@ -747,11 +801,12 @@ def _search_anime_season_on_web(anime_title_uz, anime_title_org, season_num):
         titles = re.findall(r'<a class="result__url[^"]*"[^>]*>(.*?)</a>', html_content, re.DOTALL)
         
         results = []
-        for t, s in zip(titles[:6], snippets[:6]):
+        for t, s in zip(titles[:4], snippets[:4]):
             clean_s = re.sub(r'<[^>]+>', '', s).strip()
             clean_t = re.sub(r'<[^>]+>', '', t).strip()
             clean_s = html_lib.unescape(clean_s)
             clean_t = html_lib.unescape(clean_t)
+            clean_s = clean_s[:250]  # Truncate snippet to 250 characters to save user tokens
             results.append({"title": clean_t, "snippet": clean_s})
         return results
     except Exception as e:
@@ -865,8 +920,8 @@ def _filter_search_results_by_query(query, results):
     
     # Bypass season and final constraints for queries referencing specific subtitles/arcs
     specific_subtitle_keywords = [
-        "ustaxona", "jangi", "shahzodaning", "qaytishi", "temirchilar", "qishlog'i", 
-        "qishlogi", "cheksiz", "poyezd", "poyezdi", "qal'a", "qadriyat", "bo'lim", "bolim",
+        "ustaxona", "shahzodaning", "qaytishi", "temirchilar", "qishlog'i", 
+        "qishlogi", "cheksiz", "poyezd", "poyezdi", "qal'a", "qadriyat",
         "ko'ngilochar", "kongilochar", "mavze", "xashira", "mashg'ulot", "mashgulot"
     ]
     has_specific_subtitle = any(k in query_lower for k in specific_subtitle_keywords)
@@ -890,17 +945,6 @@ def _filter_search_results_by_query(query, results):
         
     if not query_words:
         return []
-        
-    # Dictionary of popular cross-language synonyms (no Russian/Cyrillic)
-    synonyms = {
-        "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "ma'bud", "minorasi"},
-        "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "iblislar", "qotili"},
-        "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "titanlar", "hujumi"},
-        "afsuniy jang": {"jujutsu kaisen", "afsuniy", "jang"},
-        "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "qahramonlik", "akademiyam"},
-        "o'lim daftari": {"death note", "o'lim", "daftari"},
-        "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
-    }
         
     filtered = []
     for r in results:
@@ -943,8 +987,8 @@ def _filter_search_results_by_query(query, results):
                         
         # Subtitle check to filter out general titles when specific subtitles are queried
         specific_subtitle_keywords = [
-            "ustaxona", "jangi", "shahzodaning", "qaytishi", "temirchilar", "qishlog'i", 
-            "qishlogi", "cheksiz", "poyezd", "poyezdi", "qal'a", "qadriyat", "bo'lim", "bolim",
+            "ustaxona", "shahzodaning", "qaytishi", "temirchilar", "qishlog'i", 
+            "qishlogi", "cheksiz", "poyezd", "poyezdi", "qal'a", "qadriyat",
             "ko'ngilochar", "kongilochar", "mavze", "xashira", "mashg'ulot", "mashgulot"
         ]
         query_subtitles = [k for k in specific_subtitle_keywords if k in query_lower]
@@ -957,7 +1001,7 @@ def _filter_search_results_by_query(query, results):
             
         # Check synonyms
         matched_synonym = False
-        for uz_name, syn_set in synonyms.items():
+        for uz_name, syn_set in ANIME_SYNONYMS.items():
             if uz_name in title_lower:
                 for syn in syn_set:
                     if syn in query_lower:
@@ -1093,8 +1137,15 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Clean up Uzbek dative pronouns "manga/menga/sanga" if any got into the search query
         query = re.sub(r'\b(manga|menga|sanga)\b', '', query, flags=re.IGNORECASE).strip()
         
+        # Fallback to broad search query from user_text if LLM query is empty/invalid
+        if not query or query.lower() in ["yo'q", "yoq", "none", "null"]:
+            query = _extract_broad_search_query(user_text, chat_history)
+            
         if not query or query.lower() in ["yo'q", "yoq", "none", "null"]:
             return _sumire_response("Aniq qaysi animeni yoki janrni qidiryapsiz?", "what")
+            
+        # Canonicalize query using ANIME_SYNONYMS
+        query = _canonicalize_query(query)
             
         anime_type = command.get("anime_type", "")
         limit = min(max(_safe_int(command.get("limit"), 3), 1), 10)
@@ -1111,18 +1162,8 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         has_overlap = any(qw in user_text.lower() or any(qw in uw or uw in qw for uw in user_words_clean) for qw in query_words_clean)
         
         # Synonym-based overlap check to prevent synonym-queries from being treated as follow-ups
-        synonyms = {
-            "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "ma'bud", "minorasi"},
-            "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "iblislar", "qotili"},
-            "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "titanlar", "hujumi"},
-            "afsuniy jang": {"jujutsu kaisen", "afsuniy", "jang"},
-            "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "qahramonlik", "akademiyam"},
-            "o'lim daftari": {"death note", "o'lim", "daftari"},
-            "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
-        }
-        
         matched_synonym = False
-        for uz_name, syn_set in synonyms.items():
+        for uz_name, syn_set in ANIME_SYNONYMS.items():
             if any(k in user_text.lower() for k in [uz_name] + list(syn_set)):
                 if any(k in query_lower for k in [uz_name] + list(syn_set)):
                     matched_synonym = True
@@ -1138,7 +1179,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                 "mening qahramonlik akademiyam": ["akademiy", "qahramon", "hero", "academia"],
                 "iblislar qotili": ["iblis", "qotil", "demon", "slayer", "temirchi"],
                 "titanlar hujumi": ["titan", "hujum", "attack", "shingeki"],
-                "afsuniy jang": ["afsun", "jang", "jujutsu", "kaisen"],
+                "jodugarlar jangi": ["jodugar", "jang", "jujutsu", "kaisen"],
                 "o'lim daftari": ["o'lim", "daftar", "death", "note"],
                 "sehrgarning kelini": ["sehrgar", "kelin", "bride"]
             }
@@ -1227,8 +1268,8 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
 
         # Define subtitle/arc keywords that indicate a highly specific query
         specific_subtitle_keywords = [
-            "ustaxona", "jangi", "shahzodaning", "qaytishi", "temirchilar", "qishlog'i", 
-            "qishlogi", "cheksiz", "poyezd", "poyezdi", "qal'a", "qadriyat", "bo'lim", "bolim",
+            "ustaxona", "shahzodaning", "qaytishi", "temirchilar", "qishlog'i", 
+            "qishlogi", "cheksiz", "poyezd", "poyezdi", "qal'a", "qadriyat",
             "ko'ngilochar", "kongilochar", "mavze", "xashira", "mashg'ulot", "mashgulot"
         ]
         has_specific_subtitle = any(k in query_lower for k in specific_subtitle_keywords)
@@ -1271,16 +1312,6 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         if asking_seasons and filtered_results:
             # Filter filtered_results to only include titles that actually match the query name to prevent third-party hijacking
             q_words = [w for w in _split_uzbek_words(query.lower()) if len(w) >= 3 and w not in ["fasl", "sezon", "season", "part", "mavsum"]]
-            q_synonyms = {
-                "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "ma'bud", "minorasi"},
-                "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "iblislar", "qotili"},
-                "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "titanlar", "hujumi"},
-                "afsuniy jang": {"jujutsu kaisen", "afsuniy", "jang"},
-                "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "qahramonlik", "akademiyam"},
-                "o'lim daftari": {"death note", "o'lim", "daftari"},
-                "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
-            }
-            
             cleaned_filtered_results = []
             for r in filtered_results:
                 t = r.get('title', '')
@@ -1293,7 +1324,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                     
                 # Check synonyms
                 matched_syn = False
-                for uz_name, syn_set in q_synonyms.items():
+                for uz_name, syn_set in ANIME_SYNONYMS.items():
                     if uz_name in t_lower:
                         for syn in syn_set:
                             if syn in query.lower():
@@ -1380,9 +1411,7 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                 base_anime_item = None
                 for item in base_db_results:
                     title = item.get("title", "")
-                    title_clean = _clean_base_title(title).lower()
-                    q_clean = base_query.lower()
-                    if q_clean in title_clean or title_clean in q_clean:
+                    if _is_anime_title_match(base_query, title):
                         base_anime_item = item
                         break
                 
@@ -1685,6 +1714,17 @@ def api_send_message(request):
             }
         else:
             command = _parse_ai_command(user_text, history_text, profile, db_context_text)
+            
+            # Force intent to search for season requests if not conversational/apology
+            has_season = _extract_season_number(user_text) is not None
+            is_conv = _is_greeting(user_text) or _contains_any(user_text.lower(), THANKS_WORDS) or _contains_any(user_text.lower(), RESOLVED_WORDS)
+            
+            apology_keywords = ["kechir", "uzr", "kechiring", "kechirasiz", "aybga buyurmang", "tavba", "hazl", "hazillashdim"]
+            is_apology = any(k in user_text.lower() for k in apology_keywords)
+            
+            if has_season and not is_conv and not is_apology:
+                if command.get("intent") not in ["reject", "ticket", "purchase", "bot_link"]:
+                    command["intent"] = "search"
         
         # Increment request count without resetting the existing key's TTL
         if user_requests > 0:
