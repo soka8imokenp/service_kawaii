@@ -620,6 +620,9 @@ def _route_without_ai(user_text):
 
 
 def _extract_broad_search_query(text, chat_history):
+    # Normalize apostrophes
+    text = re.sub(r"[’‘ʻ`]", "'", text)
+    
     def clean_text(t):
         t_low = t.lower().strip()
         t_low = re.sub(r'[!?.,;:]+$', '', t_low).strip()
@@ -719,6 +722,10 @@ def _extract_season_number(text):
         val = int(d)
         if 1 <= val <= 20:
             if not (1900 <= val <= 2100):
+                # Ensure the digit is not part of an episode/part/series pattern
+                digit_pat = rf'\b{d}\s*-?\s*(?:qism|seriy|epizod|сери|эпизод)'
+                if re.search(digit_pat, text_lower):
+                    continue
                 return val
     return None
 
@@ -726,6 +733,8 @@ def _extract_season_number(text):
 def _clean_base_title(title):
     if not title:
         return ""
+    # Normalize apostrophes
+    title = re.sub(r"[’‘ʻ`]", "'", title)
     # Strip common season suffixes like "2-fasl", "2-mavsum", "season 2", "2nd season", etc.
     cleaned = re.sub(
         r'\b(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?)|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?\s*-?\s*(\d+)))\b',
@@ -753,6 +762,12 @@ def _canonicalize_query(query):
             canonical_base = uz_name
             break
             
+    # Map season 8 of My Hero Academia to Final
+    is_hero_academy = any(k in canonical_base.lower() for k in ["qahramon", "hero", "akademiya"])
+    if season_num == 8 and is_hero_academy:
+        has_final = True
+        season_num = None
+
     res = canonical_base
     if has_final:
         res = f"{res} Final"
@@ -1211,7 +1226,13 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Reinforce search query with season/final keywords
         query_lower = query.lower()
         season_num = _extract_season_number(user_text)
-        has_final = "final" in user_text.lower() or "8" in user_text.lower() or "oxirgi" in user_text.lower()
+        has_final = "final" in user_text.lower() or "oxirgi" in user_text.lower()
+        
+        # Mathematical alignment: treat My Hero Academia season 8 as Final
+        is_hero_academy = any(k in query_lower for k in ["qahramon", "hero", "akademiya"])
+        if season_num == 8 and is_hero_academy:
+            has_final = True
+            season_num = None
         
         # Check if the current message is a follow-up (does not contain the explicit anime title or its parts)
         query_words_clean = [w for w in _split_uzbek_words(query_lower) if len(w) > 2]
@@ -1294,7 +1315,8 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                         # Stop if we hit the message that started the current search thread
                         contains_current_name = any(s in prev_text for s in current_stems)
                         
-                        if "final" in prev_text or "8" in prev_text or "oxirgi" in prev_text:
+                        is_hero_academy_prev = any(k in prev_text for k in ["qahramon", "hero", "akademiya"])
+                        if "final" in prev_text or "oxirgi" in prev_text or ("8" in prev_text and is_hero_academy_prev):
                             has_final = True
                             break
                             
@@ -1811,7 +1833,7 @@ def api_send_message(request):
             "jalab", "qotoq", "yiban", "lox", "lo'x", "dalbayob", "dalbaob",
             "hezi", "haromi", "iflos", "yeban", "eban", "yobani", "yobaniy",
             "skaman", "sikaman", "sikey", "sikay", "siki", "sikish", "sikiş", "sik", "ski",
-            "ami", "aminga", "am", "poxuy", "pohuy", "naxuy", "nahuy", "chmo",
+            "ami", "aminga", "am", "om", "omi", "oming", "omni", "omila", "omingni", "omining", "omigni", "poxuy", "pohuy", "naxuy", "nahuy", "chmo",
             "dnx", "dnh", "amigni", "amni", "amingni", "amila", "aming", "amlar", "amining",
             "qotogini", "qotog'ingni", "qotogingni", "qotoging", "sex", "seks"
         ]
