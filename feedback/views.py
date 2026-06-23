@@ -190,7 +190,10 @@ Foydalanuvchi bilan muloqot qilayotganda sening emotsiyang (emotion) har doim bi
       * AYNAN "Men aniq bir qism yoki seriyani alohida yubora olmayman. Lekin sizga butun animening o'zini tashlab bera olaman." deb javob ber.
       * Shunda ham, orqa fonda qidiruv ishlashi uchun `search_query` ga o'sha animening o'zbekcha nomini qism raqamisiz FAQAT o'zini yozib qidiruvni faollashtir (intent: "search" qil, yaqinidagi qism ko'rsatkichlarini olib tashla!).
       * Misol: "Titanlar hujumi 10-qism tasha" -> reply: "Men aniq bir qism yoki seriyani alohida yubora olmayman. Lekin sizga butun animening o'zini tashlab bera olaman.", intent: "search", search_query: "Titanlar hujumi".
-13. CHALKASH VA TUSHUNARSIZ XABARLAR (UNCLEAR/GIBBERISH INPUTS):
+13. INGLIZCHA ANIME NOMALARI (ENGLISH ANIME TITLES):
+    - Foydalanuvchi ingliz tilida gap yoki savol ko'rinishidagi xabar yozsa (masalan: "Can a boy-girl friendship survive?", "I want to eat your pancreas", "Your lie in April", "I've Been Killing Slimes for 300 Years" va h.k.), bu katta ehtimol bilan animening inglizcha nomi hisoblanadi!
+    - Bunday vaziyatlarda aslo oddiy suhbat (intent: "chat") deb o'ylama! Qat'iyan intent: "search" deb belgilash va "search_query" ga o'sha inglizcha gapni to'liq yozish shart.
+14. CHALKASH VA TUSHUNARSIZ XABARLAR (UNCLEAR/GIBBERISH INPUTS):
     - Agar foydalanuvchi yozgan gap g'alati, xato, chala yoki mutlaqo tushunarsiz bo'lsa (masalan: harflar ketma-ketligi, tushunarsiz so'zlar yig'indisi, chala jumlalar) va bu biron-bir anime nomiga o'xshamasada, lekin qidiruvga o'xshab ko'rinsa:
       * Uni aslo anime qidiruvi deb tushunma va `search_query` ga yozma!
       * Buning o'rniga undan aniqlik kiritishini so'ra (intent: "chat", emotion: "what").
@@ -960,7 +963,33 @@ def _filter_search_results_by_query(query, results):
         return []
         
     query_lower = query.lower().strip()
-    q_clean = query_lower.replace(" ", "")
+    q_clean = re.sub(r'[^a-z0-9]', '', query_lower)
+    
+    # Check if the query consists entirely of genre keywords (Uzbek, Russian, English)
+    raw_words = _split_uzbek_words(query_lower)
+    sig_query_words = [w for w in raw_words if w not in ["fasl", "sezon", "season", "part", "mavsum", "final", "nihoya", "yakun", "oxirgi", "bormi", "anime", "kino", "serial"]]
+    
+    GENRE_KEYWORDS = {
+        # Uzbek
+        "romantika", "ramantika", "romantik", "ramantik", "fantastika", "fantastik", 
+        "komediya", "drama", "triller", "detektiv", "jangari", "sarguzasht", "dahshat", 
+        "sehrli", "maktab", "sport", "kosmos", "musiqa", "kundalik", "harbiy", 
+        "psixologik", "g'ayritabiiy", "tarixiy", "shonen", "shodjo", "seinen", "mexa", 
+        "mecha", "iseykay", "isekay", "isekai",
+        # Russian
+        "романтика", "фантастика", "комедия", "драма", "триллер", "детектив", "боевик", 
+        "приключения", "ужасы", "магия", "школа", "спорт", "космос", "музыка", 
+        "повседневность", "военный", "психологический", "сверхъестественное", 
+        "исторический", "меха", "исекай",
+        # English
+        "romance", "fantasy", "comedy", "drama", "thriller", "detective", "action", 
+        "adventure", "horror", "magic", "school", "sport", "space", "music", 
+        "slice", "life", "military", "psychological", "supernatural", "historical"
+    }
+    
+    is_genre_query = sig_query_words and all(w in GENRE_KEYWORDS for w in sig_query_words)
+    if is_genre_query:
+        return results
     
     # Extract season number and final keywords from the query if any
     query_season = _extract_season_number(query_lower)
@@ -984,7 +1013,6 @@ def _filter_search_results_by_query(query, results):
         "mening", "sening", "bizning", "ularning", "u", "bu", "shu", "o'sha"
     }
     
-    import re
     # Extract query words
     raw_words = [w for w in _split_uzbek_words(query_lower) if w not in common_stop_words]
     query_words = [w for w in raw_words if len(w) > 2 or w.isdigit()]
@@ -1062,17 +1090,33 @@ def _filter_search_results_by_query(query, results):
             filtered.append(r)
             continue
             
-        # Exact match or substring match
+        # Exact match or substring match against title_uzb
         if q_clean in t_clean or t_clean in q_clean:
             filtered.append(r)
             continue
             
-        # Check Levenshtein distance for fuzzy matching (typos)
+        # Exact match or substring match against title_org
+        title_org_lower = (r.get('title_org') or '').lower()
+        t_org_clean = re.sub(r'[^a-z0-9]', '', title_org_lower)
+        if q_clean in t_org_clean or t_org_clean in q_clean:
+            filtered.append(r)
+            continue
+            
+        # Check Levenshtein distance for fuzzy matching (typos) against title_uzb
         max_len = max(len(q_clean), len(t_clean))
         if max_len > 0:
             dist = _levenshtein_distance(q_clean, t_clean)
             similarity = 1.0 - (dist / max_len)
             if similarity >= 0.75:
+                filtered.append(r)
+                continue
+                
+        # Check Levenshtein distance for fuzzy matching against title_org
+        max_len_org = max(len(q_clean), len(t_org_clean))
+        if max_len_org > 0:
+            dist_org = _levenshtein_distance(q_clean, t_org_clean)
+            similarity_org = 1.0 - (dist_org / max_len_org)
+            if similarity_org >= 0.75:
                 filtered.append(r)
                 continue
             
@@ -1801,6 +1845,7 @@ def api_send_message(request):
         # Pre-query database for real-time anime search context
         broad_query = _extract_broad_search_query(user_text, chat_history)
         db_context_text = ""
+        db_results = []
         if broad_query:
             base_broad_query = _clean_base_title(broad_query)
             db_results = search_manga_database(base_broad_query, limit=15)
@@ -1857,6 +1902,35 @@ def api_send_message(request):
             }
         else:
             command = _parse_ai_command(user_text, history_text, profile, db_context_text)
+            
+            # If the database has a matching title and intent is chat, force search intent (fail-safe for English/synonym titles)
+            if command.get("intent") == "chat" and db_results:
+                clean_u = re.sub(r'[^a-z0-9]', '', user_text.lower())
+                for r in db_results:
+                    title_uz = r.get("title", "").lower()
+                    title_org = (r.get("title_org") or "").lower()
+                    clean_uz = re.sub(r'[^a-z0-9]', '', title_uz)
+                    clean_org = re.sub(r'[^a-z0-9]', '', title_org)
+                    
+                    max_len_uz = max(len(clean_u), len(clean_uz))
+                    max_len_org = max(len(clean_u), len(clean_org))
+                    
+                    sim_uz = 1.0 - (_levenshtein_distance(clean_u, clean_uz) / max_len_uz) if max_len_uz > 0 else 0
+                    sim_org = 1.0 - (_levenshtein_distance(clean_u, clean_org) / max_len_org) if max_len_org > 0 else 0
+                    
+                    is_match = False
+                    if clean_u == clean_uz or clean_u == clean_org:
+                        is_match = True
+                    elif len(clean_u) >= 4:
+                        if (clean_u in clean_uz and len(clean_u) >= len(clean_uz) * 0.7) or (clean_u in clean_org and len(clean_u) >= len(clean_org) * 0.7):
+                            is_match = True
+                        elif sim_uz >= 0.8 or sim_org >= 0.8:
+                            is_match = True
+                            
+                    if is_match:
+                        command["intent"] = "search"
+                        command["search_query"] = r.get("title")
+                        break
             
             # Force intent to search for season requests if not conversational/apology
             has_season = _extract_season_number(user_text) is not None
