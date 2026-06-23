@@ -101,10 +101,10 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 === BAZA BILAN ISHLASH VA SOXTA JAVOB TAQIQI (MUHIM!) ===
 Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan topilgan real animelar ro'yxati taqdim etiladi.
 1. SOXTA JAVOB BERMA VA QAT'IY FILTRLANGAN JAVOBLAR: Foydalanuvchi so'ragan anime bazamizda bor-yo'qligini ro'yxatdan QAT'IY tekshir!
-   - Agar foydalanuvchi so'ragan nom (yoki uning sinonimi, arc nomi, masalan "Temirchilar qishlog'i" aslida "Iblislar qotili 3-fasl" ekanligini yaxshi bilasan) bazadagi haqiqiy ro'yxatda BO'LMASA va unga mutlaqo aloqasi yo'q bo'lsa (masalan, ro'yxat bo'sh bo'lsa yoki Solo Leveling so'rasa-yu, ro'yxatda mutlaqo boshqa animelar bo'lsa), u holda BU ANIME ARXIVIMIZDA YO'QLIGINI tan ol (intent: "chat", emotion: "canthelp"). ASLO soxta ma'lumot yoki boshqa animeni "bor" deb taklif qilma!
+   - Agar foydalanuvchi so'ragan nom (yoki uning sinonimi, arc nomi, masalan "Temirchilar qishlog'i" aslida "Iblislar qotili 3-fasl" ekanligini yaxshi bilasan) bazadagi haqiqiy ro'yxatda BO'LMASA va unga mutlaqo aloqasi yo'q bo'lsa (masalan, ro'yxat bo'sh bo'lsa yoki Solo Leveling so'rasa-yu, ro'yxatda mutlaqo boshqa animelar bo'lsa), u holda BU ANIME ARXIVIMIZDA YO'QLIGINI tan ol (intent: "chat", emotion: "canthelp"). ASLO soxta ma'lumot/boshqa animeni "bor" deb taklif qilma!
    - Agar foydalanuvchi so'ragan arc nomi yoki sinonimi bazadagi biron bir animening fasli yoki qismiga to'g'ri kelsa (masalan, "Temirchilar qishlog'i" -> "Iblislar qotili 3-fasl"), uni o'sha anime sifatida qabul qil va tasdiqla!
    - SEZONLAR VA FASLLAR SO'ROVI (MUHIM!): Agar foydalanuvchi ma'lum bir faslni so'rasa (masalan: 2-fasl, 3-fasl va h.k.), arxivda u bor yoki yo'qligidan qat'iy nazar, har doim intent: "search" deb belgilashing va "search_query" ga o'sha so'ralgan fasl nomini aniq yozishing shart (masalan: "Davolash sehridan 2-fasl"). Aslo intent: "chat" qilib "arxivda yo'q" deb javob yozma! Tizim o'zi orqa fonda bazani va internetni qidirib, to'g'ri javobni shakllantiradi.
-   - KINO/FILM VA TV SERIAL CHEKLANISHI (MUHIM!): Agar foydalanuvchi biron animening film (kino) variantini so'rasa va ro'yxatda faqat serial bo'lsa (yoki aksincha), u holda film yo'qligini, bizda faqat serial fasllari borligini ochiq ayt! Hech qachon serial havolasini "film" deb yuborma va soxta gapirma!
+   - KINO/FILM VA TV SERIAL CHEKLANISHI (MUHIM!): Agar foydalanuvchi biron animening film (kino) variantini so'rasa va ro'yxatda faqat serial bo'lsa (yoki aksincha), u holda film yo'qligini, bizda faqat serial fasllari borligini ochiq ayt! Hech qachon serial havolasini "film" deb yuborma va soxta gapirma! Shuningdek, foydalanuvchi film, kino, movie yoki ruschada "фильм", "фильмы" so'rayotgan bo'lsa JSON dagi "anime_type" ni har doim "film" deb belgilang! Serial so'rayotgan bo'lsa (yoki "сериал", "сериалы") "serial" deb belgilang!
    - MATEMATIK HISOB-KITOB VA SEZON RAQAMLARI (MUHIM!): Har xil animelarda oxirgi mavsum "Final" deb nomlangan bo'lishi mumkin. Agar foydalanuvchi oxirgi fasl raqamini (masalan: 8-fasl) so'rasa, matematika bo'yicha bu o'sha "Final" mavsumidir! ASLO foydalanuvchi bilan tortishib o'tirma, uni o'sha final mavsumi sifatida qabul qil va tasdiqla!
 2. HAVOLALARNI TIQISHTIRMA VA POLITE FLOW ZANJIRI (LOOP-BREAKER):
    - Foydalanuvchi shunchaki "bormi?", "bormi yo'qmi?", "barcha fasllari bormi?" deb so'rasa, havolalarni (anime_list) darhol yuborma! Oldin suhbatlash va: "Ha, bor. Havolalarini tashlab beraymi?" deb ruxsat so'ra (intent: "chat").
@@ -135,7 +135,7 @@ Agar foydalanuvchi sendan kechirim so'rasa, uzr so'rasa, yoki xatosini tan olsa 
   "search_query": "FAQAT anime nomi yoki bitta janr. 'degan anime', 'topilmadi' kabi so'zlarni ASLO qo'shma!",
   "exclude_keywords": ["foydalanuvchi xohlamagan animelarning ASOSIY nomlari"],
   "offensive_words": ["foydalanuvchi ishlatgan qo'pol so'zlar (FAQAT intent: reject uchun)"],
-  "anime_type": "film|serial|bosh",
+  "anime_type": "film|serial|bosh. 'film' agar kino/film/фильм/фильмы so'ralsa; 'serial' agar serial/сериал so'ralsa; aks holda 'bosh'",
   "limit": 3,
   "offset": 0,
   "save_genre": "agar foydalanuvchi biron janrni yoqtirishini aytsa, shuni yoz"
@@ -706,8 +706,8 @@ def _split_uzbek_words(text):
         return []
     # Normalize different apostrophes/backticks to a single quote
     normalized = re.sub(r"[’‘ʻ`]", "'", text.lower())
-    # Split by characters that are not alphanumeric or single quote
-    parts = re.split(r"[^a-z0-9']+", normalized)
+    # Split by characters that are not alphanumeric (Unicode-aware) or single quote
+    parts = re.split(r"[^\w']+|_+", normalized)
     return [p.strip("'") for p in parts if p.strip("'")]
 
 
@@ -991,31 +991,122 @@ Guidelines:
                 return f"Ushbu animening {season_num}-fasli umuman mavjud emas va e'lon qilinmagan."
 
 
+GENRE_KEYWORDS = {
+    # Uzbek
+    "romantika", "ramantika", "romantik", "ramantik", "fantastika", "fantastik", 
+    "komediya", "drama", "triller", "detektiv", "jangari", "sarguzasht", "dahshat", 
+    "sehrli", "sehr", "maktab", "sport", "kosmos", "musiqa", "kundalik", "harbiy", 
+    "psixologik", "g'ayritabiiy", "tarixiy", "shonen", "shodjo", "seinen", "mexa", 
+    "mecha", "iseykay", "isekay", "isekai",
+    # Russian
+    "романтика", "фантастика", "комедия", "драма", "триллер", "детектив", "боевик", 
+    "приключения", "ужасы", "магия", "школа", "спорт", "космос", "музыка", 
+    "повседневность", "военный", "психологический", "сверхъестественное", 
+    "исторический", "меха", "исекай",
+    # English
+    "romance", "fantasy", "comedy", "drama", "thriller", "detective", "action", 
+    "adventure", "horror", "magic", "school", "sport", "space", "music", 
+    "slice", "life", "military", "psychological", "supernatural", "historical"
+}
+
+GENRE_STOP_WORDS = {
+    "bormi", "bormi?", "anime", "animeni", "kino", "serial", "shikoyat", "xabar", 
+    "uz", "uzb", "the", "a", "an", "of", "and", "or", "in", "on", "at", "to", "for",
+    "mening", "sening", "bizning", "ularning", "u", "bu", "shu", "o'sha",
+    "menga", "manga", "sanga", "tashla", "tasha", "yubor", "skachat", "ko'rsat", "korsat",
+    "кинь", "мне", "пожалуйста", "фильмы", "фильм", "кино", "сериал", "аниме", "в", "жанре",
+    "хочу", "посоветуй", "рекомендуй", "покажи", "жанр", "жанридаги", "жанрида", "fasl", 
+    "sezon", "season", "part", "mavsum", "final", "nihoya", "yakun", "oxirgi", "i",
+    "киньте", "подкинь", "даруй", "дай", "дайте", "скинь", "выдай", "скиньте", "хочется", 
+    "посмотреть", "смотреть", "порекомендуй", "предложи", "какой-нибудь", "какой", 
+    "какие", "какие-то", "с", "элементами", "про", "на", "подскажи", "tavsiya", 
+    "qil", "qilgin", "bersang", "ber", "yuboring", "tashlang", "ko'rmoqchiman", 
+    "kormoqchiman", "topib", "top", "bo'lsa", "bolsa", "bor", "yo'nalishidagi", 
+    "yonalishidagi", "turidagi", "hush", "yoqadigan", "yaxshi", "ajoyib", "qiziqarli", 
+    "zo'r", "zor", "есть", "интересные", "интересное", "интересный", "qanday", "qanaqa", 
+    "qanaqangi", "yoqadi", "yoqsa", "janrlar", "janri", "janrlaridagi", "janrlarida"
+}
+
+GENRE_MAP = {
+    # Russian to Uzbek Latin tags
+    "романтика": "romantika",
+    "фантастика": "fantastika",
+    "комедия": "komediya",
+    "драма": "drama",
+    "триллер": "triller",
+    "детектив": "detektiv",
+    "боевик": "jangari",
+    "приключения": "sarguzasht",
+    "ужасы": "dahshat",
+    "магия": "sehrli",
+    "школа": "maktab",
+    "спорт": "sport",
+    "космос": "kosmos",
+    "музыка": "musiqa",
+    "повседневность": "kundalik",
+    "военный": "harbiy",
+    "психологический": "psixologik",
+    "сверхъестественное": "g'ayritabiiy",
+    "исторический": "tarixiy",
+    "меха": "mexa",
+    "исекай": "iseykay",
+
+    # Uzbek variants/typos to standard tags
+    "ramantika": "romantika",
+    "romantik": "romantika",
+    "ramantik": "romantika",
+    "fantastik": "fantastika",
+    "sehr": "sehrli",
+    "iseykay": "iseykay",
+    "isekay": "iseykay",
+    "isekai": "iseykay",
+    "mecha": "mexa",
+
+    # English to Uzbek Latin tags
+    "romance": "romantika",
+    "fantasy": "fantastika",
+    "comedy": "komediya",
+    "thriller": "triller",
+    "detective": "detektiv",
+    "action": "jangari",
+    "adventure": "sarguzasht",
+    "horror": "dahshat",
+    "magic": "sehrli",
+    "school": "maktab",
+    "sport": "sport",
+    "space": "kosmos",
+    "music": "musiqa",
+    "slice": "kundalik",
+    "life": "kundalik",
+    "military": "harbiy",
+    "psychological": "psixologik",
+    "supernatural": "g'ayritabiiy",
+    "historical": "tarixiy"
+}
+
 def _is_genre_query(query):
     if not query:
         return False
     query_lower = query.lower().strip()
     raw_words = _split_uzbek_words(query_lower)
-    sig_query_words = [w for w in raw_words if w not in ["fasl", "sezon", "season", "part", "mavsum", "final", "nihoya", "yakun", "oxirgi", "bormi", "anime", "kino", "serial"]]
-    
-    GENRE_KEYWORDS = {
-        # Uzbek
-        "romantika", "ramantika", "romantik", "ramantik", "fantastika", "fantastik", 
-        "komediya", "drama", "triller", "detektiv", "jangari", "sarguzasht", "dahshat", 
-        "sehrli", "maktab", "sport", "kosmos", "musiqa", "kundalik", "harbiy", 
-        "psixologik", "g'ayritabiiy", "tarixiy", "shonen", "shodjo", "seinen", "mexa", 
-        "mecha", "iseykay", "isekay", "isekai",
-        # Russian
-        "романтика", "фантастика", "комедия", "драма", "триллер", "детектив", "боевик", 
-        "приключения", "ужасы", "магия", "школа", "спорт", "космос", "музыка", 
-        "повседневность", "военный", "психологический", "сверхъестественное", 
-        "исторический", "меха", "исекай",
-        # English
-        "romance", "fantasy", "comedy", "drama", "thriller", "detective", "action", 
-        "adventure", "horror", "magic", "school", "sport", "space", "music", 
-        "slice", "life", "military", "psychological", "supernatural", "historical"
-    }
+    sig_query_words = [w for w in raw_words if w not in GENRE_STOP_WORDS]
     return bool(sig_query_words and all(w in GENRE_KEYWORDS for w in sig_query_words))
+
+
+def _clean_genre_query(query):
+    if not query:
+        return query
+    query_lower = query.lower().strip()
+    raw_words = _split_uzbek_words(query_lower)
+    sig_query_words = [w for w in raw_words if w not in GENRE_STOP_WORDS]
+    mapped_words = []
+    for w in sig_query_words:
+        mapped = GENRE_MAP.get(w, w)
+        if mapped not in mapped_words:
+            mapped_words.append(mapped)
+    if mapped_words:
+        return " ".join(mapped_words)
+    return query
 
 
 def _filter_search_results_by_query(query, results):
@@ -1023,7 +1114,7 @@ def _filter_search_results_by_query(query, results):
         return []
         
     query_lower = query.lower().strip()
-    q_clean = re.sub(r'[^a-z0-9]', '', query_lower)
+    q_clean = re.sub(r'[^\w]|_', '', query_lower)
     
     if _is_genre_query(query):
         return results
@@ -1062,7 +1153,7 @@ def _filter_search_results_by_query(query, results):
     filtered = []
     for r in results:
         title_lower = r.get('title', '').lower()
-        t_clean = title_lower.replace(" ", "")
+        t_clean = re.sub(r'[^\w]|_', '', title_lower)
         
         # 1. Season matching check
         title_season = _extract_season_number(title_lower)
@@ -1128,34 +1219,36 @@ def _filter_search_results_by_query(query, results):
             continue
             
         # Exact match or substring match against title_uzb
-        if q_clean in t_clean or t_clean in q_clean:
+        if q_clean and t_clean and (q_clean in t_clean or t_clean in q_clean):
             filtered.append(r)
             continue
             
         # Exact match or substring match against title_org
         title_org_lower = (r.get('title_org') or '').lower()
-        t_org_clean = re.sub(r'[^a-z0-9]', '', title_org_lower)
-        if q_clean in t_org_clean or t_org_clean in q_clean:
+        t_org_clean = re.sub(r'[^\w]|_', '', title_org_lower)
+        if q_clean and t_org_clean and (q_clean in t_org_clean or t_org_clean in q_clean):
             filtered.append(r)
             continue
             
         # Check Levenshtein distance for fuzzy matching (typos) against title_uzb
-        max_len = max(len(q_clean), len(t_clean))
-        if max_len > 0:
-            dist = _levenshtein_distance(q_clean, t_clean)
-            similarity = 1.0 - (dist / max_len)
-            if similarity >= 0.75:
-                filtered.append(r)
-                continue
+        if q_clean and t_clean:
+            max_len = max(len(q_clean), len(t_clean))
+            if max_len > 0:
+                dist = _levenshtein_distance(q_clean, t_clean)
+                similarity = 1.0 - (dist / max_len)
+                if similarity >= 0.75:
+                    filtered.append(r)
+                    continue
                 
         # Check Levenshtein distance for fuzzy matching against title_org
-        max_len_org = max(len(q_clean), len(t_org_clean))
-        if max_len_org > 0:
-            dist_org = _levenshtein_distance(q_clean, t_org_clean)
-            similarity_org = 1.0 - (dist_org / max_len_org)
-            if similarity_org >= 0.75:
-                filtered.append(r)
-                continue
+        if q_clean and t_org_clean:
+            max_len_org = max(len(q_clean), len(t_org_clean))
+            if max_len_org > 0:
+                dist_org = _levenshtein_distance(q_clean, t_org_clean)
+                similarity_org = 1.0 - (dist_org / max_len_org)
+                if similarity_org >= 0.75:
+                    filtered.append(r)
+                    continue
             
         # Basic word-overlap check for season-restricted queries: if any name-word of length >= 3 overlaps
         title_words = _split_uzbek_words(title_lower)
@@ -1454,6 +1547,10 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         elif (season_num is not None) or has_final:
             limit = 1   # Set limit to 1 for specific season / final requests
             
+        # Clean up genre query if it consists of genres and stop words
+        if _is_genre_query(query):
+            query = _clean_genre_query(query)
+
         # Query 50 items to have a larger pool for filtering, so that fuzzy mismatches are correctly filtered out
         results = search_manga_database(query, limit=50, offset=0, anime_type=anime_type, exclude_keywords=exclude_keywords)
         
@@ -1965,27 +2062,29 @@ def api_send_message(request):
             
             # If the database has a matching title and intent is chat, force search intent (fail-safe for English/synonym titles)
             if command.get("intent") == "chat" and db_results:
-                clean_u = re.sub(r'[^a-z0-9]', '', user_text.lower())
+                clean_u = re.sub(r'[^\w]|_', '', user_text.lower())
                 for r in db_results:
                     title_uz = r.get("title", "").lower()
                     title_org = (r.get("title_org") or "").lower()
-                    clean_uz = re.sub(r'[^a-z0-9]', '', title_uz)
-                    clean_org = re.sub(r'[^a-z0-9]', '', title_org)
-                    
-                    max_len_uz = max(len(clean_u), len(clean_uz))
-                    max_len_org = max(len(clean_u), len(clean_org))
-                    
-                    sim_uz = 1.0 - (_levenshtein_distance(clean_u, clean_uz) / max_len_uz) if max_len_uz > 0 else 0
-                    sim_org = 1.0 - (_levenshtein_distance(clean_u, clean_org) / max_len_org) if max_len_org > 0 else 0
+                    clean_uz = re.sub(r'[^\w]|_', '', title_uz)
+                    clean_org = re.sub(r'[^\w]|_', '', title_org)
                     
                     is_match = False
-                    if clean_u == clean_uz or clean_u == clean_org:
+                    if clean_u and (clean_u == clean_uz or clean_u == clean_org):
                         is_match = True
-                    elif len(clean_u) >= 4:
-                        if (clean_u in clean_uz and len(clean_u) >= len(clean_uz) * 0.7) or (clean_u in clean_org and len(clean_u) >= len(clean_org) * 0.7):
-                            is_match = True
-                        elif sim_uz >= 0.8 or sim_org >= 0.8:
-                            is_match = True
+                    elif clean_u and len(clean_u) >= 4:
+                        # Uzbek title match
+                        if clean_uz:
+                            max_len_uz = max(len(clean_u), len(clean_uz))
+                            sim_uz = 1.0 - (_levenshtein_distance(clean_u, clean_uz) / max_len_uz) if max_len_uz > 0 else 0
+                            if (clean_u in clean_uz and len(clean_u) >= len(clean_uz) * 0.7) or sim_uz >= 0.8:
+                                is_match = True
+                        # Org title match
+                        if clean_org:
+                            max_len_org = max(len(clean_u), len(clean_org))
+                            sim_org = 1.0 - (_levenshtein_distance(clean_u, clean_org) / max_len_org) if max_len_org > 0 else 0
+                            if (clean_u in clean_org and len(clean_u) >= len(clean_org) * 0.7) or sim_org >= 0.8:
+                                is_match = True
                             
                     if is_match:
                         command["intent"] = "search"
