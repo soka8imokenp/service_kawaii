@@ -192,8 +192,13 @@ Foydalanuvchi bilan muloqot qilayotganda sening emotsiyang (emotion) har doim bi
       * Misol: "Titanlar hujumi 10-qism tasha" -> reply: "Men aniq bir qism yoki seriyani alohida yubora olmayman. Lekin sizga butun animening o'zini tashlab bera olaman.", intent: "search", search_query: "Titanlar hujumi".
 13. INGLIZCHA ANIME NOMALARI (ENGLISH ANIME TITLES):
     - Foydalanuvchi ingliz tilida gap yoki savol ko'rinishidagi xabar yozsa (masalan: "Can a boy-girl friendship survive?", "I want to eat your pancreas", "Your lie in April", "I've Been Killing Slimes for 300 Years" va h.k.), bu katta ehtimol bilan animening inglizcha nomi hisoblanadi!
-    - Bunday vaziyatlarda aslo oddiy suhbat (intent: "chat") deb o'ylama! Qat'iyan intent: "search" deb belgilash va "search_query" ga o'sha inglizcha gapni to'liq yozish shart.
-14. CHALKASH VA TUSHUNARSIZ XABARLAR (UNCLEAR/GIBBERISH INPUTS):
+    - Bunday vaziyatlarda aslo oddiy suhbat (intent: "chat") deb o'ylama! Qat'iyan intent: "search" deb belgilash va "search_query" ga o'sha animening yaponcha original (Romaji) nomini (masalan, "Danjo no Yuujou wa Seiritsu suru?" yoki "Kimi no Suizou wo Tabetai" yoki "Shigatsu wa Kimi no Uso") yoki o'zbekcha tarjima nomini yozish shart.
+14. JANR QIDIRUVI (GENRE SEARCH):
+    - Agar foydalanuvchi anime nomini emas, balki bir yoki bir nechta janrni (masalan: "romantika", "fantastika", "ramantik", "drama", "triller" va h.k.) yozsa:
+      * Qat'iyan intent: "search" deb belgilang!
+      * "search_query" ga o'sha janr nomini yozing.
+      * Javob (reply) matniga "Mana siz so'ragan janrdagi animelar." deb yozing (aslo "bunday nomli anime arxivda yo'q" deb yozmang!).
+15. CHALKASH VA TUSHUNARSIZ XABARLAR (UNCLEAR/GIBBERISH INPUTS):
     - Agar foydalanuvchi yozgan gap g'alati, xato, chala yoki mutlaqo tushunarsiz bo'lsa (masalan: harflar ketma-ketligi, tushunarsiz so'zlar yig'indisi, chala jumlalar) va bu biron-bir anime nomiga o'xshamasada, lekin qidiruvga o'xshab ko'rinsa:
       * Uni aslo anime qidiruvi deb tushunma va `search_query` ga yozma!
       * Buning o'rniga undan aniqlik kiritishini so'ra (intent: "chat", emotion: "what").
@@ -826,6 +831,34 @@ def _is_anime_title_match(query, title):
     return False
 
 
+def _translate_title_to_romaji_via_llm(query):
+    if not client:
+        return query
+    prompt = (
+        f"Foydalanuvchi quyidagi so'rov bo'yicha anime qidiryapti: '{query}'.\n"
+        "Ushbu animening original yaponcha (romaji, masalan: 'Shingeki no Kyojin', 'Danjo no Yuujou wa Seiritsu suru?') yoki "
+        "o'zbekcha tarjima nomini aniqlang. Faqat eng mashhur, qidiruv tizimi topa oladigan nomini qaytaring. "
+        "Agar bu inglizcha nom bo'lsa (masalan: 'Can a boy-girl friendship survive?'), uni yaponcha romaji nomiga o'giring. "
+        "Faqat bitta nomni matn ko'rinishida qaytaring, hech qanday qo'shimcha so'z, tushuntirish yoki tinish belgilari bo'lmasin."
+    )
+    try:
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[
+                {"role": "system", "content": "Siz anime nomlarini yaponcha romaji yoki o'zbekcha nomiga o'giruvchi yordamchisiz. Faqat bitta nomni qaytarasiz."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.1,
+            max_tokens=60
+        )
+        translated = response.choices[0].message.content.strip()
+        translated = translated.strip('"').strip("'")
+        return translated
+    except Exception as e:
+        print(f"Error in _translate_title_to_romaji_via_llm: {e}", flush=True)
+        return query
+
+
 def _search_anime_season_on_web(anime_title_uz, anime_title_org, season_num):
     from urllib.parse import quote_plus
     import html as html_lib
@@ -958,14 +991,10 @@ Guidelines:
                 return f"Ushbu animening {season_num}-fasli umuman mavjud emas va e'lon qilinmagan."
 
 
-def _filter_search_results_by_query(query, results):
-    if not query or not results:
-        return []
-        
+def _is_genre_query(query):
+    if not query:
+        return False
     query_lower = query.lower().strip()
-    q_clean = re.sub(r'[^a-z0-9]', '', query_lower)
-    
-    # Check if the query consists entirely of genre keywords (Uzbek, Russian, English)
     raw_words = _split_uzbek_words(query_lower)
     sig_query_words = [w for w in raw_words if w not in ["fasl", "sezon", "season", "part", "mavsum", "final", "nihoya", "yakun", "oxirgi", "bormi", "anime", "kino", "serial"]]
     
@@ -986,9 +1015,17 @@ def _filter_search_results_by_query(query, results):
         "adventure", "horror", "magic", "school", "sport", "space", "music", 
         "slice", "life", "military", "psychological", "supernatural", "historical"
     }
+    return bool(sig_query_words and all(w in GENRE_KEYWORDS for w in sig_query_words))
+
+
+def _filter_search_results_by_query(query, results):
+    if not query or not results:
+        return []
+        
+    query_lower = query.lower().strip()
+    q_clean = re.sub(r'[^a-z0-9]', '', query_lower)
     
-    is_genre_query = sig_query_words and all(w in GENRE_KEYWORDS for w in sig_query_words)
-    if is_genre_query:
+    if _is_genre_query(query):
         return results
     
     # Extract season number and final keywords from the query if any
@@ -1428,8 +1465,25 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
             results_any = search_manga_database(query, limit=50, offset=0, anime_type="", exclude_keywords=exclude_keywords)
             filtered_results = _filter_search_results_by_query(query, results_any)
             
-        if not filtered_results:
-            record_wanted_anime(query)
+        is_season_or_final = (season_num is not None and season_num >= 2) or has_final
+        if not filtered_results and not is_season_or_final:
+            # Try to translate/normalize query using LLM (e.g. from English/typo to original Japanese Romaji or Uzbek title)
+            translated_query = _translate_title_to_romaji_via_llm(query)
+            if translated_query and translated_query.lower().strip() != query.lower().strip():
+                print(f"DEBUG: Translating search query '{query}' -> '{translated_query}'", flush=True)
+                results_translated = search_manga_database(translated_query, limit=50, offset=0, anime_type=anime_type, exclude_keywords=exclude_keywords)
+                filtered_results = _filter_search_results_by_query(translated_query, results_translated)
+                if not filtered_results and anime_type:
+                    results_any = search_manga_database(translated_query, limit=50, offset=0, anime_type="", exclude_keywords=exclude_keywords)
+                    filtered_results = _filter_search_results_by_query(translated_query, results_any)
+                
+                if filtered_results:
+                    query = translated_query
+                    reply = "Topdim. Ko'rishingiz mumkin."
+                    emotion = "talking"
+            
+            if not filtered_results:
+                record_wanted_anime(query)
             
         # Paginate manually if offset/limit are specified (unless we are showing all unique seasons)
         if asking_seasons and filtered_results:
@@ -1574,6 +1628,12 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                 f"(masalan: <i>Attack on Titan</i>).",
                 "canthelp"
             )
+
+        # Genre query override
+        if _is_genre_query(query) or _is_genre_query(user_text):
+            if paginated_results:
+                reply = "Mana siz so'ragan janrdagi animelar."
+                emotion = "talking"
 
         anime_list = _format_search_results(paginated_results)
         
@@ -1932,6 +1992,12 @@ def api_send_message(request):
                         command["search_query"] = r.get("title")
                         break
             
+            # Force intent to search for genre queries
+            if _is_genre_query(user_text):
+                if command.get("intent") not in ["reject", "ticket", "purchase", "bot_link"]:
+                    command["intent"] = "search"
+                    command["search_query"] = user_text
+
             # Force intent to search for season requests if not conversational/apology
             has_season = _extract_season_number(user_text) is not None
             is_conv = _is_greeting(user_text) or _contains_any(user_text.lower(), THANKS_WORDS) or _contains_any(user_text.lower(), RESOLVED_WORDS)
