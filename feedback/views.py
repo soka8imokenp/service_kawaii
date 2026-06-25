@@ -49,6 +49,10 @@ ANIME_SYNONYMS = {
     "o'lim daftari": {"death note", "o'lim", "daftari"},
     "o'lim kundaligi": {"death note", "o'lim", "daftari", "kundaligi"},
     "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
+    "yolg'izlikda daraja ko'tarish": {"solo leveling", "solo level", "ore dake level up na ken", "ore dake", "level up", "соло левелинг", "соло левел", "yolgizlikda daraja kotarish", "yolgizlikda daraja ko'tarish", "yolg'izlikda daraja kotarish"},
+    "yulduz bolalari": {"oshi no ko", "oshinoko", "yulduz bolalari", "yulduz", "bolalari"},
+    "sening isming": {"your name", "kimi no na wa", "kimi no nawa", "sening isming"},
+    "yigit va qiz o'rtasida do'stlik bo'lishi mumkinmi!?": {"can a boy girl friendship survive", "danjo no yuujou wa seiritsu suru", "yigit va qiz", "o'rtasida do'stlik"}
 }
 
 
@@ -765,6 +769,11 @@ def _canonicalize_query(query):
     base = _clean_base_title(query)
     canonical_base = base
     base_lower = base.lower().strip()
+    
+    # Strip common trailing grammatical suffixes in Uzbek (both space-separated and attached)
+    base_lower = re.sub(r'\s*\b(?:ni|ga|ning|da|dan)\b$', '', base_lower).strip()
+    base_lower = re.sub(r'-?(?:ni|ga|ning|da|dan)$', '', base_lower).strip()
+    
     for uz_name, syn_set in ANIME_SYNONYMS.items():
         if base_lower == uz_name.lower().strip() or any(s.lower().strip() == base_lower for s in syn_set):
             canonical_base = uz_name
@@ -2005,6 +2014,7 @@ def api_send_message(request):
         db_results = []
         if broad_query:
             base_broad_query = _clean_base_title(broad_query)
+            base_broad_query = _canonicalize_query(base_broad_query)
             db_results = search_manga_database(base_broad_query, limit=15)
             db_results = _filter_search_results_by_query(base_broad_query, db_results)
             if db_results:
