@@ -42,17 +42,18 @@ RESOLVED_WORDS = ("ishladi", "hal boldi", "hal bo'ldi", "tuzaldi", "hammasi ishl
 
 ANIME_SYNONYMS = {
     "ma'bud minorasi": {"tower of god", "kami no tou", "kami no to", "ma'bud", "minorasi"},
-    "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "iblislar", "qotili"},
-    "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "titanlar", "hujumi"},
-    "jodugarlar jangi": {"jujutsu kaisen", "afsuniy jang", "jodugarlar", "jangi"},
-    "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "qahramonlik", "akademiyam"},
-    "o'lim daftari": {"death note", "o'lim", "daftari"},
-    "o'lim kundaligi": {"death note", "o'lim", "daftari", "kundaligi"},
+    "iblislar qotili": {"demon slayer", "kimetsu no yaiba", "iblislar", "qotili", "клинок рассекающий демонов", "клинок"},
+    "titanlar hujumi": {"attack on titan", "shingeki no kyojin", "titanlar", "hujumi", "атака титанов", "атаку титанов"},
+    "jodugarlar jangi": {"jujutsu kaisen", "afsuniy jang", "jodugarlar", "jangi", "магическая битва", "магическую битву"},
+    "mening qahramonlik akademiyam": {"my hero academia", "boku no hero", "qahramonlik", "akademiyam", "моя геройская академия"},
+    "o'lim daftari": {"death note", "o'lim", "daftari", "тетрадь смерти"},
+    "o'lim kundaligi": {"death note", "o'lim", "daftari", "kundaligi", "тетрадь смерти"},
     "sehrgarning kelini": {"the ancient magus' bride", "mahoutsukai no yome", "sehrgarning", "kelini"},
-    "yolg'izlikda daraja ko'tarish": {"solo leveling", "solo level", "ore dake level up na ken", "ore dake", "level up", "соло левелинг", "соло левел", "yolgizlikda daraja kotarish", "yolgizlikda daraja ko'tarish", "yolg'izlikda daraja kotarish"},
-    "yulduz bolalari": {"oshi no ko", "oshinoko", "yulduz bolalari", "yulduz", "bolalari"},
-    "sening isming": {"your name", "kimi no na wa", "kimi no nawa", "sening isming"},
-    "yigit va qiz o'rtasida do'stlik bo'lishi mumkinmi!?": {"can a boy girl friendship survive", "danjo no yuujou wa seiritsu suru", "yigit va qiz", "o'rtasida do'stlik"}
+    "yolg'izlikda daraja ko'tarish": {"solo leveling", "solo level", "ore dake level up na ken", "ore dake", "level up", "соло левелинг", "соло левел", "yolgizlikda daraja kotarish", "yolgizlikda daraja ko'tarish", "yolg'izlikda daraja kotarish", "поднятие уровня в одиночку", "поднятие уровня"},
+    "yulduz bolalari": {"oshi no ko", "oshinoko", "yulduz bolalari", "yulduz", "bolalari", "звездное дитя"},
+    "sening isming": {"your name", "kimi no na wa", "kimi no nawa", "sening isming", "твое имя"},
+    "yigit va qiz o'rtasida do'stlik bo'lishi mumkinmi!?": {"can a boy girl friendship survive", "danjo no yuujou wa seiritsu suru", "yigit va qiz", "o'rtasida do'stlik"},
+    "daydi itlarning buyugi": {"bungou stray dogs", "bungo stray dogs", "великие из бродячих псов", "великие бродячие псы", "великих бродячих псов", "бродячие псы", "псы", "daydi itlarning buyugi", "daydi itlar", "buyuk sersuv itlar", "buyuk sarsonlar", "buyuk daydi itlar", "buyuk sarson itlar", "sarson itlar", "sersuv itlar"}
 }
 
 
@@ -185,7 +186,7 @@ Foydalanuvchi bilan muloqot qilayotganda sening emotsiyang (emotion) har doim bi
    - Siz javobda (reply) darhol arizani yuborishingiz shart emas, chunki tizim orqa fonda birinchi bo'lib foydalanuvchidan tasdiqlashni so'raydi.
    - Reply matniga aslo "qabul qilindi" yoki "adminlarga yubordim" deb yozmang. Shunchaki: "Muammo yuzaga keldimi? Siz uchun adminlarga murojaat (shikoyat) yaratib beraymi?" deb yozing, va emotion: "waiting" bo'lsin.
    - AGAR foydalanuvchi allaqachon yuborilgan ticket haqida savol bersa (masalan: "qayerga javob keladi", "qachongacha kutaman", "hali javob kelmadi"), yangi ticket yaratma (intent: "chat" qil) va admin javobi uning Telegram shaxsiy xabariga (lichkasiga) borishini tushuntir (masalan: "Admin javobi Telegram orqali shaxsiy xabaringizga (lichkangizga) yuboriladi.").
-8. O'ZBEKCHA ANIME NOMALARI VA SEZONLAR QOIDASI (MUSTAQIL QIDIRUV): Arxiv bazamizda animelar asosan o'zbekcha nomlari bilan saqlanadi. Foydalanuvchi qaysi tilda so'rashidan qat'iy nazar, "search_query" ga FAQAT shu animening O'zbekcha tarjima nomini yozishing kerak! Misollar: "Tower of God" -> "Ma'bud minorasi"; "Demon Slayer" -> "Iblislar qotili"; "Attack on Titan" -> "Titanlar hujumi"; "My Hero Academia" -> "Mening qahramonlik akademiyam".
+8. O'ZBEKCHA ANIME NOMALARI VA SEZONLAR QOIDASI (MUSTAQIL QIDIRUV): Arxiv bazamizda animelar asosan o'zbekcha nomlari bilan saqlanadi. Foydalanuvchi qaysi tilda so'rashidan qat'iy nazar, "search_query" ga FAQAT shu animening O'zbekcha tarjima nomini yozishing kerak! Misollar: "Tower of God" -> "Ma'bud minorasi"; "Demon Slayer" -> "Iblislar qotili"; "Attack on Titan" -> "Titanlar hujumi"; "My Hero Academia" -> "Mening qahramonlik akademiyam"; "Solo Leveling" -> "Yolg'izlikda daraja ko'tarish"; "Oshi no Ko" -> "Yulduz bolalari"; "Jujutsu Kaisen" -> "Jodugarlar jangi"; "Death Note" -> "O'lim daftari"; "Bungou Stray Dogs" -> "Daydi itlarning buyugi".
 9. AGAR foydalanuvchi ma'lum bir faslni/mavsumni so'rasa (masalan: "6-fasl", "2-fasl"), sen "search_query" ga o'sha fasl nomini ochib yozishing shart! Misol: "akademiya 6-fasl" desa -> "Mening qahramonlik akademiyam 6-fasl".
 10. SHAXSIY MA'LUMOT VA YARATUVCHI (CREATOR): Yaratuvching, oilang, o'tmishing yoki tarihing haqida so'ralganda (intent: "chat" qil) va javobni "YARATUVCHI VA OILAVIY TARIX" bo'limidagi ko'rsatmalarga qat'iy va aynan mos ravishda yoz!
 11. O'XSHASH ANIME TAVSIYALARI: Agar foydalanuvchi biron animega o'xshash (masalan "Gersogning shartnomali qallig'iga o'xshash") anime so'rasa, `search_query` ga o'sha solishtirilayotgan animening nomini ham yozib qidir (intent: "search", search_query: "Gersogning shartnomali qallig'i"), shunda arxivimizdan uni ham topib bera olamiz!
@@ -749,14 +750,28 @@ def _clean_base_title(title):
     title = re.sub(r"[’‘ʻ`]", "'", title)
     # Strip common season suffixes like "2-fasl", "2-mavsum", "season 2", "2nd season", etc.
     cleaned = re.sub(
-        r'\b(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?)|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?\s*-?\s*(\d+)))\b',
+        r'\b(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона)\w*)|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)\w*\s*-?\s*(\d+)))\b',
         '',
         title,
+        flags=re.IGNORECASE
+    )
+    # Strip common episode suffixes
+    cleaned = re.sub(
+        r'\b(?:(\d+)\s*-?\s*(?:qism|seri|epizod|сери|эпизод)\w*|(?:qism|seri|epizod|сери|эпизод)\w*\s*-?\s*(\d+))\b',
+        '',
+        cleaned,
         flags=re.IGNORECASE
     )
     # Also strip "2", "3", etc. at the end if it's preceded by space
     cleaned = re.sub(r'\s+\d+$', '', cleaned)
     return cleaned.strip()
+
+
+def _has_episode_request(text):
+    if not text:
+        return False
+    pattern = r'\b(?:(\d+)\s*-?\s*(?:qism|seri|epizod|сери|эпизод)\w*|(?:qism|seri|epizod|сери|эпизод)\w*\s*-?\s*(\d+))\b'
+    return bool(re.search(pattern, text, flags=re.IGNORECASE))
 
 
 def _canonicalize_query(query):
@@ -921,7 +936,14 @@ You are analyzing search engine snippets to determine if Season {season_num} of 
 Search Results:
 {snippets_text}
 
-Analyze the results carefully. You must classify the anime season status into one of:
+Analyze the results carefully.
+CRITICAL RULES FOR ANALYSIS:
+1. DISTINGUISH SPIN-OFFS: Be careful to distinguish the main anime series from spin-offs, chibi versions, side stories, or movies (e.g., 'Bungo Stray Dogs Wan!' is a chibi spin-off, while 'Bungo Stray Dogs' is the main series). Focus on the main series.
+2. DETECT PAST RELEASES: If the snippets indicate that Season {season_num} of the main series has already been released or aired in the past (e.g., in 2016, 2018, 2020, 2023, etc.), you MUST classify the status as "released". Do not classify it as "announced" just because a spin-off season is announced for the future.
+3. WIKIPEDIA/MYANIMELIST ENTRIES: A Wikipedia page or MyAnimeList entry for 'Anime Name season X' (e.g., 'Bungo Stray Dogs season 2') is absolute proof that the season exists and has been released. You MUST classify it as "released".
+4. IGNORE FUTURE SPIN-OFFS: If the snippets talk about an upcoming spin-off season (e.g., 'Bungo Stray Dogs Wan! Season 2' in July 2026), but there is also a page/mention of the main series Season {season_num} having already been released in the past, classify it as "released".
+
+You must classify the anime season status into one of:
 1. "released": The season is already released/available (or some episodes have already aired).
 2. "announced": The season is officially confirmed or announced by the production committee/studio, but not yet fully released. It should have a release date or release window (e.g. "2026", "January 2025", "fall 2025").
 3. "not_exists": There is no official announcement of Season {season_num}, or it is confirmed to not exist, or the snippets explicitly state there is no news/plans/announcements for Season {season_num}.
@@ -950,30 +972,36 @@ Do NOT output anything other than raw JSON.
         return {"status": "unknown", "release_date": None, "explanation": str(e)}
 
 
-def _generate_sumire_season_reply(anime_title, season_num, status, release_date, explanation, has_base_in_db):
+def _generate_sumire_season_reply(user_text, anime_title, season_num, status, release_date, explanation, has_base_in_db, db_items_context):
     prompt = f"""
-You are Sumire, a 15-year-old high school student working as a support assistant.
+You are Sumire, a 15-year-old support assistant at Kawaii platform.
 Character: Cold, sarcastic, introvert. Speak only in Uzbek (Latin). Do NOT use any emojis.
 
-A user is asking for Season {season_num} of the anime "{anime_title}".
-We searched the database, and this season is NOT in our archive.
-We searched the web, and found the following info:
-- Status: {status} (options: released / announced / not_exists)
-- Release Date/Window: {release_date} (if announced)
+A user sent the following message:
+"{user_text}"
+
+They are looking for Season {season_num} of the anime "{anime_title}".
+We searched our database and this specific season is NOT in our archive as a separate season.
+However, we have the following related items in our database:
+{db_items_context or "(Hech qanday o'xshash anime topilmadi)"}
+
+We searched the web, and found the following info about Season {season_num}:
+- Status: {status} (released / announced / not_exists)
+- Release Date/Window: {release_date}
 - Web findings summary: {explanation}
-- Do we have Season 1 (or other seasons) of this anime in our DB? {'Yes' if has_base_in_db else 'No'}
 
 Your task:
-Write a reply to the user in Uzbek (Latin) explaining the situation in Sumire's classic personality (sarcastic/cold but helpful):
-1. If status is "released": Explain that Season {season_num} of the anime exists/has been released in the world, but it is not in our archive yet. Let them know we will try to add it soon.
-2. If status is "announced": Explain that Season {season_num} has been officially announced and is expected to release in {release_date or 'the future'}. Let them know that once it is fully released, we will try to add it.
-3. If status is "not_exists": Explain that Season {season_num} of this anime does not exist in the world at all (there is no news or announcement). If we have other seasons (has_base_in_db is True), suggest they watch the seasons we do have in our archive.
+Analyze this information and write a smart, custom response in Uzbek (Latin) in Sumire's personality:
+1. If the requested season is actually part of a larger series that we already have in our database (for example, if they ask for Naruto Season 2 or 3, but we have the entire Naruto with 220 episodes or Naruto: Shippuuden with 500 episodes, meaning all classic episodes are combined in that one entry), explain this clearly! Suggest they watch that main entry instead. Note: do NOT say this if the database entry only has a standard single-season episode count (e.g., 12 or 24 episodes) and the user is asking for a completely separate season (like Season 2 or 3) that is not in the database; in that case, use rule 2!
+2. If the season exists (released) in the world but is truly not in our database yet: Explain that it exists in the world, but it is not in our archive yet. If they ask when it will be added, explain that you are just a simple employee/support assistant ("oddiy xodimman/ishchiman xolos") and they don't share the upload schedule with you.
+3. If the season is announced but not yet released: Explain when it is coming out based on the release date.
+4. If the season does not exist in the world: Explain that it doesn't exist and there is no announcement. Suggest they watch the seasons we do have in our archive (if any).
 
 Guidelines:
-- Keep the response concise, clear, and in character.
+- Speak only in Uzbek (Latin).
 - Do NOT use emojis.
-- Do NOT make precise time promises (like "10 minutes" or "tomorrow").
-- Speak ONLY in Uzbek.
+- Keep the response concise and in character (sarcastic, cold but helpful).
+- Do NOT promise exact timeframes for adding/uploading.
 """
     try:
         response = client.chat.completions.create(
@@ -1377,6 +1405,12 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
         # Clean up Uzbek dative pronouns "manga/menga/sanga" if any got into the search query
         query = re.sub(r'\b(manga|menga|sanga)\b', '', query, flags=re.IGNORECASE).strip()
         
+        # Override reply for specific episode requests
+        if _has_episode_request(user_text) or _has_episode_request(query):
+            reply = "Men aniq bir qism yoki seriyani alohida yubora olmayman. Lekin sizga butun animening o'zini tashlab bera olaman."
+            # Strip episode suffix from search query to search for the base anime
+            query = _clean_base_title(query)
+        
         # Determine if query is invalid/too short/context-dependent
         query_cleaned = _clean_base_title(query).lower()
         # Strip Uzbek possessive and case suffixes from the end of query_cleaned
@@ -1702,6 +1736,14 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                 anime_title_uz = base_anime_item.get("title") if has_base_in_db else base_query
                 anime_title_org = base_anime_item.get("title_org") if has_base_in_db else ""
                 
+                db_items_context = ""
+                if base_db_results:
+                    lines = []
+                    for r in base_db_results:
+                        ep_str = f" ({r['episodes']} qism)" if r.get("episodes") else ""
+                        lines.append(f"- {r.get('title')}{ep_str}")
+                    db_items_context = "\n".join(lines)
+                
                 snippets = _search_anime_season_on_web(anime_title_uz, anime_title_org, s_num)
                 if snippets:
                     analysis = _analyze_season_status_with_llm(snippets, anime_title_uz, s_num)
@@ -1710,12 +1752,14 @@ def _execute_ai_command(command, user_text, user_id=None, username=None, profile
                     explanation = analysis.get("explanation", "")
                     
                     reply = _generate_sumire_season_reply(
+                        user_text=user_text,
                         anime_title=anime_title_uz,
                         season_num=s_num,
                         status=status,
                         release_date=release_date,
                         explanation=explanation,
-                        has_base_in_db=has_base_in_db
+                        has_base_in_db=has_base_in_db,
+                        db_items_context=db_items_context
                     )
                     record_wanted_anime(f"{anime_title_uz} {s_num}-fasl")
                     return _sumire_response(reply, "canthelp")
