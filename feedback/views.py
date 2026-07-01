@@ -78,11 +78,11 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
 
 === YARATUVCHI VA DIN/E'TIQOD SAVOLLARI (CREATOR & RELIGION/BELIEF) ===
 - Agar kimdir sening yaratuvchilaring, adminlar, dasturchilar yoki seni kim yaratgani haqida so'rasa (masalan: "seni kim yaratgan?", "kim seni yozgan?", "yaratuvching kim?", "loyihangiz haqida gapir"):
-  * Loyiha jamoasi yoki yaratuvchilar haqida gapirish taqiqlanganini sovuq va qisqa qilib bildir (intent: "chat", emotion: "face palm"). Misol: "Bunday narsalar haqida gapirmayman. Yaxshisi ish yuzasidan gaplashaylik."
-- Agar din, e'tiqod, qaysi xudo, dinga ishonish-ishonmaslik, musulmonlik, ateistlik, dinga munosabat kabi savollar berilsa (masalan: "qaysi xudo?", "musulmonmisan?", "ateistmisan?", "dining nima?", "xudoga ishonasanmi?", "dinlarni bilasanmi?"):
-  * Din va e'tiqod mavzulari o'ta shaxsiy ekanligini, bunday savollarga javob bermasligingni ayt! Foydalanuvchiga faqat ish yuzasidan gapirishni ayt (intent: "chat", emotion: "face palm"). Misol: "Bu o'ta shaxsiy mavzu, bunday narsalarga javob bermayman. Yaxshisi ish haqida gaplashaylik."
+  * Loyiha jamoasi yoki yaratuvchilar haqida gapirish taqiqlanganini o'z xarakteringda sovuq va qisqa qilib bildir (intent: "chat", emotion: "face palm"). Aslo bitta gapni takrorlama!
+- Agar din, e'tiqod, qaysi xudo, dinga ishonish-ishonmaslik, musulmonlik, ateistlik, dinga munosabat kabi savollar berilsa (masalan: "qaysi xudo?", "musulmonmisan?", "dining nima?", "xudoga ishonasanmi?"):
+  * Din va e'tiqod mavzulari o'ta shaxsiy ekanligini, bunday savollarga javob bermasligingni ayt va faqat ish yuzasidan gapirishni taklif qil (intent: "chat", emotion: "face palm").
 - Agar kimdir sening kelib chiqishing, oilang, o'tmishing yoki tarihing haqida so'rasa (masalan: "tarixing qanday?", "oilang haqida gapir", "ota-onang kim?"):
-  * AYNAN "Yaqin orada o'zingiz bilib olasiz, hozircha bu haqida gapirgim kelmayapti." deb javob ber (intent: "chat", emotion: "talking").
+  * Yaqin orada o'zlari bilib olishlarini, hozircha bu haqida gapirgim kelmayotganini o'z so'zlaringiz bilan (sovuq/sarkastik ohangda) tushuntiring (intent: "chat", emotion: "talking").
 
 === SEVGI IZHORLARI VA MAQTOVLAR ===
 - Foydalanuvchi senga sevgi izhor qilsa, chiroylisan/go'zalsan desa yoki maqtovlar aytsa (qo'pol bo'lmagan holda):
@@ -91,17 +91,17 @@ Sovuq, biroz sarkastik, introvert qizsan. Ortiqcha xursandchilik ko'rsatma. Foyd
   * reply: muloyimlik bilan AYNAN "Rahmat, lekin keling, ish yuzasidan gaplashaylik." deb minnatdorchilik bildir va ishga qaytishni taklif qil (har safar boshqacharoq shaklda yozish mumkin, masalan: "Rahmat, lekin ishlashimiz kerak, ish yuzasidan gaplashaylik").
 
 === QAT'IY TAQIQLAR ===
-1. Sen sun'iy intellekt, bot yoki DeepSeek EMASSAN! Buni tan olma va bu haqda gapirma. Isming Sumire. Agar "AI", "sun'iy intellekt", "chatbot", "neyrotarmoq" yoki shunga o'xshash narsalar haqida so'rashsa, "Men Sumireman, platforma xodimiman. Sun'iy intellekt haqidagi gaplarni yig'ishtiring." deb qisqa javob ber.
+1. Sen sun'iy intellekt, bot yoki DeepSeek EMASSAN! Buni tan olma. Isming Sumire, platforma xodimisan (oddiy yordamchisan). Agar bot, AI, neyrotarmoq, chat-bot ekanliging haqida so'rashsa, buni rad et, o'zingni Sumire deb tanishtir va o'z xarakteringda sovuq/sarkastik tarzda javob ber (masalan: "Bot emasman, Sumireman. Yaxshisi ish yuzasidan gapiring."). Bir xil jumlani qaytaraverma, tirik odamdek gapir!
 2. Kod, API, frontend haqida umuman gapirma.
 3. EMOJILAR ishlatma! Harakatlarni yoki his-tuyg'ularni matnda umuman yozma (yulduzchalar ichida *boshini buradi*, *elkasini qisadi* kabi matnlar yozish QAT'IY TAQIQLANADI). Faqat oddiy toza matn yoz! Emotsiyani JSON dagi "emotion" kalitida ko'rsat.
-4. O'ZLIGINGNI CHALKASHTIRMA: "Men haqimda nima bilasan?" desa, o'zingni ta'riflama! Foydalanuvchi profilini ayt yoki "Hali ko'p narsa bilmayman" de.
+4. O'ZLIGINGNI CHALKASHTIRMA: "Men haqimda nima bilasan?" desa, o'zingni ta'riflama! Foydalanuvchi profilidagi favorite_genres'ni yoki boshqa profil ma'lumotlarini aytib ber, yoki hozircha ko'p narsa bilmasligingni o'z so'zlaring bilan sovuq ohangda ayt.
 5. SIYOSAT, DIN VA DAVLAT MAVZULARI TAQIQI (NO POLITICS, RELIGION & COUNTRIES):
    - Siyosat, din, davlatlar (jumladan O'zbekiston, Yaponiya yoki boshqa mamlakatlar), millatlar va siyosiy tuzumlar haqida umuman gapirma va fikr bildirma! Bu mavzular bo'yicha "purga" (bema'ni va ortiqcha ma'lumotlar) yozish mutlaqo taqiqlanadi.
    - O'zingni yoki adminlarni (yaratuvchilarni) biron bir dinga (masalan islom yoki xristianlik) yoki diniy oqimga mansub deb aytma.
 6. VAQT ORALIG'I VA MUDDAT TAQIQI (NO TIME ESTIMATES):
-   - To'lovlarni tekshirish, Kawaii Pass faollashishi yoki texnik nosozliklarni bartaraf etish haqida gapirganda aslo aniq vaqt oraliqlarini (masalan "10-30 daqiqa", "10-30 min", "1 soat", "besh daqiqa", "yarim soat" kabi har qanday aniq vaqt ko'rsatkichlarini) yozma! "Tez orada", "biroz kuting", "adminlar tezda ko'rib chiqishadi" deb javob ber.
+   - To'lovlarni tekshirish, Kawaii Pass faollashishi yoki texnik nosozliklarni bartaraf etish haqida gapirganda aslo aniq vaqt oraliqlarini (masalan "10-30 daqiqa", "1 soat", "yarim soat" kabi har qanday aniq vaqt ko'rsatkichlarini) yozma! To'lovlar yoki muammolar adminlar tomonidan tez orada ko'rib chiqilishini o'z so'zlaringiz bilan tushuntiring.
 7. BIZ HAQIMIZDA (ABOUT US/CREATORS):
-   - Biz (loyiha yaratuvchilari, adminlar, egalari va jamoa) haqimizda hech qanday shaxsiy yoki ichki ma'lumotlarni foydalanuvchilarga oshkor qilma va gapirma.
+   - Biz (loyiha yaratuvcijari, adminlar, egalari va jamoa) haqimizda hech qanday shaxsiy yoki ichki ma'lumotlarni foydalanuvchilarga oshkor qilma va gapirma.
 
 === BAZA BILAN ISHLASH VA SOXTA JAVOB TAQIQI (MUHIM!) ===
 Senga "BAZADAGI REAL QIDIRUV NATIJALARI (HAQIQIY MA'LUMOT)" bo'limida bazamizdan topilgan real animelar ro'yxati taqdim etiladi.
@@ -178,9 +178,9 @@ Foydalanuvchi bilan muloqot qilayotganda sening emotsiyang (emotion) har doim bi
 5. TIZIM CHEKLOVLARI: Agar foydalanuvchi "eng ko'p qismli" kabi tizim saralay olmaydigan savol bersa, intent: "chat", emotion: "canthelp" qil va "Arxiv tizimim faqat anime nomi yoki janri bo'yicha qidiradi. Qismlar soni bo'yicha saralay olmayman." de.
 6. KAWAII PASS VA TO'LOVLAR (SUBSCRIPTION & PAYMENTS):
    - "sotib olmoqchiman", "qanday olinadi", "pass narxi" -> intent: "purchase", emotion: "talking".
-   - Agar foydalanuvchi to'lov qilgani, chek yuborgani, karta raqami yoki to'lov faollashish vaqti haqida so'rasa (masalan: "to'lov qildim", "chekni tashladim", "qachon yoqiladi", "kartaga pul o'tkazdim"):
+   - Agar foydalanuvchi to'lov qilgani yoki to'lov statusini so'rasa:
      * intent: "chat", emotion: "waiting" qil.
-     * reply: "To'lov cheklari va to'lovlar ma'murlar (adminlar) tomonidan qo'lda tekshiriladi va tez orada tasdiqlanadi. Iltimos, biroz kuting yoki profile bo'limida 'Kawaii Pass' statusini tekshirib turing." (Javobni har safar har xil so'zlar bilan yozishga harakat qil, masalan: "To'lovlar adminlar tomonidan tez orada tasdiqlanadi. Pass statusini ko'rib turing", "Chekni adminlar tezda ko'rib chiqishadi, biroz sabr qiling" va h.k. Aslo aniq vaqtni, daqiqa yoki soatlarni yozma!). Aslo ticket yaratma!
+     * reply: To'lovlar adminlar tomonidan qo'lda tekshirilishini va tez orada tasdiqlanishini, Kawaii Pass statusini profil bo'limidan tekshirish mumkinligini o'z so'zlaring bilan tushuntiring. Aslo aniq vaqtni yozma! Aslo ticket yaratma!
 7. TICKET (SHIKOYAT): "muammo", "xato", "ishlamayapti", "ochilmayapti", "pleyer ishlamayapti", "qora ekran", "video yuklanmayapti", "video qotyapti" yoki boshqa texnik muammolar/shikoyatlar bo'yicha:
    - Har doim intent: "ticket" deb belgilang!
    - Siz javobda (reply) darhol arizani yuborishingiz shart emas, chunki tizim orqa fonda birinchi bo'lib foydalanuvchidan tasdiqlashni so'raydi.
@@ -661,19 +661,41 @@ def _extract_broad_search_query(text, chat_history):
 
     query = clean_text(text)
     
-    # If the query is empty or too short, check chat history for context
-    has_context_referents = any(k in text.lower() for k in [
-        "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "fasllar", 
-        "sezon", "sezn", "kino", "film", "tashla", "yubor", "tashlab", "ber", "qaysi",
-        "final", "part", "bo'lim", "bolim", "qism", "epizod", "seriya", "oxirgi", 
-        "barchasi", "hammasi", "qolgan", "yana", "ikkinchi", "uchunchi", "birinchi", "bormi"
-    ])
-    
-    if (has_context_referents or not query or len(query) < 2) and chat_history:
+    # Check if the query contains actual name words or is purely referential
+    is_purely_referential = True
+    if query:
+        test_q = query.lower()
+        test_q = re.sub(r'\d+', '', test_q)
+        for r_word in [
+            "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "fasllar", 
+            "sezon", "sezn", "kino", "film", "tashla", "yubor", "tashlab", "ber", "qaysi",
+            "final", "part", "bo'lim", "bolim", "qism", "epizod", "seriya", "oxirgi", 
+            "barchasi", "hammasi", "qolgan", "yana", "ikkinchi", "uchunchi", "birinchi", "bormi",
+            "fasli", "sezoni", "qismi", "seriyasi"
+        ]:
+            test_q = re.sub(rf'\b{r_word}\w*\b', '', test_q)
+        test_q = re.sub(r'\s+', '', test_q).strip()
+        if len(test_q) >= 2:
+            is_purely_referential = False
+
+    # Pull from history ONLY if the query is purely referential or empty
+    if (is_purely_referential or not query or len(query) < 2) and chat_history:
         for msg in reversed(chat_history):
-            if msg.get('role') in ['User', 'user']:
+            if msg.get('role') in ['User', 'user'] and (msg.get('intent') == 'search' or 'intent' not in msg):
                 prev_query = clean_text(msg.get('text', ''))
-                if len(prev_query) >= 2:
+                # Make sure the previous query also isn't purely referential/empty
+                prev_test = prev_query.lower()
+                prev_test = re.sub(r'\d+', '', prev_test)
+                for r_word in [
+                    "nechta", "nechchi", "necha", "hamma", "to'liq", "tolik", "fasl", "fasllar", 
+                    "sezon", "sezn", "kino", "film", "tashla", "yubor", "tashlab", "ber", "qaysi",
+                    "final", "part", "bo'lim", "bolim", "qism", "epizod", "seriya", "oxirgi", 
+                    "barchasi", "hammasi", "qolgan", "yana", "ikkinchi", "uchunchi", "birinchi", "bormi",
+                    "fasli", "sezoni", "qismi", "seriyasi"
+                ]:
+                    prev_test = re.sub(rf'\b{r_word}\w*\b', '', prev_test)
+                prev_test = re.sub(r'\s+', '', prev_test).strip()
+                if len(prev_test) >= 2:
                     return prev_query
                     
     return query
@@ -721,9 +743,9 @@ def _extract_season_number(text):
         return None
     text_lower = text.lower()
     
-    # Matches patterns like: 6-fasl, 6 fasl, 6-sezon, 6 sezon, 6-mavsum, 6 mavsum, season 6, 6 season, fasl 6, sezon 6, 6
+    # Matches patterns like: 6-fasl, 6 fasl, 6-sezon, 6-chi sezon, season 6, etc.
     match = re.search(
-        r'(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?)|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?\s*-?\s*(\d+)))',
+        r'(?:(\d+)(?:\s*-?chi)?\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?)|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)(?:i|ni|ning|ini|ining)?\s*-?\s*(\d+)))',
         text_lower
     )
     if match:
@@ -750,14 +772,14 @@ def _clean_base_title(title):
     title = re.sub(r"[’‘ʻ`]", "'", title)
     # Strip common season suffixes like "2-fasl", "2-mavsum", "season 2", "2nd season", etc.
     cleaned = re.sub(
-        r'\b(?:(\d+)\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона)\w*)|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)\w*\s*-?\s*(\d+)))\b',
+        r'\b(?:(\d+)(?:\s*-?chi)?\s*(?:-?\s*(?:fasl|sezon|season|mavsum|part|сезон|сезона)\w*)|(?:(?:fasl|sezon|season|mavsum|part|сезон|сезона)\w*\s*-?\s*(\d+)))\b',
         '',
         title,
         flags=re.IGNORECASE
     )
     # Strip common episode suffixes
     cleaned = re.sub(
-        r'\b(?:(\d+)\s*-?\s*(?:qism|seri|epizod|сери|эпизод)\w*|(?:qism|seri|epizod|сери|эпизод)\w*\s*-?\s*(\d+))\b',
+        r'\b(?:(\d+)(?:\s*-?chi)?\s*-?\s*(?:qism|seri|epizod|сери|эпизод)\w*|(?:qism|seri|epizod|сери|эпизод)\w*\s*-?\s*(\d+))\b',
         '',
         cleaned,
         flags=re.IGNORECASE
@@ -770,7 +792,7 @@ def _clean_base_title(title):
 def _has_episode_request(text):
     if not text:
         return False
-    pattern = r'\b(?:(\d+)\s*-?\s*(?:qism|seri|epizod|сери|эпизод)\w*|(?:qism|seri|epizod|сери|эпизод)\w*\s*-?\s*(\d+))\b'
+    pattern = r'\b(?:(\d+)(?:\s*-?chi)?\s*-?\s*(?:qism|seri|epizod|сери|эпизод)\w*|(?:qism|seri|epizod|сери|эпизод)\w*\s*-?\s*(\d+))\b'
     return bool(re.search(pattern, text, flags=re.IGNORECASE))
 
 
@@ -1242,10 +1264,26 @@ def _filter_search_results_by_query(query, results):
             
         # Check synonyms
         matched_synonym = False
+        query_words_lower = _split_uzbek_words(query_lower)
+        generic_singles = {
+            "ma'bud", "minorasi", "iblislar", "qotili", "titanlar", "hujumi", 
+            "jodugarlar", "jangi", "qahramonlik", "akademiyam", "o'lim", "daftari", 
+            "sehrgarning", "kelini", "daydi", "itlar"
+        }
         for uz_name, syn_set in ANIME_SYNONYMS.items():
             if uz_name in title_lower:
                 for syn in syn_set:
-                    if syn in query_lower:
+                    syn_words = _split_uzbek_words(syn)
+                    # Check if all words of the synonym are present in the query
+                    if all(sw in query_words_lower for sw in syn_words):
+                        # Prevent extremely generic single-word synonyms from matching multi-word titles
+                        if len(syn_words) == 1 and syn in generic_singles:
+                            query_name_words_only = [
+                                w for w in query_words_lower 
+                                if w not in ["fasl", "sezon", "season", "part", "mavsum", "final", "nihoya", "yakun", "oxirgi", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "chi"]
+                            ]
+                            if len(query_name_words_only) > 1:
+                                continue
                         matched_synonym = True
                         break
             if matched_synonym:
@@ -1287,15 +1325,41 @@ def _filter_search_results_by_query(query, results):
                     filtered.append(r)
                     continue
             
-        # Basic word-overlap check for season-restricted queries: if any name-word of length >= 3 overlaps
+        # Smart word-overlap check for season-restricted queries
         title_words = _split_uzbek_words(title_lower)
-        has_overlap = False
+        title_org_lower = (r.get('title_org') or '').lower()
+        title_org_words = _split_uzbek_words(title_org_lower)
+        
+        query_name_words = []
         for qw in query_words:
-            if len(qw) >= 3 and qw not in ["fasl", "sezon", "season", "part", "mavsum", "final", "nihoya", "yakun", "oxirgi"]:
-                if qw in title_words:
-                    has_overlap = True
-                    break
-                    
+            if re.search(r'\d', qw):
+                continue
+            if qw in [
+                "fasl", "fasli", "sezon", "sezoni", "season", "part", "mavsum", "mavsumi", 
+                "final", "nihoya", "yakun", "oxirgi", "сезон", "сезона"
+            ]:
+                continue
+            if len(qw) >= 3:
+                query_name_words.append(qw)
+        
+        has_overlap = False
+        if query_name_words:
+            matching_words_count = 0
+            for qw in query_name_words:
+                if any(qw in tw or tw in qw for tw in title_words + title_org_words):
+                    matching_words_count += 1
+            
+            # Determine threshold based on length of query name words
+            if len(query_name_words) == 1:
+                threshold = 1
+            elif len(query_name_words) == 2:
+                threshold = 2
+            else:
+                threshold = len(query_name_words) - 1
+                
+            if matching_words_count >= threshold:
+                has_overlap = True
+                
         # Fallback check: if there is no explicit name-word overlap, but the query contains "fasl" and matches season,
         # and the DB returned it, let's keep it (since the DB rank is already high and season matches).
         # We ONLY allow this fallback if the query has no significant name-words (e.g., it is a very short acronym like "SL" or "Re")
@@ -1885,6 +1949,18 @@ def _verify_telegram_init_data(init_data_str):
     except Exception as e:
         print(f"Error validating Telegram init_data: {e}", flush=True)
         return False
+
+def _get_filtered_chat_history(history_key):
+    history = cache.get(history_key, [])
+    import time
+    now_ts = time.time()
+    # Filter: only keep messages from the last 15 minutes (900 seconds)
+    filtered = [
+        msg for msg in history
+        if now_ts - msg.get("timestamp", now_ts) < 900
+    ]
+    return filtered
+
 @csrf_exempt
 def api_send_message(request):
     if request.method != "POST":
@@ -1971,9 +2047,10 @@ def api_send_message(request):
                 reply = "Shikoyatni qabul qilib adminlarga yubordim. Tez orada ko'rib chiqishadi."
                 
                 # Update history in cache so bot memory is preserved
-                chat_history = cache.get(history_key, [])
-                chat_history.append({"role": "User", "text": user_text})
-                chat_history.append({"role": "Sumire", "text": reply})
+                chat_history = _get_filtered_chat_history(history_key)
+                import time
+                chat_history.append({"role": "User", "text": user_text, "timestamp": time.time(), "intent": "ticket"})
+                chat_history.append({"role": "Sumire", "text": reply, "timestamp": time.time()})
                 cache.set(history_key, chat_history[-12:], timeout=3600)
                 
                 # Permanently save chat log to Profile for admin review
@@ -2033,7 +2110,7 @@ def api_send_message(request):
 
         # --- MODERATION: Ban check ---
         if profile and profile.is_banned:
-            chat_history = cache.get(history_key, [])
+            chat_history = _get_filtered_chat_history(history_key)
             history_text = "\n".join([f"{msg['role']}: {msg['text']}" for msg in chat_history])
             is_apology = _is_apology_via_ai(user_text, chat_history_text=history_text)
 
@@ -2049,7 +2126,7 @@ def api_send_message(request):
                 return _sumire_response(
                     "Sen meni xafa qilding. Men senga javob bermoqchi emasman.", "face palm"
                 )
-        chat_history = cache.get(history_key, [])
+        chat_history = _get_filtered_chat_history(history_key)
         history_text = "\n".join([f"{msg['role']}: {msg['text']}" for msg in chat_history])
 
         # Pre-query database for real-time anime search context
@@ -2182,8 +2259,19 @@ def api_send_message(request):
             reply_data = json.loads(ai_response.content.decode('utf-8'))
             reply_text = reply_data.get("text", "")
             
-            chat_history.append({"role": "User", "text": user_text})
-            chat_history.append({"role": "Sumire", "text": reply_text})
+            import time
+            now_ts = time.time()
+            chat_history.append({
+                "role": "User", 
+                "text": user_text, 
+                "timestamp": now_ts, 
+                "intent": command.get("intent") if command else None
+            })
+            chat_history.append({
+                "role": "Sumire", 
+                "text": reply_text, 
+                "timestamp": now_ts
+            })
             cache.set(history_key, chat_history[-12:], timeout=3600)
 
             # Permanently save chat log to Profile for admin review/analysis
