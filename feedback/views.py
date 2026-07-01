@@ -1294,16 +1294,28 @@ def _filter_search_results_by_query(query, results):
             continue
             
         # Exact match or substring match against title_uzb
-        if q_clean and t_clean and (q_clean in t_clean or t_clean in q_clean):
-            filtered.append(r)
-            continue
+        if q_clean and t_clean:
+            if len(q_clean) < 3 or len(t_clean) < 3:
+                if q_clean == t_clean:
+                    filtered.append(r)
+                    continue
+            else:
+                if q_clean in t_clean or t_clean in q_clean:
+                    filtered.append(r)
+                    continue
             
         # Exact match or substring match against title_org
         title_org_lower = (r.get('title_org') or '').lower()
         t_org_clean = re.sub(r'[^\w]|_', '', title_org_lower)
-        if q_clean and t_org_clean and (q_clean in t_org_clean or t_org_clean in q_clean):
-            filtered.append(r)
-            continue
+        if q_clean and t_org_clean:
+            if len(q_clean) < 3 or len(t_org_clean) < 3:
+                if q_clean == t_org_clean:
+                    filtered.append(r)
+                    continue
+            else:
+                if q_clean in t_org_clean or t_org_clean in q_clean:
+                    filtered.append(r)
+                    continue
             
         # Check Levenshtein distance for fuzzy matching (typos) against title_uzb
         if q_clean and t_clean:
@@ -1344,9 +1356,18 @@ def _filter_search_results_by_query(query, results):
         
         has_overlap = False
         if query_name_words:
+            def _is_word_match(qw, tw):
+                if qw == tw:
+                    return True
+                if len(qw) >= 3 and qw in tw:
+                    return True
+                if len(tw) >= 3 and tw in qw:
+                    return True
+                return False
+
             matching_words_count = 0
             for qw in query_name_words:
-                if any(qw in tw or tw in qw for tw in title_words + title_org_words):
+                if any(_is_word_match(qw, tw) for tw in title_words + title_org_words):
                     matching_words_count += 1
             
             # Determine threshold based on length of query name words
